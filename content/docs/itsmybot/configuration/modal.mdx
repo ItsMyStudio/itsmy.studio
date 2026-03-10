@@ -1,0 +1,325 @@
+---
+title: Modal
+description: Learn how to configure modals in ItsMyBot.
+---
+
+# How to configure Modal
+In this guide, you will learn how to configure a modal and everything you can do with it. 
+Modals support [placeholders](/docs/itsmybot/configuration/placeholders/), you can put them in any part of the modal, and they will be replaced with the corresponding value when the modal is displayed.
+
+I really recommend learning about the message configuration first, as modals use the same component system. You can find the message configuration guide [here](/docs/itsmybot/configuration/message). 
+
+---
+
+# Modal Configuration
+This is the main part of the modal configuration. You set everything you want to display in the modal here. The modal is composed of components, which are the building blocks of the modal. Each component has a type and can have various options.
+
+- Support the following components: [`text-display`](#text-display), [`label`](#label).
+
+
+<TypeTable
+  type={{
+    title: {
+      description: 'The title of the modal, it will be displayed at the top of the modal.',
+      type: 'string',
+      required: true,
+    },
+    'custom-id': {
+      description: "The custom id of the modal, used to identify the modal when it is submitted. The custom id is not required everywhere, it's not used in tickets for example",
+      type: 'string',
+      required: false,
+    },
+    components: {
+      description: 'List of components, the components of the modal. Can be a text display or a label.',
+      type: 'Component[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example"
+title: "My Modal" # Optional, the title of the modal.
+components: # The components of the modal. With the new format, all the content of the modal is in the components.
+  - type: "text-display" # A text display component, it will display the content as a text.
+    content: "Hello there !"
+  - type: "label" # A label component, it will display a label with a description and an input field.
+    components:
+      - type: 'label'
+        label: 'What is your name?'
+        description: 'Please enter your full name.'
+        component:
+          type: 'text-input' # A text input component, it will display an input field.
+          style: 'Short' # 'Short' or 'Paragraph'
+          custom-id: 'name'
+          placeholder: 'Enter your name here'
+          max-length: 50
+    - type: 'label'
+      label: 'Select an option'
+      description: 'Please select one of the options below.'
+      component:
+        type: select-menu # A select menu component, it will display a dropdown menu with options.
+        custom-id: "select1"
+        options:
+          - label: "Option 1"
+            value: "option1"
+          - label: "Option 2"
+            value: "option2"
+```
+
+---
+
+# Components
+Below, you will find a list of all the possible components you can include in your modal.
+
+### Component Conditions
+Each component supports conditions, these are exactly the same conditions you can find in scripts. They allow you to display a component only in certain cases, so your message can adapt to the context.
+You can find the list of available [conditions here](/docs/itsmybot/scripting/conditions/). The format is as follows:
+
+<TypeTable
+  type={{
+    conditions: {
+      description: 'List of conditions, the conditions of the component. The component will only be displayed if the conditions are met.',
+      type: 'Condition[]',
+      required: false,
+      typeDescriptionLink: '/docs/itsmybot/scripting/conditions',
+    },
+  }}
+/>
+```yaml title="Example"
+components:
+  - type: "text-display"
+    content: "Hello there !"
+    conditions: # [!code focus]
+      - id: aboveMembers # [!code focus]
+        args: # [!code focus]
+          amount: 10 # [!code focus]
+```
+
+---
+
+### Text Display 
+#### `text-display` [!toc]
+Text display are the default components to use when you want to display text. They are compatible with Discord’s markdown format, so you can create titles by adding # at the beginning of the line, etc.
+
+The content option can be a list of strings, ItsMyBot will randomly select one of the results. This means each message will be unique!
+
+<TypeTable
+  type={{
+    type: {
+      type: 'text-display',
+      description: 'The type of the component, in this case text-display.',
+      required: true,
+    },
+    content: {
+      description: 'The content of the text display. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example" tab="Simple"
+components:
+  - type: text-display
+    content: "Hello there !" # A simple text display
+```
+```yaml title="Example" tab="Multiline"
+components:
+  - type: text-display
+    content: | # A multiline text display
+      Multiple lines of text
+      are supported, just like in Discord.
+```
+```yaml title="Example" tab="Random"
+components:
+  - type: text-display
+    content: # A list of strings, one will be randomly selected
+      - "Hello there !"
+      - "Hi !"
+      - "Greetings !"
+```
+
+### Label
+#### `label` [!toc]
+A label is a component that can contain a label, a description, and an input component. It is used to display a label with an input field, like a text input or a select menu.
+
+- Support the following components: [`text-input`](#text-input), [`select-menu`](#select-menu).
+
+<TypeTable
+  type={{
+    type: {
+      type: 'label',
+      description: 'The type of the component, in this case label.',
+      required: true,
+    },
+    label: {
+      description: 'The label of the component, it will be displayed above the input component.',
+      type: 'string | string[]',
+      required: true,
+    },
+    description: {
+      description: 'The description of the component, it will be displayed below the label and above the input component.',
+      type: 'string | string[]',
+      required: false,
+    },
+    component: {
+      description: 'The input component of the label, it can be a text input or a select menu.',
+      type: 'Component',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: label
+    label: "Username"
+    description: "Enter your username"
+    component: # [!code focus]
+      type: text-input # [!code focus]
+      custom-id: "username" # [!code focus]
+      style: "short" # [!code focus]
+      required: true # [!code focus]
+```
+
+### Text Input
+#### `text-input` [!toc]
+A text input is a component that allows the user to enter text. It can be used to collect information from the user.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'text-input',
+      description: 'The type of the component, in this case text-input.',
+      required: true,
+    },
+    style: {
+      description: 'The style of the text input, can be "Short" or "Paragraph".',
+      type: 'string',
+      required: true,
+    },
+    'custom-id': {
+      description: 'The custom id of the text input, used to identify the text input when it is submitted.',
+      type: 'string',
+      required: true,
+    },
+    placeholder: {
+      description: 'The placeholder of the text input, it will be displayed when the input is empty.',
+      type: 'string | string[]',
+      required: false,
+    },
+    'max-length': {
+      description: 'The maximum length of the text input, it will prevent the user from entering more than the specified number of characters.',
+      type: 'integer',
+      required: false,
+    },
+    'min-length': {
+      description: 'The minimum length of the text input, it will prevent the user from entering less than the specified number of characters.',
+      type: 'integer',
+      required: false,
+    },
+    required: {
+      description: 'Whether the text input is required or not, if true the user will not be able to submit the modal without filling this input.',
+      type: 'boolean',
+      required: false,
+    },
+    value: {
+      description: 'The default value of the text input, it will be displayed in the input field when the modal is displayed.',
+      type: 'string | string[]',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: label
+    label: "What is your favorite color?"
+    component:
+      type: text-input # [!code focus]
+      style: "Short" # [!code focus]
+      custom-id: "favorite_color" # [!code focus] 
+      placeholder: "Enter your favorite color" # [!code focus]
+      max-length: 30 # [!code focus] 
+      required: true # [!code focus]
+```
+
+
+### Select Menu
+#### `select-menu` [!toc]
+A select menu is a component that allows the user to select an option from a list.
+
+The placeholder options can be a string or a list of strings, ItsMyBot will randomly select one of the results. 
+
+<TypeTable
+  type={{
+    type: {
+      type: 'select-menu',
+      description: 'The type of the component, in this case select-menu.',
+      required: true,
+    },
+    'custom-id': {
+      description: 'The custom id of the select menu. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    options: {
+      description: 'List of options, the options of the select menu.',
+      type: 'SelectOption[]',
+      required: true,
+    },
+    placeholder: {
+      description: 'The placeholder of the select menu. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+    'min-values': {
+      description: 'The minimum number of values that can be selected.',
+      type: 'integer',
+      required: false,
+      default: 1,
+    },
+    'max-values': {
+      description: 'The maximum number of values that can be selected.',
+      type: 'integer',
+      required: false,
+      default: 1,
+    },
+  }}
+/>
+
+#### Select Option
+A select option is an object that represents an option in the select menu. It has the following properties:
+<TypeTable
+  type={{
+    label: {
+      description: 'The label of the option. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    value: {
+      description: 'The value of the option. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: label
+    label: "Select your favorite fruits"
+    component:
+      type: select-menu # [!code focus]
+      custom-id: "select1" # The custom id of the select menu, used to identify the select menu when it is selected [!code focus]
+      options: # The options of the select menu [!code focus]
+        - label: "Option 1" # [!code focus]
+          value: "option1" # The value of the option, used to identify the option when it is selected [!code focus]
+        - label: "Option 2" # [!code focus]
+          value: "option2" # [!code focus]
+        - label: "Option 3" # [!code focus]
+          value: "option3" # [!code focus]
+      placeholder: "Select an option" # Optional, the placeholder of the select menu [!code focus]
+      min-values: 1 # Optional, the minimum number of values that can be selected [!code focus]
+      max-values: 2 # Optional, the maximum number of values that can be selected [!code focus]
+```

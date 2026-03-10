@@ -1,0 +1,60 @@
+---
+title: Tickets
+description: Learn how to use the tickets addon to create tickets in your server.
+---
+
+The tickets addon allows you to create tickets in your server.
+
+[Purchase](https://builtbybit.com/resources/51625/)
+
+## Create a category
+You can create a unlimited amount of categories. Each category can have a different configuration. You just need to create a new file in the `configs/Tickets/categories/` folder or subfolder.
+
+## Commands
+- `/add <user>`<br/>
+  Add a user to the ticket.
+- `/remove <user>`<br/>
+  Remove a user from the ticket.
+- `/claim`<br/>
+  Claim the ticket.
+- `/rename`<br/>
+  Rename the ticket.
+- `/transcript [channel]`<br/>
+  Get the transcript of the channel. If no channel is specified, the transcript will be sent in the current channel.
+- `/close [reason]`<br/>
+  Close the ticket. You can specify a reason for closing the ticket.
+- `/tickets panel <panel>`<br/>
+  Create a ticket creation panel. The panel configuration file must be in the `configs/Tickets/panels/` folder.
+- `/tickets history [user]`<br/>
+  Get the ticket history of a user. If no user is specified, it will show your ticket history.
+
+## Placeholders
+- `%tickets_total_tickets%`<br/>
+  The total amount of tickets created.
+- `%tickets_open_tickets%`<br/>
+  The amount of open tickets.
+- `%tickets_closed_tickets%`<br/>
+  The amount of closed tickets.
+- `%tickets_user_tickets%`<br/>
+  The amount of tickets created by a user.
+- `%tickets_user_open_tickets%`<br/>
+  The amount of open tickets of a user.
+- `%tickets_user_closed_tickets%`<br/>
+  The amount of closed tickets of a user.
+- `%staff_claimed_tickets%`<br/>
+  The amount of tickets claimed by a staff member.
+- `%staff_closed_tickets%`<br/>
+  The amount of tickets closed by a staff member.
+
+## Button Custom ID
+Allows you to have custom buttons to execute various actions of the Tickets addon at any location of the bot
+- `tickets_create_<category-id>`<br/>
+  Create a ticket of the category with the specified id. The category id is the filename of the category configuration without the extension. For example, if your category configuration file is `configs/Tickets/categories/support.yml`, the category id will be `support` and the custom id of the button will be `tickets_create_support`.
+
+  ```yaml {{ title: 'Example' }}
+    - type: button
+      label: "Open a Support Ticket"
+      custom-id: "tickets_create_support"
+      emoji: "📩"
+      style: 'Secondary'
+  ```

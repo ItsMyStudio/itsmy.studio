@@ -1,0 +1,379 @@
+---
+title: Custom Commands
+description: Learn how to create custom commands in ItsMyBot to extend the bot's functionalities and perform various actions based on user input.
+---
+
+With ItsMyBot and the [scripting](/docs/itsmybot/scripting/) system, you can create custom commands to extend the bot's functionalities. These commands can be used to perform various actions, such as sending messages, managing roles, and more.
+
+Each custom command need to be created in the `scripting/custom-commands` folder in the bot's directory. It supports subfolders, so you can organize your commands as you want. Each command is a .yml file that contains the command's configuration. You can disable a command by adding an underscore at the beginning of the file name, for example: `_my-command.yml`.
+
+## Command Structure
+A custom command is a YAML file that contains the following structure:
+<TypeTable
+  type={{
+    name: {
+      description: "The name of the command, used to call it in Discord.",
+      type: "string",
+      required: true
+    },
+    description: {
+      description: "The description of the command, used to display it in the help command.",
+      type: "string",
+      required: true
+    },
+    options: {
+      description: "The list of options for the command.",
+      type: "CommandOption[]",
+      typeDescriptionLink: "#options-types",
+      required: false,
+    },
+    actions: {
+      description: "The list of actions to perform when the command is executed.",
+      type: "Action[]",
+      typeDescriptionLink: "/docs/itsmybot/scripting/actions",
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+name: give-role
+description: "Give a role to a user."
+options:
+  - name: user # Option name
+    type: "user" # Option type
+    description: "The user to give the role to"
+    required: true # Option required
+  - name: role
+    type: "role"
+    description: "Select a role to add to the user"
+    required: true
+actions:
+  - actions:
+    - id: addRole
+      args:
+        value: "%option_role_id%"
+    - id: reply
+      args:
+        delay: 3
+        components: 
+          - type: text-display
+            content: "Role %option_role_mention% added to %option_user_mention%"
+    target:
+      member: "%option_user_id%" # Transform the main member to the user selected in the option.
+```
+
+---
+
+## Options types
+Options are the parameters that can be passed to a command when it is executed. They can be used to customize the behavior of the command. Each option has a type, a name, a description, and can have additional properties depending on its type.
+
+Each option give you the following variables to use in the actions:
+- `[[option_<option-name>]]`: The value of the option.
+- `[[option_<option-name>_is_provided]]`: A boolean that indicates if the option was provided or not.
+
+If the option have choices, it will also provide the following variable:
+- `[[option_<option-name>_choice_name]]`: The name of the choice selected
+
+### String
+#### `string` [!toc]
+A string option is a text input that can be used to provide a value for the command.
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case string",
+      type: "'string'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    },
+    choices: {
+      description: "The list of choices for the option. Each choice is a dictionary with the following keys: name (string, the name of the choice) and value (string, the value of the choice).",
+      type: 'Choice[]',
+      required: false
+    },
+    'max-length': {
+      description: "The maximum length of the option value. Only used for `string` type.",
+      type: 'integer',
+      required: false
+    },
+    'min-length': {
+      description: "The minimum length of the option value. Only used for `string` type.",
+      type: 'integer',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options:
+  - name: option1
+    description: This is the first option.
+    type: string
+    required: true
+    choices:
+      - name: choice1
+        value: value1
+      - name: choice2
+        value: value2
+  - name: option2
+    description: This is the second option.
+    type: string
+    required: false
+    max-length: 100
+    min-length: 1
+```
+
+### Number
+#### `integer`/`number` [!toc]
+An integer option is a numeric input that can be used to provide a value for the command.
+
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case integer or number",
+      type: "'integer' | 'number'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    },
+    choices: {
+      description: "The list of choices for the option. Each choice is a dictionary with the following keys: name (string, the name of the choice) and value (integer/number, the value of the choice).",
+      type: 'Choice[]',
+      required: false
+    },
+    'max-value': {
+      description: "The maximum value of the option. Only used for `integer` type.",
+      type: 'integer',
+      required: false
+    },
+    'min-value': {
+      description: "The minimum value of the option. Only used for `integer` type.",
+      type: 'integer',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options: 
+  - name: option1
+    description: This is the first option.
+    type: integer # or number
+    required: true
+    choices:
+      - name: choice1
+        value: 1
+      - name: choice2
+        value: 2
+    min-value: 0
+    max-value: 100
+  - name: option2
+    description: This is the second option.
+    type: integer # or number
+    required: false
+```
+
+### Boolean
+#### `boolean` [!toc]
+A boolean option is a checkbox that can be used to provide a value for the command.
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case boolean",
+      type: "'boolean'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options:
+  - name: option1
+    description: This is the first option.
+    type: boolean
+    required: true
+```
+
+### User
+#### `user` [!toc]
+A user option is a user mention that can be used to provide a value for the command.
+- Add the [user variables](/docs/itsmybot/configuration/variables#user) with the prefix `[[option_<option-name>_]]` in the actions. Example: `[[option_user_mention]]` to get the mention of the user selected.
+
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case user",
+      type: "'user'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options:
+  - name: option1
+    description: This is the first option.
+    type: user
+    required: true
+```
+
+### Channel
+#### `channel` [!toc]
+A channel option is a channel mention that can be used to provide a value for the command.
+- Add the [channel variables](/docs/itsmybot/configuration/variables#channel) with the prefix `[[option_<option-name>_]]` in the actions. Example: `[[option_option1_mention]]` to get the mention of the channel selected.
+
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case channel",
+      type: "'channel'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    },
+    'channel-type': {
+      description: "The type of the channel. Can be GuildText, GuildVoice, GuildCategory, GuildAnnouncement, AnnouncementThread, PublicThread, PrivateThread, GuildStageVoice, GuildForum, GuildMedia, GuildDirectory.",
+      type: 'string',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options:
+  - name: option1
+    description: This is the first option.
+    type: channel
+    required: true
+    channel-type: GuildText 
+```
+
+### Role
+#### `role` [!toc]
+A role option is a role mention that can be used to provide a value for the command.
+- Add the [role variables](/docs/itsmybot/configuration/variables#role) with the prefix `[[option_<option-name>_]]` in the actions. Example: `[[option_option1_mention]]` to get the mention of the role selected.
+
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case role",
+      type: "'role'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options:
+  - name: option1
+    description: This is the first option.
+    type: role
+    required: true
+```
+
+### Mentionable
+#### `mentionable` [!toc]
+A mentionable option is a mentionable entity (user or role) that can be used to provide a value for the command.
+- Add the [user variables](/docs/itsmybot/configuration/variables#user) or [role variables](/docs/itsmybot/configuration/variables#role) with the prefix `[[option_<option-name>_]]` in the actions. Example: `[[option_option1_mention]]` to get the mention of the selected mentionable.
+
+<TypeTable
+  type={{
+    type: {
+      description: "The type of the option, in this case mentionable",
+      type: "'mentionable'",
+      required: true
+    },
+    description: {
+      description: "The description of the option",
+      type: 'string',
+      required: true
+    },
+    required: {
+      description: "If the option is required or not.",
+      type: 'boolean',
+      default: 'false',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+name: my-command
+description: This is a custom command.
+options:
+  - name: option1
+    description: This is the first option.
+    type: mentionable
+    required: true
+```
+
+## Actions
+Actions are the core of the custom commands. They define what the command will do when it is executed. You can use any action available in the [actions](/docs/itsmybot/scripting/actions) section.

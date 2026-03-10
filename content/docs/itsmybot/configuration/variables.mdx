@@ -1,0 +1,57 @@
+---
+title: Variables
+description: Learn how to use variables in ItsMyBot to display dynamic information in your messages and components.
+---
+
+Variables are dynamic values that can only be used in certain locations and not everywhere like placeholders. They are mainly used in language files. The format of a variable is like this: `[[<variable_name>]]`. Example: `[[target_display_name]]`.
+When variables are about a specific context (user, channel, role or time), they are available with a prefix. For example: `target` or `executor` will be prefixes for user-related variables: `[[target_username]]`, `[[executor_mention]]`, etc.
+
+### User
+Retrieve information about a user.
+
+```
+[[<prefix>_id]]
+[[<prefix>_username]]
+[[<prefix>_display_name]]
+[[<prefix>_mention]]
+[[<prefix>_avatar]]
+[[<prefix>_create_date]]
+[[<prefix>_join_date]]
+[[<prefix>_roles]]
+[[<prefix>_messages]]
+[[<prefix>_coins]]
+```
+
+### Channel
+Retrieve information about a channel.
+```
+[[<prefix>_id]]
+[[<prefix>_name]]
+[[<prefix>_mention]]
+[[<prefix>_type]]
+[[<prefix>_createdate]]
+[[<prefix>_topic]]
+[[<prefix>_url]]
+[[<prefix>_parent_id]]
+```
+
+### Role
+Retrieve information about a role.
+```
+[[<prefix>_id]]
+[[<prefix>_name]]
+[[<prefix>_mention]]
+```
+
+### Time
+Display the time in different formats.
+
+```
+[[<prefix>_short_date]]   # 11/28/2018
+[[<prefix>_long_date]]    # November 28, 2018	
+[[<prefix>_short_time]]   # 9:01 AM	
+[[<prefix>_long_time]]    # 9:01:00 AM	
+[[<prefix>_short]]        # November 28, 2018 9:01 AM	
+[[<prefix>_long]]         # Wednesday, November 28, 2018 9:01 AM	
+[[<prefix>_relative]]     # 3 years ago	
+```

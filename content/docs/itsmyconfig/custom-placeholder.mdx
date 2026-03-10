@@ -1,0 +1,358 @@
+---
+title: Custom Placeholder
+description: Discover the Custom Placeholder feature in ItsMyConfig
+---
+
+Custom Placeholders allow you to create your own placeholders and use them in all plugins that are compatible with PlaceholderAPI. For example, you can have one universal prefix for all messages, regardless of the plugin, and be able to change this prefix easily. Placeholder currently has 4 different types, each with its own features.
+
+You can now use the placeholder `%itsmyconfig_yourPlaceholder%` to display it in the game.
+
+## Argument
+
+We have added the ability to add arguments to custom placeholders.
+
+```yaml title='config.yml'
+custom-placeholder:
+  yourPlaceholder: 
+    value: "This is your custom placeholder {0} !"
+```
+
+You can use the placeholder `%itsmyconfig_yourPlaceholder_Enjoy%` to display your argument directly in the placeholder.
+
+## Custom Placeholder Types
+
+### String Type
+String placeholder is the default type, it allows you to create a simple placeholder with a string value. You don't need to specify the type, placeholder will automatically detect it.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    value: "This is your custom placeholder"
+    type: "string" # Optional
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>%`<br/>
+  Return the value of the placeholder
+- `%itsmyconfig_<placeholder>_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_>`<br/>
+  Return the value of the placeholder
+- `<placeholder:_placeholder_:_arg-1_:_arg-2_>`<br/>
+  Return the value of the placeholder with arguments
+
+### Color Type
+Color placeholder allows you to create a placeholder with a color value. You can use the color name or the hex color code. It's automatically create different placeholders for each format.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    value: "red"
+    # Supported value: black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, or white.
+    # You can also use hex color code: #FF0000
+    type: "color"
+    bold: true # Optional
+    underlined: false # Optional
+    italic: false # Optional
+    strikethrough: false # Optional
+    obfuscated: false # Optional
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>%`<br/>
+  Return the value of the placeholder in miniMessage format: `<red>` for color and `<#FF0000>` for hex
+- `%itsmyconfig_<placeholder>_legacy%`<br/>
+  Return the value of the placeholder in legacy format: `&c` for color and `&#FF0000` for hex
+- `%itsmyconfig_<placeholder>_console%`<br/>
+  Return the value of the placeholder in console format: `§c` for color and `§x§F§F§0§0§0§0` for hex
+- `%itsmyconfig_<placeholder>_mini%`<br/>
+  Return the value of the placeholder in miniMessage format: `<red>` for color and `<#FF0000>` for hex
+- `%itsmyconfig_<placeholder>_mini_<text>%`<br/>
+  Return the value of the placeholder in miniMessage format but close the tag too: `<red>text</red>` for color and `<#FF0000>text<#FF0000>` for hex
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_>`<br/>
+  Directly apply the style and color to the follow text, you can close the tag with `</placeholder>`. It's directly return the miniMessage format. 
+- `<p:_placeholder_`<br/>
+  Directly apply the style and color to the follow text, you can close the tag with `</p>`. It's directly return the miniMessage format.
+
+### Animation Type
+Animation placeholder allows you to create a placeholder with a list of values that will be displayed one after the other at a specified interval.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    values: # Attention, values not value
+      - "<green>Animation !"
+      - "<yellow>Animation !"
+      - "<gold>Animation !"
+      - "<red>Animation !"
+      - "<pink>Animation !"
+    type: "animation"
+    interval: 20
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>%`<br/>
+  Return the value of the placeholder
+- `%itsmyconfig_<placeholder>_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_>`<br/>
+  Return the value of the placeholder
+- `<placeholder:_placeholder_:_arg-1_:_arg-2_>`<br/>
+  Return the value of the placeholder with arguments
+
+### Random Type
+Random placeholder allows you to create a placeholder with a list of values that will be randomly displayed.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    values: # Attention, values not value
+      - "Rock"
+      - "Paper"
+      - "Scissors"
+    type: "random"
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>%`<br/>
+  Return the value of the placeholder
+- `%itsmyconfig_<placeholder>_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_>`<br/>
+  Return the value of the placeholder
+- `<placeholder:_placeholder_:_arg-1_:_arg-2_>`<br/>
+  Return the value of the placeholder with arguments
+
+### Colored Text Type
+Colored Text placeholder allows you to create a placeholder with a text that contains color and style and get output in different formats.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    value: "<#d4acfb>Server Name</#d4acfb>"
+    type: colored_text
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>%`<br/>
+  Return the value of the placeholder in miniMessage format: `<#d4acfb>Server Name</#d4acfb>`
+- `%itsmyconfig_<placeholder>_legacy%`<br/>
+  Return the value of the placeholder in legacy format: `&#d4acfb>Server Name&#d4acfb>`
+- `%itsmyconfig_<placeholder>_console%`<br/>
+  Return the value of the placeholder in console format: `§x§d§4§a§c§f>Server Name§x§d§4§a§c§f>`
+- `%itsmyconfig_<placeholder>_mini%`<br/>
+  Return the value of the placeholder in miniMessage format: `<#d4acfb>Server Name</#d4acfb>`
+- `%itsmyconfig_<placeholder>_mini_<text>%`<br/>
+  Return the value of the placeholder in miniMessage format but close the tag too: `<#d4acfb>text</#d4acfb>`
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_>`<br/>
+  Directly apply the style and color to the follow text, you can close the tag with `</placeholder>`. It's directly return the miniMessage format. 
+- `<p:_placeholder_`<br/>
+  Directly apply the style and color to the follow text, you can close the tag with `</p>`. It's directly return the miniMessage format.
+
+### Math Type
+Math placeholder allows you to create a placeholder with a math expression that will be calculated and displayed.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    value: "1 + 1"
+    type: "math"
+    rounding: HALF_UP # Supported value: HALF_UP, HALF_DOWN, HALF_EVEN, UP, DOWN, CEILING, FLOOR. Optional
+    precision: 1 # Number of decimal places. Optional
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>%`<br/>
+  Return the value of the placeholder
+- `%itsmyconfig_<placeholder>_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments
+- `%itsmyconfig_<placeholder>_formatted_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments and formatted number
+- `%itsmyconfig_<placeholder>_fixed_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments and fixed number of decimal places
+- `%itsmyconfig_<placeholder>_commas_<arg-1>::<arg-2>%`<br/>
+  Return the value of the placeholder with arguments and formatted number with commas
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_>`<br/>  
+  Return the value of the placeholder
+- `<placeholder:_placeholder_:_arg-1_:_arg-2_>`<br/>
+  Return the value of the placeholder with arguments
+
+### Progress Bar Type
+
+Progress Bar placeholder allows you to create a placeholder with a progress bar that will be displayed.
+
+```yaml title='config.yml'
+custom-placeholder:
+  your-placeholder-id: 
+    value: ⦁●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⦁
+    type: progress_bar
+    completed-color: '&a'
+    progress-color: '&e'
+    remaining-color: '&7'
+```
+
+#### How to use the placeholder [!toc]
+##### PlaceholderAPI [!toc]
+- `%itsmyconfig_<placeholder>_<value>_<max-value>%`<br/>
+  Return the progress bar with the value and max value
+##### Placeholder Tag [!toc]
+- `<placeholder:_placeholder_:_value_:_max-value_>`<br/>
+  Return the progress bar with the value and max value
+
+---
+
+## Requirements
+
+Conditional placeholder is a system that help you to create more complex placeholder for create requirement and more.
+
+When the placeholder `%itsmyconfig_yourPlaceholder%` is parsed, the placeholder `%player_name%` will be check if is the same placeholder will be return `Hello Skyssy`
+
+### Comparators
+
+<TypeTable
+  type={{
+    type: {
+      type:'string',
+      description: "The type of the requirement",
+      typeDescripion: "Can be ==, >=, <=, !=, >, <",
+      required: true
+    },
+    input: {
+      type:'string',
+      description: "The input of the requirement",
+      required: true
+    },
+    output: {
+      type:'string',
+      description: "The output of the requirement",
+      required: true
+    },
+    deny: {
+      type:'string',
+      description: "The message to return if the requirement is not met",
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+custom-placeholder:
+  your_placeholder:
+    value: "&aRequirement passed !"
+    requirements:
+      haveMoney:
+        type: ">="
+        input: "%vault_eco_balance%"
+        output: "100"
+        deny: "Don't have enought money"
+```
+
+Compares `input:` with `output:`.
+
+| Comparator | Description |
+| --- | --- | 
+| `==` | `input:` equals to `output:` |
+| `>=` | `input:` greater than or equals to `output:` |
+| `<=` | `input:` less than or equals to `output:` |
+| `!=` | `input:` not equals to `output:` |
+| `>` | `input:` greater than `output:` |
+| `<` | `input:` less than `output:` |
+
+
+### String
+<TypeTable
+  type={{
+    type: {
+      type:'string',
+      description: "The type of the requirement",
+      typeDescripion: "(string equals/string contains) [ignorecase] [ignorecolor]",
+      required: true
+    },
+    input: {
+      type:'string',
+      description: "The input of the requirement",
+      required: true
+    },
+    output: {
+      type:'string',
+      description: "The output of the requirement",
+      required: true
+    },
+    deny: {
+      type:'string',
+      description: "The message to return if the requirement is not met",
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+custom-placeholder:
+  your_placeholder:
+    value: "&aRequirement passed !"
+    requirements:
+      areYouSkyssy:
+        type: "string equals ignorecolor"
+        input: "%player_name%"
+        output: "Skyssy"
+        deny: "You are not Skyssy"
+```
+
+Checks if `input:` matches `output:`
+
+To invert the requirement (Check if the input doesn't match the output) you can simply add the exclamation mark before the type name (like this `type: "!string equals ignorecase"`).
+
+### Regex matches
+<TypeTable
+  type={{
+    type: {
+      type:'string',
+      description: "The type of the requirement",
+      typeDescripion: "regex matches",
+      required: true
+    },
+    input: {
+      type:'string',
+      description: "The input of the requirement",
+      required: true
+    },
+    output: {
+      type:'string',
+      description: "The regular expression to match",
+      required: true
+    },
+    deny: {
+      type:'string',
+      description: "The message to return if the requirement is not met",
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+custom-placeholder:
+  your_placeholder:
+    value: "&aRequirement passed !"
+    requirements:
+      areYouSkyssy:
+        type: "string equals ignorecolor"
+        input: "%player_name%"
+        output: "Skyssy"
+        deny: "You are not Skyssy"
+```
+
+Checks if `input:` contains the regular expression in `regex:`.
+Visit [this site](https://regexr.com/) to create regular expressions easily.
+
+To invert the requirement (Check if the input doesn't contain the regular expression) you can simply add the exclamation mark before the type name (like this `type: "!regex matches"`).!
+

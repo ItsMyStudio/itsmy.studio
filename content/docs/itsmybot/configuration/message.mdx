@@ -1,0 +1,609 @@
+---
+title: Message
+description: Learn how to configure messages in ItsMyBot.
+---
+
+## How to configure Message
+In this guide, you will learn how to configure a message and everything you can do with it. Discord recently released a new format for bots called **ComponentV2**. This guide will explain how to create messages using this format. If you want to use the old format, you can refer to the [Old Format Message](/docs/itsmybot/configuration/message-old) page. 
+
+Messages support [placeholders](/docs/itsmybot/configuration/placeholders/), you can put them in any part of the message, and they will be replaced with the corresponding value when the message is sent.
+
+To make things easier for you, I have implemented the format on [discord.builders](https://discord.builders/itsmybot-code-generator), allowing you to create your messages with a convenient interface and directly generate the configuration!
+
+---
+
+## Message Configuration
+This is the main part of the message configuration. You set everything you want to display in the message here. The message is composed of components, which are the building blocks of the message. Each component has a type and can have various options.
+
+- Support the following components: [`text-display`](#text-display), [`container`](#container), [`section`](#section), [`action-row`](#action-row), [`media-gallery`](#media-gallery), [`separator`](#separator), [`file`](#file) & [`repeat`](#repeat).
+
+<TypeTable
+  type={{
+    ephemeral: {
+      description: 'If true the bot will send the message as an ephemeral message. Only works for messages from an interaction.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    'disable-mentions': {
+      description: 'If true mentions in the message will not ping anyone.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    components: {
+      description: 'List of components, the components of the message. Can be a text display, a container, a section, an action row, a media gallery, a separator, a file or a repeat component.',
+      type: 'Component[]',
+      required: true,
+    },
+  }}
+/>
+```yaml title="Example"
+ephemeral: true 
+components:
+  - type: "text-display"
+    content: "Hello there !"
+```
+
+---
+
+## Components
+As explained above, with Discord’s new format, all the content is now done through components. Below, you will find a list of all the possible components you can include in your message. There are no components that are required in a message.
+
+### Component Conditions
+Each component supports conditions, these are exactly the same conditions you can find in scripts. They allow you to display a component only in certain cases, so your message can adapt to the context.
+You can find the list of available [conditions here](/docs/itsmybot/scripting/conditions/). The format is as follows:
+
+<TypeTable
+  type={{
+    conditions: {
+      description: 'List of conditions, the conditions of the component. The component will only be displayed if the conditions are met.',
+      type: 'Condition[]',
+      required: false,
+      typeDescriptionLink: '/docs/itsmybot/scripting/conditions',
+    },
+  }}
+/>
+```yaml title="Example"
+components:
+  - type: "text-display"
+    content: "Hello there !"
+    conditions: # [!code focus]
+      - id: aboveMembers # [!code focus]
+        args: # [!code focus]
+          amount: 10 # [!code focus]
+```
+
+---
+
+### Text Display 
+#### `text-display` [!toc]
+Text display are the default components to use when you want to display text. They are compatible with Discord’s markdown format, so you can create titles by adding # at the beginning of the line, etc.
+
+The content option can be a list of strings, ItsMyBot will randomly select one of the results. This means each message will be unique!
+
+<TypeTable
+  type={{
+    type: {
+      type: 'text-display',
+      description: 'The type of the component, in this case text-display.',
+      required: true,
+    },
+    content: {
+      description: 'The content of the text display. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example" tab="Simple"
+components:
+  - type: text-display
+    content: "Hello there !" # A simple text display
+```
+```yaml title="Example" tab="Multiline"
+components:
+  - type: text-display
+    content: | # A multiline text display
+      Multiple lines of text
+      are supported, just like in Discord.
+```
+```yaml title="Example" tab="Random"
+components:
+  - type: text-display
+    content: # A list of strings, one will be randomly selected
+      - "Hello there !"
+      - "Hi !"
+      - "Greetings !"
+```
+
+### Container
+#### `container` [!toc]
+A container is a component that can contain other components. It is used to group components together and display them in a more organized way.
+
+The color option can be a list of hexadecimal colors, ItsMyBot will randomly select one of the results.
+- Support the following components: [`text-display`](#text-display), [`section`](#section), [`action-row`](#action-row), [`media-gallery`](#media-gallery), [`separator`](#separator), [`file`](#file) & [`repeat`](#repeat).
+
+<TypeTable
+  type={{
+    type: {
+      type: 'container',
+      description: 'The type of the component, in this case container.',
+      required: true,
+    },
+    components: {
+      description: 'List of components, the components inside the container. Can be a text display, a section, an action row, a media gallery, a separator, a file or a repeat component.',
+      type: 'Component[]',
+      required: true,
+    },
+    spoiler: {
+      description: 'If true the container will be a spoiler, the content will be hidden until the user clicks on it.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    color: {
+      description: 'The color of the container. It can be a hexadecimal color or a list of hexadecimal colors. If it is a list of hexadecimal colors, one of the colors will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: container
+    color: "#00ff00"
+    components:
+      - type: text-display
+        content: "This is a container with a text display."
+      - type: action-row
+        components:
+          - type: button
+            label: "Click me !"
+            style: "primary"
+            custom-id: "button1"
+```
+
+### Section
+#### `section` [!toc]
+A section is a component that can contain a text display and an accessory. It is used to display a text with an accessory, like a button or an image. You can add multiple text displays in a section, and they will be displayed one after the other.
+
+- Support the following components: [`text-display`](#text-display) & [`repeat`](#repeat).
+- Support the following accessories: [`button`](#button), [`thumbnail`](#thumbnail).
+
+<TypeTable
+  type={{
+    type: {
+      type: 'section',
+      description: 'The type of the component, in this case section.',
+      required: true,
+    },
+    components: {
+      description: 'List of text displays, the text displays inside the section. A section can only contain text displays and repeat components.',
+      type: 'Component[]',
+      required: true,
+    },
+    accessory: {
+      description: 'The accessory of the section, it can be a button or a thumbnail.',
+      type: 'Component',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: section
+    components:
+      - type: text-display
+        content: "This is a section with a text display."
+      - type: text-display
+        content: "You can add multiple components in a section."
+    accessory: # The accessory of the section, it can be a button or an image.
+      type: button
+      label: "Click me !"
+      style: "url"
+      url: "https://itsmy.studio/discord"
+```
+
+### Action Row
+#### `action-row` [!toc]
+An action row is a component that can contain multiple components. It is used to display a row of components, like buttons or select menus. 
+
+- Support the following components: [`button`](#button), [`select-menu`](#select-menu) & [`repeat`](#repeat).
+
+<TypeTable
+  type={{
+    type: {
+      type: 'action-row',
+      description: 'The type of the component, in this case action-row.',
+      required: true,
+    },
+    components: {
+      description: 'List of components, the components inside the action row. Can be a button, a select menu or a repeat component. An action row can only contain buttons or one select menu.',
+      type: 'Component[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: action-row
+    components: # A row of buttons, maximum 5 buttons per row
+      - type: button
+        label: "First Button"
+        style: "primary"
+        custom-id: "button1"
+      - type: button
+        label: "Second Button"
+        style: "url"
+        url: "https://itsmy.studio/discord"
+  - type: action-row
+    components: # Only one select menu can be in an action row
+      - type: select-menu
+        custom-id: "select1"
+        options:
+          - label: "Option 1"
+            value: "option1"
+          - label: "Option 2"
+            value: "option2"
+```
+
+### Media Gallery 
+#### `media-gallery` [!toc]
+A media gallery is a component that can contain multiple images. It is used to display a gallery of media files. Item also support conditions.
+<TypeTable
+  type={{
+    type: {
+      type: 'media-gallery',
+      description: 'The type of the component, in this case media-gallery.',
+      required: true,
+    },
+    items: {
+      description: 'List of media items, the items inside the media gallery.',
+      type: 'MediaItem[]',
+      required: true,
+    },
+  }}
+/>
+
+#### Media Gallery Item
+A media item is an object that represents a media file in the media gallery. It has the following properties:
+<TypeTable
+  type={{
+    url: {
+      description: 'The URL of the media file. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    description: {
+      description: 'The description of the media file. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+    spoiler: {
+      description: 'If true the media file will be a spoiler, the content will be hidden until the user clicks on it.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+  }} 
+/>
+
+```yaml title="Example"
+components:
+  - type: media-gallery
+    items: # A list of media items
+      - url: "https://example.com/image1.png" # The URL of the image
+        spoiler: true # Optional, if true the image will be a spoiler
+      - url: "https://example.com/image2.png" # The URL of the image
+      - url: "https://example.com/image3.png" # The URL of the image
+        description: "This is an image" # Optional, the description of the image
+```
+
+### Separator
+#### `separator` [!toc]
+A separator is a component that adds a separator between components. It is used to separate components visually.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'separator',
+      description: 'The type of the component, in this case separator.',
+      required: true,
+    },
+    spacing: {
+      description: 'The spacing of the separator. It can be 1 or 2. 1 is a normal separator, 2 is a separator with more spacing.',
+      type: 'integer',
+      typeDescription: '1 or 2',
+      required: true,
+    },
+    divider: {
+      description: 'If true, the separator will have a divider line. If false, it will just be empty space.',
+      type: 'boolean',
+      required: false,
+      default: "true",
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: separator
+    spacing: 1 
+  - type: separator
+    spacing: 2 # A separator with more spacing
+  - type: separator
+    spacing: 1
+    divider: false # An invisible separator
+```
+
+### File
+#### `file` [!toc]
+A file component allows you to attach a file to the message. It can be used to send images, documents, or any other type of file.
+
+The url option can be a list of strings, ItsMyBot will randomly select one of the results.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'file',
+      description: 'The type of the component, in this case file.',
+      required: true,
+    },
+    url: {
+      description: 'The URL of the file. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    spoiler: {
+      description: 'If true the file will be a spoiler, the content will be hidden until the user clicks on it.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: file
+    url: "https://example.com/file.txt" # The URL of the file
+  - type: file
+    url: "https://example.com/image.png" # The URL of the image
+    spoiler: true # Optional, if true the file will be a spoiler
+```
+
+### Button
+#### `button` [!toc]
+
+A button is a component that can be clicked by the user. It can be used to trigger an action or to navigate to a URL. You can also use the `custom-id` option to identify the button when it is clicked.
+
+The label, style, custom-id, url & emoji option can be a list of strings, ItsMyBot will randomly select one of the results.
+<Callout>
+  To detect a button click with a script, the custom-id of the button needs to starts with `script_`.
+</Callout>
+
+<TypeTable
+  type={{
+    type: {
+      type: 'button',
+      description: 'The type of the component, in this case button.',
+      required: true,
+    },
+    label: {
+      description: 'The label of the button. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    style: {
+      description: 'The style of the button. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+      default: "primary",
+    },
+    'custom-id': {
+      description: 'The custom id of the button. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+    url: {
+      description: 'The URL to navigate to when the button is clicked. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+    emoji: {
+      description: 'The emoji to display on the button. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+    disabled: {
+      description: 'If true, the button will be disabled and cannot be clicked.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: action-row
+    components:
+      - type: button
+        label: "Click me !"
+        style: "primary" # The style of the button, can be primary, secondary, success, danger, link
+        custom-id: "button1" # The custom id of the button, used to identify the button when it is clicked
+      - type: button
+        label: "Go to Discord"
+        style: "link" # The style of the button, can be primary, secondary, success, danger, link
+        url: "https://itsmy.studio/discord" # The URL to navigate to when the button is clicked
+      - type: button
+        label: "Script Button"
+        style: "primary"
+        custom-id: "script_my_script" # Can be detected with a script
+        emoji: "👋" # The emoji to display on the button
+      - type: button
+        label: "Disabled Button"
+        style: "secondary"
+        disabled: true # The button is disabled, it cannot be clicked
+```
+
+### Select Menu
+#### `select-menu` [!toc]
+A select menu is a component that allows the user to select an option from a list.
+
+The placeholder options can be a string or a list of strings, ItsMyBot will randomly select one of the results. 
+
+<Callout>
+  To detect a select menu selection with a script, the custom-id of the select menu needs to starts with `script_`.
+</Callout>
+
+<TypeTable
+  type={{
+    type: {
+      type: 'select-menu',
+      description: 'The type of the component, in this case select-menu.',
+      required: true,
+    },
+    'custom-id': {
+      description: 'The custom id of the select menu. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    options: {
+      description: 'List of options, the options of the select menu.',
+      type: 'SelectOption[]',
+      required: true,
+    },
+    placeholder: {
+      description: 'The placeholder of the select menu. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: false,
+    },
+    'min-values': {
+      description: 'The minimum number of values that can be selected.',
+      type: 'integer',
+      required: false,
+      default: 1,
+    },
+    'max-values': {
+      description: 'The maximum number of values that can be selected.',
+      type: 'integer',
+      required: false,
+      default: 1,
+    },
+  }}
+/>
+
+#### Select Option
+A select option is an object that represents an option in the select menu. It has the following properties:
+<TypeTable
+  type={{
+    label: {
+      description: 'The label of the option. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+    value: {
+      description: 'The value of the option. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: action-row
+    components: # A select menu, only one select menu can be in an action row
+      - type: select-menu
+        custom-id: "select1" # The custom id of the select menu, used to identify the select menu when it is selected
+        options: # The options of the select menu
+          - label: "Option 1"
+            value: "option1" # The value of the option, used to identify the option when it is selected
+          - label: "Option 2"
+            value: "option2"
+          - label: "Option 3"
+            value: "option3"
+        placeholder: "Select an option" # Optional, the placeholder of the select menu
+        min-values: 1 # Optional, the minimum number of values that can be selected
+        max-values: 2 # Optional, the maximum number of values that can be selected
+```
+
+### Thumbnail
+#### `thumbnail` [!toc]
+A thumbnail is a component that displays an image. It's used to display an image in a section.
+
+The url option can be a list of strings, ItsMyBot will randomly select one of the results.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'thumbnail',
+      description: 'The type of the component, in this case thumbnail.',
+      required: true,
+    },
+    url: {
+      description: 'The URL of the image. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      type: 'string | string[]',
+      required: true,
+    }
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: section
+    components:
+      - type: text-display
+        content: "This is a section with a thumbnail."
+    accessory: # The accessory of the section, it can be a button or an image.
+      type: thumbnail
+      url: "https://example.com/image.png" # The URL of the image
+```
+
+### Repeat
+#### `repeat` [!toc]
+A repeat compoent is a special compenent that don't exist in Discord. It's allow you to repeat the template multiple time depending on the content. Primarly used for pagination messages.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'repeat',
+      description: 'The type of the component, in this case repeat.',
+      required: true,
+    },
+    'data-source': {
+      description: 'The data source to use for the repeat component. It can be a placeholder that returns a list, or a custom data source depending on the context.',
+      type: 'string',
+      required: true,
+    },
+    template: {
+      description: 'The template to use for the repeat component, it can be a list of components that will be repeated for each item in the data source.',
+      type: 'Component[]',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title="Example"
+components:
+  - type: repeat
+    data-source: "pagination-items" # The data source to use for the repeat component.
+    template: # The template to use for the repeat component, it can be a list of components
+      - type: section
+        components:
+          - type: text-display  
+            content: "This is a section with a text display."
+        accessory: 
+          type: button
+          label: "Click me !"
+          style: "primary"
+          custom-id: "button1"
+      - type: separator
+        spacing: 1
+```

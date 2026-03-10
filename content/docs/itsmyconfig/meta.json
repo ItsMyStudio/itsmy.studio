@@ -1,5 +1,6 @@
 {
-  "title": "Name of Folder",
-  "description": "The description of root folder (optional)",
-  "root": true
+  "title": "ItsMyConfig",
+  "description": "Custom Placeholders Plugin",
+  "root": true,
+  "icon": "Wrench"
 }

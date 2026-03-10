@@ -1,0 +1,66 @@
+---
+title: Installation
+description: Learn how to install, configure, and launch ItsMyBot based on your preferred hosting method.
+icon: Rocket
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+To install ItsMyBot, you can follow the steps below. The installation process may vary depending on your hosting method, but the general steps are as follows:
+
+<Steps>
+<Step>
+## Choose your hosting method
+Depending on your needs and experience, choose one of the three following methods
+<Cards>
+<Card icon={<CloudIcon />} title='Hosting Provider' href='/docs/itsmybot/installation/hosting-provider'>
+
+Use an external bot hosting service. No server management required, perfect for beginners. Recommended
+
+</Card>
+
+<Card icon={<PanelsTopLeftIcon />} title='Self-Hosted Panel'  href='/docs/itsmybot/installation/self-hosted-panel'>
+
+Manage the bot using your own instance of Pterodactyl. Great for configuring it easily. Recommended
+
+</Card>
+
+<Card icon={<ServerIcon />} title='VPS Setup'  href='/docs/itsmybot/installation/vps'>
+
+Install the bot on your own Linux VPS using Node.js and PM2. Need to be comfortable with command line and server management.
+
+</Card>
+</Cards>
+</Step>
+<Step>
+## Create the Bot on Discord
+When the installation is complete and after running the bot once to generate the config files, you’ll need to create the bot application on Discord.
+1. Go to the [Discord developers](https://discord.com/developers/applications) site.
+2. Create a new application.
+3. Go to the **Installation** tab.
+4. Set the **Installation Link** to **None**
+5. Go to the **Bot** tab.
+6. Disable the **Public Bot** option.
+7. Enable the **Presence Intent**, **Server Members Intent**, and **Message Content Intent** options.
+8. Go to the **OAuth2** tab.
+9. In the **OAuth2 URL Generator** section, check the **bot** and **applications.commands** scopes.
+10. In the **Bot Permissions** section, check the **Administrator** permission.
+11. Copy the generated link at the bottom of the page, paste it into your browser, and add the bot to your server.
+
+</Step>
+<Step>
+## Configuring the Bot
+1. Return to the [Discord developers](https://discord.com/developers/applications) site.
+2. Choose your application and go to the **Bot** tab.
+3. Reset the bot token to get a new token.
+4. Copy the token.
+5. Open the `/configs/config.yml` file.
+6. Paste the token into the `token` field.
+7. Add your primary guild ID to the `primary-guild` field. The primary guild is the guild where the bot will be primarily used. To find your guild ID, you can right-click on the server name in Discord and select **Copy Server ID**. *Make sure Developer Mode is enabled in your Discord settings*.
+8. Save the file.
+9. If you have addons for the bot, you can add them to the `/build/addons/` folder. The folders need to be unzipped, with each addon in its own folder.
+10. Launch the bot and enjoy the features of ItsMyBot!
+</Step>
+</Steps>
+
+To understand how the bot works, you can refer to the other pages of the documentation.

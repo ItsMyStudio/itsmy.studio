@@ -1,0 +1,716 @@
+---
+title: Conditions
+description: Learn about all the conditions you can use in ItsMyBot to create dynamic and interactive scripts, commands, and components.
+---
+
+Just like actions, conditions are defined by an `id` and a set of `args`. Condition is a way to check if a certain condition is met before executing an action or something else.
+You can define conditions in script, custom commands, message components, and more.
+
+```yaml
+- id: hasPermission
+  args:
+    value: "MANAGE_MESSAGES" # Permission ID or name
+```
+As shown in the example below, all conditions can include an optional `inverse` argument:
+
+```yaml
+- id: memberCountAbove
+  args:
+    amount: 100
+    inverse: true # [!code ++]
+```
+
+Setting `inverse: true` will negate the condition, meaning it will only be true if the original condition is false.
+
+<Callout>
+  Alternatively you can prefix the condition ID with `!` to invert it. For example, `!hasPermission` is equivalent to `hasPermission` with `inverse: true`.
+</Callout>
+
+---
+
+## Not Met Actions
+If a condition is specific to an action (i.e., listed under that action's `conditions: []`), you can define `not-met-actions`.
+These are fallback actions executed when the condition is not met. Here's an example:
+
+```yaml
+actions:
+  - id: addReaction
+    args:
+      value: "✅"
+    conditions:
+      - id: hasPermission
+        args:
+          value: "MANAGE_MESSAGES"
+        not-met-actions: # [!code focus]
+          - id: addReaction # [!code focus]
+            args: # [!code focus]
+              value: "❌" # [!code focus]
+```
+In this example, if the user does **not** have the `MANAGE_MESSAGES` permission, the bot will react with ❌. Otherwise, it will react with ✅.
+
+---
+## All Conditions
+
+### anyOf
+Check if any of the conditions are true.
+
+<TypeTable
+  type={{
+    conditions: {
+      description: 'Array of conditions to check',
+      type: 'Condition[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: anyOf
+    args:
+      conditions: 
+        - id: memberCountAbove
+          args:
+            amount: 100
+        - id: memberCountBelow
+          args:
+            amount: 50
+```
+
+### atLeastOf
+Check if at least a certain amount of conditions are true.
+
+<TypeTable 
+  type={{
+    amount: {
+      description: 'The amount of conditions that must be true',
+      type: 'number',
+      required: true
+    },
+    conditions: {
+      description: 'Array of conditions to check',
+      type: 'Condition[]',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: atLeastOf
+    args:
+      amount: 2
+      conditions: 
+        - id: memberCountAbove
+          args:
+            amount: 100
+        - id: '!isBot'
+        - id: 'isUser'
+          args:
+            value: "123456789012345678"
+```
+
+### coinsAbove
+Check if a user has more than a certain amount of coins.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of coins to check',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: coinsAbove
+    args:
+      amount: 1000 # Check if the user has more than 1000 coins
+```
+
+### coinsBelow
+Check if a user has less than a certain amount of coins.
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of coins to check',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: coinsBelow
+    args:
+      amount: 1000 # Check if the user has less than 1000 coins
+```
+
+### hasPermission
+Check if a user has a certain permission.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The permission ID or name to check',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: hasPermission
+    args:
+      value: "MANAGE_MESSAGES" # Permission name
+  - id: hasPermission
+    args:
+      value: 
+        - "MANAGE_MESSAGES" # Permission name
+        - "MANAGE_CHANNELS" # Permission name
+```
+
+### hasRole
+Check if a user has a certain role.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The role ID or name to check',
+      type: 'string | string[]',
+      required: true
+    },
+    inherit: {
+      description: 'If the role should be inherited from the user (optional)',
+      type: 'boolean',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: hasRole
+    args:
+      value: "Admin" # Role ID or name
+      inherit: true # Optional, if the user have a role higher than the specified role, it will be considered as having the role
+  - id: hasRole
+    args:
+      value: 
+        - "Admin" # Role ID or name
+        - "Moderator" # Role ID or name
+```
+
+### hasTag
+Check if a forum post has a certain tag.
+<TypeTable
+  type={{
+    value: {
+      description: 'The tag ID to check',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: hasTag
+    args:
+      value: "123456789012345678" # Tag ID
+  - id: hasTag
+    args:
+      value: 
+        - "234567890123456789" # Tag ID
+        - "345678901234567890" # Tag ID
+```
+
+### inChannel
+Check if a message is in a certain channel or category.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The channel ID, category ID or name to check',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: inChannel
+    args:
+      value: 
+        - "123456789012345678"
+        - "Example Category"
+  - id: inChannel
+    args:
+      value: "bot-commands"
+```
+
+### inTicket
+Check if a message is in a ticket. Requires [Tickets](/docs/itsmybot/addons/tickets) addon.
+
+```yaml title='Example'
+conditions:
+  - id: inTicket
+```
+
+### isBooster
+Check if a user is a server booster.
+
+```yaml title='Example'
+conditions:
+  - id: isBooster
+```
+
+### isBot
+Check if a user is a bot.
+
+```yaml title='Example'
+conditions:
+  - id: isBot
+  - id: '!isBot'
+```
+
+### isExpressionTrue
+Check if an expression is true.
+
+<Callout>
+  This condition have a special format to easily use expressions. You can directly use the expression in the `conditions` section without needing to define it in the `args`.
+</Callout>
+<TypeTable
+  type={{
+    value: {
+      description: 'The expression to check',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example' tab='Default'
+conditions:
+  - id: isExpressionTrue
+    args:
+      value: "%server_channels% >= 0"
+```
+
+```yaml title='Example' tab='Bonus format'
+conditions:
+  - expression: "%server_channels% >= 0"
+```
+
+### isOnCooldown
+Check if a user is on cooldown for a certain action.
+<TypeTable
+  type={{
+    value: {
+      description: 'The action ID to check cooldown for',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: isOnCooldown
+    args:
+      value: "exampleAction" # Action ID
+```
+
+### isReply
+Check if a message is a reply to another message.
+```yaml title='Example'
+conditions:
+  - id: isReply
+```
+
+### isUser
+Check if a user is a certain user
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The user ID to check',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: isUser
+    args:
+      value: "123456789012345678" # User ID
+  - id: isUser
+    args:
+      value: 
+        - "123456789012345678" # User ID
+        - "987654321098765432" # User ID
+```
+
+### matchesRegex
+Check if the content of an action matches a certain regex pattern.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The regex pattern to check',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: matchesRegex
+    args:
+      value: "^[a-zA-Z0-9]+$" # Regex pattern
+  - id: matchesRegex
+    args:
+      value: "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$" # Regex pattern for email validation
+```
+
+### memberCountAbove
+Check if the amount of members in a guild is above a certain number.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of members to check',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: memberCountAbove
+    args:
+      amount: 100
+```
+
+### memberCountBelow
+Check if the amount of members in a guild is below a certain number.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of members to check',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: memberCountBelow
+    args:
+      amount: 100
+```
+
+### metaAbove
+Check if a meta value is above a certain number. Only works with `number` type.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The meta key to check',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to check against',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: metaAbove
+    args:
+      key: "exampleMetaKey" # Meta key
+      value: 100 # Value to check against
+```
+
+### metaBelow
+Check if a meta value is below a certain number. Only works with `number` type.
+<TypeTable
+  type={{
+    key: {
+      description: 'The meta key to check',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to check against',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: metaBelow
+    args:
+      key: "exampleMetaKey" # Meta key
+      value: 100 # Value to check against
+```
+
+### metaEquals
+Check if a meta value equals a certain value. Only works with `number, string, boolean` type.
+<TypeTable
+  type={{
+    key: {
+      description: 'The meta key to check',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to check against',
+      type: 'string | number | boolean',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: metaEquals
+    args:
+      key: "exampleMetaKey" # Meta key
+      value: "exampleValue" # Value to check against
+```
+
+### metaIncludes
+Check if a meta value includes a certain value. Only works with `list` type.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The meta key to check',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to check against',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: metaIncludes
+    args:
+      key: "exampleMetaKey" # Meta key
+      value: "exampleValue" # Value to check against
+```
+
+### textContains
+Check if the text is contains certain text.
+<TypeTable
+  type={{
+    input: {
+      description: 'The text to check',
+      type: 'string',
+      required: true
+    },
+    output: {
+      description: 'The text to check against',
+      type: 'string | string[]',
+      required: true
+    },
+    ignoreCase: {
+      description: 'If the check should be case-insensitive',
+      type: 'boolean',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: textContains
+    args:
+      input: "%message_content%"
+      output: # Check if the content contains "Hello" or "World"
+        - "Hello"
+        - "World"
+      ignore-case: true # Optional
+  - id: textContains
+    args:
+      input: "%message_content%"
+      output: "Hello"
+```
+
+### textEndsWith
+Check if the text ends with a certain text.
+<TypeTable
+  type={{
+    input: {
+      description: 'The text to check',
+      type: 'string',
+      required: true
+    },
+    output: {
+      description: 'The text to check against',
+      type: 'string | string[]',
+      required: true
+    },
+    ignoreCase: {
+      description: 'If the check should be case-insensitive',
+      type: 'boolean',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: textEndsWith
+    args:
+      input: "%message_content%"
+      output: # Check if the content ends with "Hello" or "World"
+        - "Hello"
+        - "World"
+      ignore-case: true # Optional
+  - id: textEndsWith
+    args:
+      input: "%message_content%"
+      output: "Hello"
+```
+
+### textEquals
+Check if the text equals a certain text.
+
+<TypeTable
+  type={{
+    input: {
+      description: 'The text to check',
+      type: 'string',
+      required: true
+    },
+    output: {
+      description: 'The text to check against',
+      type: 'string | string[]',
+      required: true
+    },
+    ignoreCase: {
+      description: 'If the check should be case-insensitive',
+      type: 'boolean',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: textEquals
+    args:
+      input: "%message_content%"
+      output: # Check if the content is equal to "Hello" or "World"
+        - "Hello"
+        - "World"
+      ignore-case: true  # Optional
+  - id: textEquals
+    args:
+      input: "%message_content%"
+      output: "Hello"
+```
+
+### textLengthAbove
+Check if the text is above a certain length.
+
+<TypeTable
+  type={{
+    text: {
+      description: 'The text to check',
+      type: 'string',
+      required: true
+    },
+    amount: {
+      description: 'The length to check against',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+conditions:
+  - id: textLengthAbove
+    args:
+      text: "%message_content%"
+      amount: 10 # Check if the text length is above 10 characters
+```
+
+### textLengthBelow
+Check if the text is below a certain length.
+
+<TypeTable
+  type={{
+    text: {
+      description: 'The text to check',
+      type: 'string',
+      required: true
+    },
+    amount: {
+      description: 'The length to check against',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: textLengthBelow
+    args:
+      text: "%message_content%"
+      amount: 10 # Check if the text length is below 10 characters
+```
+
+### textStartsWith
+Check if the text starts with a certain text.
+
+<TypeTable
+  type={{
+    input: {
+      description: 'The text to check',
+      type: 'string',
+      required: true
+    },
+    output: {
+      description: 'The text to check against',
+      type: 'string | string[]',
+      required: true
+    },
+    ignoreCase: {
+      description: 'If the check should be case-insensitive',
+      type: 'boolean',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+conditions:
+  - id: textStartsWith
+    args:
+      input: "%message_content%"
+      output: 
+        - "Hello"
+        - "World"
+      ignore-case: true # Optional
+  - id: textStartsWith
+    args:
+      input: "%message_content%"
+      output: "Hello"
+```

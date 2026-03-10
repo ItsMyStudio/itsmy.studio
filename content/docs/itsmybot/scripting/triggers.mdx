@@ -1,0 +1,145 @@
+---
+title: Triggers
+description: Learn about all the triggers you can use in ItsMyBot to execute your scripts based on various events happening in your server.
+---
+
+The triggers are the events that will trigger the script to run. The triggers are defined in the `triggers` section of the script.
+
+--- 
+
+## All Triggers
+
+### buttonClick
+Triggers when a button is clicked. _Only button starting with `script_` will work._
+- **Provided Context:** Guild, Member, User, Channel, Message, Interaction
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[button_custom_id]]`  | The custom ID of the button clicked|
+
+### channelCreate
+Triggers when a channel is created.
+- **Provided Context:** Guild, Channel
+
+### channelDelete
+Triggers when a channel is deleted.
+- **Provided Context:** Guild, Channel
+
+### displayNameUpdate
+Triggers when a user display name is updated.
+- **Provided Context:** Guild, Member, User
+
+### everyDay
+Triggers every day.
+- **Provided Context:** Guild
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[date]]`  | The current date|
+
+### everyHour
+Triggers every hour.
+- **Provided Context:** Guild
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[hour]]`  | The current hour (0-23)|
+
+### everyMinute
+Triggers every minute.
+- **Provided Context:** Guild
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[minute]]`  | The current minute (0-59)|
+
+### guildBoostAdd
+Triggers when a user boosts the guild.
+- **Provided Context:** Guild, Member, User
+
+### guildBoostRemove
+Triggers when a user removes their boost from the guild.
+- **Provided Context:** Guild, Member, User
+
+### guildMemberAdd
+Triggers when a member joins the guild.
+- **Provided Context:** Guild, Member, User
+
+### guildMemberRemove
+Triggers when a member leaves the guild.
+- **Provided Context:** Guild, Member, User
+
+### inviteCountUpdate
+Triggers when the invite count is updated (increased or decreased). Require [Invite Tracker](/docs/itsmybot/addons/invites) addon
+- **Provided Context:** Guild, Member, User
+
+### messageCreate
+Triggers when a message is created.
+- **Provided Context:** Guild, Member, User, Channel, Message
+
+### messageDelete
+Triggers when a message is deleted.
+- **Provided Context:** Guild, Member, User, Channel, Message
+
+### messageReactionAdd
+Triggers when a reaction is added to a message.
+- **Provided Context:** Guild, Member, User, Channel, Message
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[reaction_emoji]]`  | The emoji of the reaction added|
+
+### messageReactionRemove
+Triggers when a reaction is removed from a message.
+- **Provided Context:** Guild, Member, User, Channel, Message
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[reaction_emoji]]`  | The emoji of the reaction removed|
+
+### messageUpdate
+Triggers when a message is updated.
+- **Provided Context:** Guild, Member, User, Channel, Message
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[message_old_content]]`  | The old content of the message before the update
+
+### presenceUpdate
+Triggers when a user presence is updated.
+- **Provided Context:** Guild, Member, User
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[old_status]]`  | The old status of the user|
+| `[[new_status]]`  | The new status of the user|
+
+### ticketClaim
+Triggers when a ticket is claimed. Require [Tickets](/docs/itsmybot/addons/tickets) addon
+- **Provided Context:** Guild, Member, User, Channel
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[ticket_id]]`  | The ID of the ticket|
+| `[[category]]`  | The category of the ticket|
+| `[[category_id]]`  | The ID of the category of the ticket|
+
+### ticketClose
+Triggers when a ticket is closed. Require [Tickets](/docs/itsmybot/addons/tickets) addon
+- **Provided Context:** Guild, Member, User, Channel,
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[ticket_id]]`  | The ID of the ticket|
+| `[[category]]`  | The category of the ticket|
+| `[[category_id]]`  | The ID of the category of the ticket|
+
+### ticketCreate
+Triggers when a ticket is created. Require [Tickets](/docs/itsmybot/addons/tickets) addon
+- **Provided Context:** Guild, Member, User, Channel
+
+| Variable            | Value                              |
+| -----------------------|------------------------------------|
+| `[[ticket_id]]`  | The ID of the ticket|
+| `[[category]]`  | The category of the ticket|
+| `[[category_id]]`  | The ID of the category of the ticket|

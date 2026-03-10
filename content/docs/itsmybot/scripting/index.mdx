@@ -1,0 +1,123 @@
+---
+title: Introduction
+description: Learn about scripting in ItsMyBot, a powerful feature that allows you to create custom scripts to automate tasks, respond to events, and extend the bot's functionalities.
+---
+
+Scripting in ItsMyBot allows you to create custom scripts that can automate tasks, respond to events, and extend the bot's functionalities. Scripts are written in YAML format and can include actions, triggers, conditions, and target.
+
+You can even access the official ItsMyBot [Scripts library](https://scripts.itsme.to), full of free scripts to improve your bot. If you’ve created a script and want to share it, join the Discord and mention me!
+
+## Configuring an Action / Script
+The configuration of an action is done in the `actions` section of the script. Each action has its own set of arguments, triggers, conditions, and target. The action is executed when the trigger is fired and the conditions are met.
+
+You can have actions in scripts, custom commands, and more.
+
+### Example Action Config
+```yaml
+actions:
+  - id: sendMessage
+    args:
+      components:
+        - type: text-display
+          content: "Hello there !"
+      chance: 0.25 # 25% chance to send the message
+    triggers: everyHour
+    target:
+      channel: "935421560355946596" # Channel ID or name
+    conditions:
+      - id: memberCountAbove
+        args:
+          amount: 100 # Number of members in the server
+```
+The above example will send a message "Hello there !" every hour in the channel with ID `935421560355946596` if the server has more than 100 members. The message will only be sent with a 25% chance.
+
+### Understanding the Sections
+
+<TypeTable
+  type={{
+    id: {
+      description: 'The id of the action',
+      type: 'Action',
+      typeDescriptionLink: '/docs/itsmybot/scripting/actions',
+      required: true
+    },
+    args: {
+      description: 'The arguments of the action. Each action has its own set of arguments. There are also some common arguments that can be used in all actions.',
+      type: 'ActionArgs',
+      typeDescriptionLink: '/docs/itsmybot/scripting/actions#arguments'
+    },
+    triggers: {
+      description: 'The list of triggers that will trigger the action. The action is executed when the trigger is fired.',
+      type: 'Trigger | Trigger[]',
+      typeDescriptionLink: '/docs/itsmybot/scripting/triggers'
+    },
+    conditions: {
+      description: 'The list of conditions that must be met for the action to be executed. The action is executed only if the conditions is met.',
+      type: 'Condition[]',
+      typeDescriptionLink: '/docs/itsmybot/scripting/conditions'
+    },
+    target: {
+      description: 'The list of targets that will be applied to the action. The targets are applied to the action to edit the context of the action.',
+      type: 'Target',
+      typeDescriptionLink: '/docs/itsmybot/scripting/target'
+    }
+  }}
+/>
+
+
+### Optional Arguments
+Every actions have optional arguments that can be used to modify the behavior of the action. These arguments are not required, but can be useful in certain situations.
+
+<TypeTable
+  type={{
+    delay: {
+      description: 'The delay in seconds before the action is executed. This can be used to delay the action for a certain amount of time',
+      type: 'number',
+      default: '0'
+    },
+    chance: {
+      description: 'The chance of the action being executed. This can be used to execute the action with a certain probability.',
+      type: 'number',
+      typeDescription: 'Value between 0 and 1',
+      default: '1'
+    },
+    cooldown: {
+      description: 'The cooldown before the action can be executed again. This can be used to prevent the action from being executed too frequently.',
+      type: 'number',
+      typeDescription: 'Time in seconds',
+      default: '0'
+    },
+    every: {
+      description: 'Specify the action to activate every X time. This can be used to execute the action every X time.',
+      type: 'number',
+      default: '1'
+    },
+    'follow-up-actions': {
+      description: 'Specific to only some actions. The actions inside will be triggered by the actions. Example: `sendMessage` action can trigger the `deleteMessage` action.',
+      type: 'Action[]',
+      default: '[]',
+      typeDescriptionLink: '/docs/itsmybot/scripting/actions'
+    }
+  }}
+/>
+
+## Action Chain
+You can chain multiple actions together by using the `actions` property. This allows you to execute multiple actions in a single script. The actions are executed in the order they are defined.
+With the action chain, multiple actions can be impacted by the same trigger. With the targets & conditions that apply to all actions in the chain.
+```yaml
+actions:
+  - triggers: messageCreate
+    actions:
+      - id: reply
+        args:
+          components:
+            - type: text-display
+              content: "This is a reply to your message."
+      - id: addReaction
+        args:
+          value: "✅"
+    conditions:
+      - id: inChannel
+        args:
+          value: "935421560355946596" # Channel ID or name
+```

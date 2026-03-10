@@ -1,0 +1,25 @@
+---
+title: Commands & Placeholders
+description: Learn about the commands and placeholders available in ItsMyConfig
+---
+
+## Placeholders
+
+- `%itsmyconfig_font_latin_<number>%`<br/>
+  Transform number to latin number: 5 to V
+- `%itsmyconfig_font_smallCaps_<text>%`<br/>
+  Transfrom text to smallCaps text: Hello to ʜᴇʟʟᴏ
+- `%itsmyconfig_progress_<id>_<value>_<max-value>%`<br/>
+  Return custom-progress
+- `%itsmyconfig_<placeholder-id>::<arg0>::<arg1>::...%`<br/>
+  Return custom-placeholder
+
+## Commands
+- `/config <placeholder> <value>`<br/>
+  Edit the value of a custom placeholder.
+- `/message <player>|@a|@e|@p|@r|@s <message>`<br/>
+  Send a message to a player with no prefix and ItsMyConfig support
+- `/itmyconfig parse <player>|@a|@e|@p|@r|@s <message>`<br/>
+  Parse a message with ItsMyConfig
+- `/itmyconfig reload`<br/>
+  Reload plugin

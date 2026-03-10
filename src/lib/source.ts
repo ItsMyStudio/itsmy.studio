@@ -25,3 +25,16 @@ export async function getLLMText(page: InferPageType<typeof source>) {
 
 ${processed}`;
 }
+
+export function getSection(path: string | undefined) {
+  if (!path) return 'itsmybot';
+  const [dir] = path.split('/', 1);
+  if (!dir) return 'itsmybot';
+  return (
+    {
+      itsmybot: 'itsmybot',
+      itsmyconfig: 'itsmyconfig',
+      itsmyconvert: 'itsmyconvert',
+    }[dir] ?? 'itsmybot'
+  );
+}

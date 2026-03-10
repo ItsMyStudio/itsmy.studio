@@ -1,0 +1,39 @@
+---
+title: Commands
+description: Learn how to use the commands available in the bot.
+icon: SquareSlash
+---
+
+# Commands
+You can use the commands to interact with the bot and perform various actions. You can find here all the default commands available in the bot. You can also create your own commands using the [custom commands](/docs/itsmybot/scripting/custom-command) system.
+
+- `/addons list`<br/>
+  Show the list of addons.
+- `/addons enable <addon>`<br/>
+  Enable the specified addon. Require a restart to take effect.
+- `/addons disable <addon>`<br/>
+  Disable the specified addon. Require a restart to take effect.
+- `/commands enable <command>`<br/>
+  Enable the specified command. Require a restart to take effect.
+- `/commands disable <command>`<br/>
+  Disable the specified command. Require a restart to take effect.
+- `/commands permission set <command> <permission>`<br/>
+  Set the permission of the specified command.
+- `/commands permission remove <command>`<br/>
+  Remove the permission of the specified command. The command will be available to everyone.
+- `/leaderboard messages`<br/>
+  Show the leaderboard messages.
+- `/meta add <key> <value> [scope]`<br/>
+  Add a value to the specified key in the [meta](/docs/itsmybot/scripting/meta) data. The scope is optional and can be used to specify a specific user or channel. Only work with `number` type.
+- `/meta remove <key> [scope]`<br/>
+  Remove a value from the specified key in the [meta](/docs/itsmybot/scripting/meta) data. The scope is optional and can be used to specify a specific user or channel.
+- `/meta set <key> <value> [scope]`<br/>
+  Set a value to the specified key in the [meta](/docs/itsmybot/scripting/meta) data. The scope is optional and can be used to specify a specific user or channel.
+- `/meta subtract <key> <value> [scope]`<br/>
+  Subtract a value from the specified key in the [meta](/docs/itsmybot/scripting/meta) data. The scope is optional and can be used to specify a specific user or channel.
+- `/meta switch <key> <value> [scope]`<br/>
+  Switch a value in the specified key in the [meta](/docs/itsmybot/scripting/meta) data. The scope is optional and can be used to specify a specific user or channel.
+- `/parse <text>`<br/>
+  Parse a text and replace all the placeholders with their values. Useful to test the placeholders.
+- `/reload`<br/>
+  Reload the bot configuration. This will reload all the addons and the configuration files.

@@ -1,0 +1,76 @@
+---
+title: Meta
+description: Learn about the Meta system in ItsMyBot, a powerful feature that allows you to save custom data for later use in your scripts, commands, and embeds.
+---
+Meta is a new system in ItsMyBot that allows you to save custom data for later use. This makes the scripting system even more powerful. For example, you can easily create a counting channel with it.
+
+Each meta need to be created in the `scripting/metas` folder in the bot's directory. It's support subfolders, so you can organize your metas as you want. You can put multiple metas in each .yml file.
+
+## Meta Structure
+In each files, you can define multiple metas. Each meta is a YAML file that contains the following structure:
+
+<TypeTable
+  type={{
+    key: {
+      description: "The name of the meta, used to retrieve it later.",
+      type: 'string',
+      required: true
+    },
+    type: {
+      description: "The type of the meta, can be `number`, `string`, `boolean` or `list`",
+      type: 'string',
+      required: true
+    },
+    mode: {
+      description: "The mode of the meta, can be `global`, `user`, `channel` or `message`",
+      type: 'string',
+      required: true
+    },
+    default: {
+      description: "The default value of the meta, used if the meta is not set.",
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+metas:
+  - key: 'counting' # The name of the meta, used to retrieve it later.
+    type: 'number' # The type of the meta, can be `number`, `string`, `boolean` or `list`
+    mode: 'channel' # The mode of the meta, can be `global`, `user`, `channel` or `message`
+    default: '0' # The default value of the meta, used if the meta is not set.
+  - key: 'level' # The name of the meta, used to retrieve it later.
+    type: 'number' # The type of the meta, can be `number`, `string`, `boolean` or `list`
+    mode: 'user' # The mode of the meta, can be `global`, `user`, `channel` or `message`
+    default: '1' # The default value of the meta, used if the meta is not set.
+  - key: 'experience' # The name of the meta, used to retrieve it later.
+    type: 'number' # The type of the meta, can be `number`, `string`, `boolean` or `list`
+    mode: 'user' # The mode of the meta, can be `global`, `user`, `channel` or `message`
+    default: '0' # The default value of the meta, used if the meta is not set.
+```
+
+### Dictionary of Meta Properties
+#### Key
+The key is the name of the meta. It can be anything you want, but it should be unique to avoid conflicts with other metas. The key is used to retrieve the meta later in your scripts, commands, and embeds.
+#### Type
+The type of the meta. Can be `number`, `string`, `boolean` or `list`. This is used to determine how the data will be stored and how it can be used.
+#### Mode
+The mode of the meta. Can be `global`, `user`, `channel` or `message`. This is used to determine where the data will be stored. The global mode is used to store data that is shared across all users and channels. The user mode is used to store data that is specific to a user. The channel mode is used to store data that is specific to a channel. The message mode is used to store data that is specific to a message.
+#### Scope
+The scope of the meta. It is the ID of the user or channel used to retrieve the stored information. This is only used for `user` and `channel` modes.
+#### Value
+The value is the data that you want to store. It can be anything you want, but it should be of the type defined in the meta. 
+
+--- 
+
+## How to use Meta
+To use meta, you need to define them in the `scripting/metas` folder as shown above. Once defined, you can use them in your scripts, custom commands, and embeds.
+
+You can use meta in your scripts, custom commands, embeds, and more. 
+- You can find the meta actions in the [actions](/docs/itsmybot/scripting/actions) section.
+- Meta also have their own placeholders, that you can found in the [placeholders](/docs/itsmybot/configuration/placeholders) section.
+- You can also use commands to interact with meta data. You can find the commands in the [commands](/docs/itsmybot/commands) section.
+
+### Examples
+Find the examples directly in the [script library](https://scripts.itsmy.studio/) under the meta category!

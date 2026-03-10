@@ -1,5 +1,22 @@
 {
-  "title": "Name of Folder",
-  "description": "The description of root folder (optional)",
-  "root": true
+  "title": "ItsMyBot",
+  "description": "Self-Hosted Discord Bot",
+  "root": true,
+  "icon": "Bot",
+  "pages": [
+    "---Introduction---",
+    "index",
+    "installation",
+    "addons",
+    "commands",
+    "---Configurations---",
+    "configuration/message",
+    "configuration/modal",
+    "configuration/placeholders",
+    "configuration/variables",
+    "---Scripting---",
+    "...scripting",
+    "---Developers---"
+  ]
 }
+

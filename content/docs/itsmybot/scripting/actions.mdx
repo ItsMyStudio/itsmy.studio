@@ -1,0 +1,1053 @@
+---
+title: Actions
+description: Learn about all the actions you can use in ItsMyBot to perform various tasks and automate your server management.
+---
+
+The actions are the main part of the bot. They are used to perform actions when a trigger is met. You can find more information about how to use them [here](/docs/itsmybot/scripting/).
+
+---
+
+## All Actions [!toc]
+
+## addCoins
+Add coins to a user.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of coins to add',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: addCoins
+    args:
+      amount: 100 # Amount of coins to add
+```
+
+## addInviteBonus
+Add bonus invites to a user. Requires the [Invite Traker](/docs/itsmybot/addons/invites/) addon.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of bonus invites to add',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: addInviteBonus
+    args:
+      amount: 5 # Amount of bonus invites
+```
+
+## addReaction
+Add a reaction to a message. The reaction can be an emoji or a custom emoji.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The reaction to add, can be an emoji or a custom emoji',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: addReaction
+    args:
+      value: "✅"
+```
+
+## addRole
+Add a role to a member. The role can be a string or an array of strings.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The role to add, can be a string or an array of strings',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: addRole
+    args:
+      value: "Admin" # Role ID or name
+  - id: addRole
+    args:
+      value:
+        - "Admin" # Role ID or name
+        - "Moderator" # Role ID or name
+```
+
+## addTag
+Add a tag to a thread. The tag can be a string or an array of strings.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The tag to add, can be a string or an array of strings',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: addTag
+    args:
+      value: "Tag1" # Tag ID
+  - id: addTag
+    args:
+      value:
+        - "Tag1" # Tag ID
+        - "Tag2" # Tag ID
+```
+
+## closeThread
+Close a thread.
+
+```yaml title='Example'
+actions:
+  - id: closeThread
+```
+
+## createChannel
+Create a channel. 
+
+**Can triggers follow-up actions**
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the channel, support placeholders & list for random names',
+      type: 'string | string[]',
+      required: true
+    },
+    'channel-type': {
+      description: 'The type of the channel',
+      type: 'string',
+      default: 'text',
+      required: false
+    },
+    parent: {
+      description: 'The parent channel ID',
+      type: 'string',
+      required: false
+    },
+    description: {
+      description: 'The channel description, support placeholders & list for random descriptions',
+      type: 'string | string[]',
+      required: false
+    },
+    'permission-overwrites': {
+      description: 'The channel permissions',
+      type: 'array of objects with id, allow and deny properties',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: createChannel
+    args:
+      value: "new-channel" # Channel name, support placeholders & list for random names
+      channel-type: "text" # Channel type
+      parent: "123456789012345678" # Parent channel ID
+      description: "This is a new channel" # Channel description, support placeholders & list for random descriptions
+      permission-overwrites:
+        - id: "123456789012345678" # Role or user ID
+          allow: ["VIEW_CHANNEL"] # Permissions to allow
+          deny: ["SEND_MESSAGES"] # Permissions to deny
+  - id: createChannel
+    args:
+      value: "simple" # Channel name, support placeholders & list for random names
+```
+
+## createThread
+Create a thread in a channel. If made in a forum channel, it will create a forum post. If made in a text channel, it will create a thread.
+
+**Can triggers follow-up actions**
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the thread, support placeholders & list for random names',
+      type: 'string | string[]',
+      required: true
+    },
+    duration: {
+      description: 'The thread auto archive duration in seconds',
+      type: 'number',
+      typeDescription: 'Time in seconds',
+      required: false
+    },
+    private: {
+      description: 'Whether the thread is private or not',
+      type: 'boolean',
+      default: 'false',
+      required: false
+    },
+    tags: {
+      description: 'The thread tags ID (Only for forum posts)',
+      type: 'string | string[]',
+      required: false
+    },
+    'disable-mentions': {
+      description: 'If true mentions in the message will not ping anyone. Only for forum posts',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    components: {
+      description: 'The message configuration for the thread content, required for forum posts',
+      type: 'Component[]',
+      typeDescriptionLink: '/docs/itsmybot/configuration/message#message-configuration',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: createThread
+    args:
+      value: "Hello there !" # Thread name
+  - id: createThread
+    args:
+      value:
+        - "Thread 1" # Thread name
+        - "Thread 2" # Thread name
+      duration: 3600 # Thread auto archive duration in seconds (1 hour)
+      private: true # Whether the thread is private or not
+      tags: # Thread tags ID, optional (Only for forum posts)
+        - "123456789012345678" # Tag ID
+        - "234567890123456789" # Tag ID
+      components:
+        - type: text-display
+          content: "This is a forum post" # Required for forum posts
+```
+
+## crosspostMessage
+Crosspost a message from an announcement channel to other channels.
+
+```yaml title='Example'
+actions:
+  - id: crosspostMessage
+```
+
+## deleteChannel
+Delete a channel. 
+
+```yaml title='Example'
+actions:
+  - id: deleteChannel
+```
+
+## deleteMessage
+Delete a message.
+
+```yaml title='Example'
+actions:
+  - id: deleteMessage
+```
+
+## deleteThread
+Delete a thread.
+```yaml title='Example'
+actions:
+  - id: deleteThread
+```
+
+## editChannel
+Edit a channel.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the channel, support placeholders & list for random names',
+      type: 'string | string[]',
+      required: false
+    },
+    parent: {
+      description: 'The parent channel ID',
+      type: 'string',
+      required: false
+    },
+    description: {
+      description: 'The channel description, support placeholders & list for random descriptions',
+      type: 'string | string[]',
+      required: false
+    },
+    'permission-overwrites': {
+      description: 'The channel permissions',
+      type: 'array of objects with id, allow and deny properties',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: editChannel
+    args:
+      value: "edited-channel" # Channel name, support placeholders & list for random names
+      parent: "123456789012345678" # Parent channel ID
+      description: "This is an edited channel" # Channel description, support placeholders & list for random descriptions
+      permission-overwrites:
+        - id: "123456789012345678" # Role or user ID
+          allow: ["VIEW_CHANNEL"] # Permissions to allow
+          deny: ["SEND_MESSAGES"] # Permissions to deny
+  - id: editChannel
+    args:
+      value: "simple-edited" # Channel name, support placeholders & list for random names
+```
+
+## editMessage
+Edit a message. You can see the [message configuration](/docs/itsmybot/configuration/message) for more information.
+
+<TypeTable
+  type={{
+    'disable-mentions': {
+      description: 'If true mentions in the message will not ping anyone. Only for forum posts',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    components: {
+      description: 'List of components, the components of the message. Can be a text display, a container, a section, an action row, a media gallery, a separator, a file or a repeat component',
+      type: 'Component[]',
+      typeDescriptionLink: '/docs/itsmybot/configuration/message#message-configuration',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: editMessage
+    args:
+      components:
+        - type: text-display
+          content: "Hello there !"
+```
+
+## editThread
+Edit a thread.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the thread, support placeholders & list for random names',
+      type: 'string | string[]',
+      required: false
+    },
+    duration: {
+      description: 'The thread auto archive duration in seconds',
+      type: 'number',
+      required: false
+    },
+    tags: {
+      description: 'The thread tags ID, optional (Only for forum posts)',
+      type: 'string[]',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: editThread
+    args:
+      value: "edited-thread" # Thread name, support placeholders & list for random names
+      duration: 3600 # Thread auto archive duration in seconds (1 hour)
+      tags: # Thread tags ID, optional (Only for forum posts)
+        - "123456789012345678" # Tag ID
+        - "234567890123456789" # Tag ID
+  - id: editThread
+    args:
+      value: "simple-edited" # Thread name, support placeholders & list for random names
+```
+
+## lockThread
+Lock a thread. This will prevent users from sending messages in the thread.
+
+```yaml title='Example'
+actions:
+  - id: lockThread
+```
+
+## metaAdd
+Increase the value of a key in the [meta](/docs/itsmybot/scripting/meta) data. Only works with `number` type.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The key to add the value to',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to add',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: metaAdd
+    args:
+      key: "xp" # Key to add the value to
+      value: 100 # Value to add
+```
+
+## metaListAdd
+Add a value to a [meta](/docs/itsmybot/scripting/meta) list. Only works with `list` type.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The key to add the value to',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to add',
+      type: 'any',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: metaListAdd
+    args:
+      key: "inventory" # Key to add the value to
+      value: "item_1" # Value to add
+```
+
+## metaListRemove
+Remove a value from a [meta](/docs/itsmybot/scripting/meta) list. Only works with `list` type.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The key to remove the value from',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to remove',
+      type: 'any',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: metaListRemove
+    args:
+      key: "inventory" # Key to remove the value from
+      value: # Value to remove
+```
+```yaml title='Example'
+actions:
+  - id: metaListRemove
+    args:
+      key: "inventory" # Key to remove the value from
+      value: "item_1" # Value to remove
+```
+
+## metaRemove
+Remove a value from the [meta](/docs/itsmybot/scripting/meta) data.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The key to remove the value from',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: metaRemove
+    args:
+      key: "xp" # Key to remove the value from
+```
+
+## metaSet
+Set a value to a key in the [meta](/docs/itsmybot/scripting/meta) data.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The key to set the value to',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to set',
+      type: 'any',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: metaSet
+    args:
+      key: "xp" # Key to set the value to
+      value: 100 # Value to set
+```
+
+## metaSubtract
+Decrease the value of a key in the [meta](/docs/itsmybot/scripting/meta) data. Only works with `number` type.
+
+<TypeTable
+  type={{
+    key: {
+      description: 'The key to subtract the value from',
+      type: 'string',
+      required: true
+    },
+    value: {
+      description: 'The value to subtract',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: metaSubtract
+    args:
+      key: "xp" # Key to subtract the value from
+      value: 50 # Value to subtract
+```
+
+## metaToggle
+Toggle a value in the [meta](/docs/itsmybot/scripting/meta) data. Only works with `boolean` type.
+
+<TypeTable 
+  type={{
+    key: {
+      description: 'The key to toggle the value from',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: metaToggle
+    args:
+      key: "is_active" # Key to toggle the value for
+```
+
+## openThread
+Open a thread.
+```yaml title='Example'
+actions:
+  - id: openThread
+```
+
+## pinMessage
+Pin a message.
+
+```yaml title='Example'
+actions:
+  - id: pinMessage
+```
+
+## randomAction
+Run a random action from a list of actions. The actions can be defined in the `actions` array. If the `actions` array is empty, the action will do nothing.
+
+<TypeTable
+  type={{
+    actions: {
+      description: 'The list of actions to choose from. The action will randomly choose one of the actions in the list to execute.',
+      type: 'Action[]',
+      default: '[]',
+      typeDescriptionLink: '/docs/itsmybot/scripting/actions'
+    },
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: randomAction
+    args:
+      actions:
+        - id: sendMessage
+          args:
+            content: "Hello there !"
+        - id: addReaction
+          args:
+            value: "✅"
+```
+
+## removeCoins
+Remove coins from a user.
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of coins to remove',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: removeCoins
+    args:
+      amount: 50 # Amount of coins to remove
+```
+
+## removeInviteBonus
+Remove bonus invites to a user. Requires the [Invite Traker](/docs/itsmybot/addons/invites/) addon.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of bonus invites to remove',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: removeInviteBonus
+    args:
+      amount: 5 # Amount of bonus invites
+```
+
+## removeReaction
+Remove a reaction from a message. 
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The reaction to remove, can be an emoji or a custom emoji. If no value is provided, every reaction is removed.',
+      type: 'string | string[]',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: removeReaction
+    args:
+      value: "✅" # Remove a specific reaction
+```
+
+## removeRole
+Remove a role from a member.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The role to remove, can be a string or an array of strings',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: removeRole
+    args:
+      value: "Admin" # Role ID or name
+  - id: removeRole
+    args:
+      value:
+        - "Admin" # Role ID or name
+        - "Moderator" # Role ID or name
+```
+
+## removeTag
+Remove a tag from a thread.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The tag to remove, can be a string or an array of strings',
+      type: 'string | string[]',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: removeTag
+    args:
+      value: "Tag1" # Tag ID
+  - id: removeTag
+    args:
+      value:
+        - "Tag1" # Tag ID
+        - "Tag2" # Tag ID
+```
+
+## reply
+Reply to a message or an interaction. You can see the [message configuration](/docs/itsmybot/configuration/message) for more information.
+**Can triggers follow-up actions**
+<TypeTable
+  type={{
+    ephemeral: {
+      description: 'If true the bot will send the message as an ephemeral message. Only works for messages from an interaction.',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    'disable-mentions': {
+      description: 'If true mentions in the message will not ping anyone. Only for forum posts',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    components: {
+      description: 'List of components, the components of the message. Can be a text display, a container, a section, an action row, a media gallery, a separator, a file or a repeat component',
+      type: 'Component[]',
+      typeDescriptionLink: '/docs/itsmybot/configuration/message#message-configuration',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: reply
+    args:
+      content: "Hello there !"
+  - id: reply
+    args:
+      components:
+        - type: text-display
+          content: "This is a reply"
+```
+
+## resetCooldown
+Reset a cooldown for a user. 
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the cooldown to reset',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: resetCooldown
+    args:
+      value: "daily_reward" # Cooldown name
+```
+
+## sendMessage
+Send a message. You can see the [message configuration](/docs/itsmybot/configuration/message) for more information.
+
+<TypeTable
+  type={{
+    'disable-mentions': {
+      description: 'If true mentions in the message will not ping anyone. Only for forum posts',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    components: {
+      description: 'List of components, the components of the message. Can be a text display, a container, a section, an action row, a media gallery, a separator, a file or a repeat component',
+      type: 'Component[]',
+      typeDescriptionLink: '/docs/itsmybot/configuration/message#message-configuration',
+      required: true,
+    },
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: sendMessage
+    args:
+      content: "Hello there !"
+  - id: sendMessage
+    args:
+      components:
+        - type: text-display
+          content: "This is a message"
+```
+
+## sendPreset
+Send a preset message. Requires the [Presets](/docs/itsmybot/addons/presets/) addon.
+
+<TypeTable
+  type={{
+    preset: {
+      description: 'The ID or name of the preset to send',
+      type: 'string',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: sendPreset
+    args:
+      preset: "welcome_message" # Preset ID or name
+```
+
+## sendPrivateMessage
+Send a private message to a user. You can see the [message configuration](/docs/itsmybot/configuration/message) for more information. If the user has private messages disabled, the message will not be sent.
+<TypeTable
+  type={{
+    'disable-mentions': {
+      description: 'If true mentions in the message will not ping anyone. Only for forum posts',
+      type: 'boolean',
+      required: false,
+      default: "false",
+    },
+    components: {
+      description: 'List of components, the components of the message. Can be a text display, a container, a section, an action row, a media gallery, a separator, a file or a repeat component',
+      type: 'Component[]',
+      typeDescriptionLink: '/docs/itsmybot/configuration/message#message-configuration',
+      required: true,
+    },
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: sendPrivateMessage
+    args:
+      content: "Hello there !"
+  - id: sendPrivateMessage
+    args:
+      components:
+        - type: text-display
+          content: "This is a private message"
+```
+
+## sendRequest
+Send a http request. New variables will be added when you trigger an action after this action. With the format `[[data_<object>]]`. If you want a value that is inside an object, you can add the path with underscore `_`. For example, if you want the value of `user.id`, you can use `%data_user_id%`.
+***Can triggers follow-up actions**
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The URL to send the request to',
+      type: 'string',
+      required: true
+    },
+    method: {
+      description: 'The HTTP method to use',
+      type: 'string',
+      default: 'GET',
+      required: false
+    },
+    headers: {
+      description: 'The headers to send with the request',
+      type: 'object',
+      required: false
+    },
+    body: {
+      description: 'The body to send with the request. If the body is an object, it will be sent as JSON.',
+      type: 'object | string',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+- id: sendRequest
+  args:
+    value: 'https://api.mcstatus.io/v2/status/java/mc.hypixel.net:25565' # URL
+    follow-up-actions:
+      - id: sendMessage
+        args:
+          content: "Players [[data_players_online]]/[[data_players_max]] | Version [[data_version_name_clean]]"
+```
+
+## setCoins
+Set the amount of coins for a user.
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of coins to set',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: setCoins
+    args:
+      amount: 1000 # Amount of coins to set
+```
+
+## setCooldown
+Set a cooldown for a user.
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the cooldown to set',
+      type: 'string',
+      required: true
+    },
+    duration: {
+      description: 'The duration of the cooldown in seconds',
+      type: 'number',
+      typeDescription: 'Time in seconds',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: setCooldown
+    args:
+      value: "daily_reward" # Cooldown name
+      duration: 86400 # Duration in seconds (1 day)
+```
+
+
+## setInviteBonus
+Set bonus invites to a user. Requires the [Invite Tracker](/docs/itsmybot/addons/invites/) addon.
+
+<TypeTable
+  type={{
+    amount: {
+      description: 'The amount of bonus invites to set',
+      type: 'number',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: setInviteBonus
+    args:
+      amount: 5 # Amount of bonus invites
+```
+
+## setTag
+Set tags to a thread.
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The tag to set, can be a string or an array of strings. If no value is provided, the tags will be removed',
+      type: 'string | string[]',
+      required: false
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: setTag
+    args:
+      value: "Tag1" # Tag ID
+  - id: setTag
+    args:
+      value:
+        - "Tag1" # Tag ID
+        - "Tag2" # Tag ID
+```
+
+## startThread
+Start a thread from a message.
+
+**Can triggers follow-up actions**
+
+<TypeTable
+  type={{
+    value: {
+      description: 'The name of the thread, support placeholders & list for random names',
+      type: 'string | string[]',
+      required: true
+    },
+    duration: {
+      description: 'The thread auto archive duration in seconds',
+      type: 'number',
+      required: false
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: startThread
+    args:
+      value: "Hello there !" # Thread name
+  - id: startThread
+    args:
+      value:
+        - "Thread 1" # Thread name
+        - "Thread 2" # Thread name
+      duration: 3600 # Thread auto archive duration in seconds (1 hour)
+```
+
+## timeoutMember
+Timeout a member for a certain duration. The duration is in seconds.
+<TypeTable
+  type={{
+    value: {
+      description: 'The reason for the timeout, support placeholders & list for random reasons',
+      type: 'string | string[]',
+      required: false
+    },
+    duration: {
+      description: 'The duration of the timeout in seconds',
+      type: 'number',
+      typeDescription: 'Time in seconds',
+      required: true
+    }
+  }}
+/>
+
+```yaml title='Example'
+actions:
+  - id: timeoutMember
+    args:
+      duration: 3600 # Duration in seconds (1 hour)
+```
+
+## unlockThread
+Unlock a thread. This will allow users to send messages in the thread.
+
+```yaml title='Example'
+actions:
+  - id: unlockThread
+```
+
+## unpinMessage
+Unpin a message.
+
+```yaml title='Example'
+actions:
+  - id: unpinMessage
+```

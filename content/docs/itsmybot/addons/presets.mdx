@@ -1,0 +1,34 @@
+---
+title: Presets
+description: Learn how to use the presets addon to create predefined messages.
+---
+
+Presets is a simple addon that allows you to create predefined messages with a YAML configuration file.
+
+[Download](https://builtbybit.com/resources/28488/)
+
+## Create a Preset
+
+Create a new file in the `configs/Presets/presets` folder or one of its subfolders. This file will contain the configuration for your message, including the content, embeds, and components.
+For the syntax of the configuration file, see the [Message configuration](/docs/itsmybot/configuration/message) page.
+
+## Update a Preset
+To make a preset updatable, you need to add the `update-time` property to the preset configuration. The value of this property is the time in minutes after which the preset will be updated. The preset will be updated with the new content in the configuration and update all the placeholders.
+## Example
+```yaml
+update-time: 5
+components:
+  - type: "text-display"
+    content: "Hello there !"
+  - type: "container"
+    components:
+      - type: 'section'
+          - type: 'text-display'
+            content: "This is a section with a text display."
+          - type: 'text-display'
+            content: "You can add multiple components in a section."
+```
+
+## Commands
+- `/preset send <preset> [channel]`<br/>
+  Send a preset message to a channel. If no channel is specified, the message will be sent in the current channel.

@@ -1,0 +1,70 @@
+---
+title: Target
+description: Learn about the Target system in ItsMyBot, a powerful feature that allows you to change the context of actions, such as the member, channel, message, role, user, or guild that the action is executed on.
+---
+
+Targets allow you to change the context of the actions. For example, you can change the member that the action is executed on, or the channel that the action is executed in. 
+
+```yaml
+actions:
+  - id: sendMessage
+    args:
+      content: "%content%"
+    triggers:
+      - messageCreate
+    target:
+      channel: "logs" # Channel ID or name
+```
+Here, the target `channel` is used to change the channel of the action to the channel with ID `logs`. The action will be executed in the channel with ID `logs` instead of the channel where the trigger was fired.
+
+---
+
+## All Target
+
+### Member
+This can be used to change the member that the action is executed on.
+
+```yaml
+target:
+  member: "123456789012345678" # Member ID or name
+```
+
+### Channel
+This can be used to change the channel that the action is executed in.
+
+```yaml
+target:
+  channel: "123456789012345678" # Channel ID or name
+```
+
+### Message
+This can be used to change the message that the action is executed on. Need to have the correct channel before using this target.
+
+```yaml
+target:
+  message: "123456789012345678" # Message ID or content
+```
+
+### Role
+This can be used to change the role that the action is executed on.
+
+```yaml
+target:
+  role: "123456789012345678" # Role ID or name
+```
+
+### User
+This can be used to change the user that the action is executed on.
+
+```yaml
+target:
+  user: "123456789012345678" # User ID or name
+```
+
+### Guild
+This can be used to change the guild that the action is executed in.
+
+```yaml
+target:
+  guild: "123456789012345678" # Guild ID or name
+```

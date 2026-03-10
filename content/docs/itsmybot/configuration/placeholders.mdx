@@ -1,0 +1,238 @@
+---
+title: Placeholders
+description: Learn how to use placeholders in ItsMyBot to display dynamic information in your messages and components.
+---
+
+Placeholder are dynamic values that can be used in various parts of ItsMyBot configuration to display information that may change over time or based on context. They are similar to variables but are more versatile and available everywhere in the configuration.
+
+The system is similar to the minecraft plugin PlaceholderAPI. You have different extensions that provide different placeholders depending on the context. The format of a placeholder is like this: `%<placeholder_name>%`. Example: `%user_display_name%`.
+You can use placeholders in placeholder with the format: `{<placeholder_name>}`. Example: `%math_{user_messages} + 10%`.
+
+--- 
+
+## Internal Extensions
+These placeholders are available by default in ItsMyBot.
+
+### Bot
+Retrieve the information of the bot.
+
+```
+%bot_id%
+%bot_username%
+%bot_mention%
+%bot_avatar%
+```
+
+### Channel
+Retrieve the information of a channel. 
+
+```
+%channel_id%
+%channel_name%
+%channel_mention%
+%channel_type%
+%channel_createdate%
+%channel_topic%
+%channel_url%
+%channel_parent_id%
+```
+
+
+### Guild
+Retrieve the information of a guild.
+
+```
+%guild_id%
+%guild_name%
+%guild_icon%
+%guild_boosts%
+%guild_level%
+%guild_create_date%
+%guild_afk_channel%
+%guild_afk_timeout%
+%guild_verification_level%
+%guild_members%
+%guild_bots%
+%guild_users%
+%guild_roles%
+%guild_roles_list%
+%guild_channels%
+%guild_voice_channels%
+%guild_text_channels%
+%guild_announcement_channels%
+%guild_stage_channels%
+%guild_forum_channels%
+%guild_media_channels%
+%guild_categories%
+%guild_emojis%
+%guild_regular_emojis%
+%guild_animated_emojis%
+%guild_stickers%
+%guild_online_users%
+%guild_online_bots%
+%guild_online_members%
+%guild_idle_members%
+%guild_dnd_members%
+%guild_offline_members%
+```
+
+### Math 
+Perform simple math operations.
+
+```
+%math_<operation>%
+```
+
+### Member
+Retrieve the information of a member. Do not work if the user is not in the guild.
+
+```
+%member_display_name%
+%member_server_avatar%
+%member_global_avatar%
+%member_timed_out_until_date%
+%member_timed_out_until_timestamp%
+%member_join_date%
+%member_join_timestamp%
+%member_pending%
+%member_server_booster%
+%member_booster_date%
+%member_booster_timestamp%
+%member_presence_status%
+```
+
+### Message
+Retrieve the information of a message.
+
+```
+%message_id%
+%message_content%
+%message_author_id%
+%message_url%
+```
+
+### Meta
+Retrieve information about the metadata. You can find more information about meta [here](/docs/itsmybot/scripting/meta/).
+
+```
+%meta_<key>%
+%meta_has_<key>%
+%meta_include_<key>% # Only for 'list' type
+%meta_<key>_length% # Only for 'list' type
+%meta_<key>_formatted% # Only for 'list' type
+```
+
+### Owner
+Retrieve information about the owner of the guild.
+
+```
+%owner_id%
+%owner_username%
+%owner_display_name%
+%owner_mention%
+%owner_avatar%
+%owner_create_date%
+%owner_join_date%
+%owner_roles%
+%owner_messages%
+```
+
+### Performance
+Retrieve information about the performance of the bot.
+
+```
+%performance_total_memory%
+%performance_used_memory%
+%performance_free_memory%
+%performance_free_memory_percent%
+%performance_uptime%
+%performance_cpu_usage_percent%
+```
+
+### Role
+Retrieve the information of a role.
+
+```
+%role_id%
+%role_name%
+%role_mention%
+%role_color%
+%role_created_at%
+%role_position%
+%role_hoist%
+%role_managed%
+%role_mentionable%
+```
+
+### User
+Retrieve the information of a user. 
+
+```
+%user_id%
+%user_bot%
+%user_display_name%
+%user_username%
+%user_mention%
+%user_avatar%
+%user_create_date%
+%user_join_date%
+%user_roles%
+%user_messages%
+%user_coins%
+```
+
+## External Extensions
+External extensions are available when you add the relevant addons!
+
+### Invite Tracker
+Retrieve the information of Invite Tracker. Need the [Invite Tracker](https://builtbybit.com/r/51993/) addon
+
+```
+%invitetracker_invites%
+%invitetracker_regular%
+%invitetracker_bonus%
+%invitetracker_left%
+%invitetracker_fake%
+%invitetracker_inviter%
+%invitetracker_inviter_invites%
+%invitetracker_inviter_regular%
+%invitetracker_inviter_bonus%
+%invitetracker_inviter_left%
+%invitetracker_inviter_fake%
+%invitetracker_inviter_id%
+%invitetracker_inviter_username%
+%invitetracker_inviter_display_name%
+%invitetracker_inviter_mention%
+%invitetracker_inviter_avatar%
+%invitetracker_inviter_create_date%
+%invitetracker_inviter_join_date%
+%invitetracker_inviter_roles%
+%invitetracker_inviter_messages%
+```
+
+### Tickets
+Retrieve the information of Tickets.  Need the [Tickets](https://builtbybit.com/r/51625/) addon
+
+```
+%tickets_total_tickets%
+%tickets_open_tickets%
+%tickets_closed_tickets%
+%tickets_user_tickets%
+%tickets_user_open_tickets%
+%tickets_user_closed_tickets%
+%staff_claimed_tickets%
+%staff_closed_tickets%
+```
+
+### McStatus
+Get the status of a Minecraft server. Need the [McStatus](https://builtbybit.com/r/31222/) addon
+
+```
+%mcstatus_<server>_players%
+%mcstatus_<server>_max_players%
+%mcstatus_<server>_motd%
+%mcstatus_<server>_version%
+%mcstatus_<server>_host%
+%mcstatus_<server>_port%
+%mcstatus_<server>_status%
+```
