@@ -5,9 +5,7 @@ description: Discover the Tag System in ItsMyConfig, a powerful feature that all
 
 ItsMyConfig adds support for MiniMessage in every message with the symbol prefix. It also creates custom tags to add more possibilities to your messages.
 
-<div className="not-prose">
-  <Button href="https://docs.advntr.dev/minimessage/format.html" variant="text" arrow="right" children="See MiniMessage tags"/>
-</div>
+[See MiniMessage tags](https://docs.advntr.dev/minimessage/format.html)
 
 ---
 
@@ -87,9 +85,9 @@ Transform the text in small caps
 
 It's a very important tag that blocks other tags within it, very useful for preventing players from parsing placeholders or similar elements.
 
-<Note>
+<Callout>
   For security reasons, the tag can only be used once per message and must be closed.
-</Note>
+</Callout>
 
 ```yaml title='Example'
 - "<red>The warp <quote>%warp%</quote> doesn't exist."
@@ -117,9 +115,9 @@ Support different value:
 - `<v:repeat_total>` - The total number of times the message will be repeated
 - `<v:repeat_count>` - The number of times the message has been repeated
 
-<Note>
+<Callout>
   You can cancel the repeat with the tag `<repeat:cancel>`
-</Note>
+</Callout>
 
 ```yaml title='Example'
 - "<repeat:'<red>Teleporting in <v:repeat_left> seconds...':5:20>"
@@ -136,9 +134,9 @@ Bar progress can be a number or the value `progress` or `reverse`, if it's `prog
 Supported color: `BLUE`, `GREEN`, `PINK`, `PURPLE`, `RED`, `WHITE`, `YELLOW`
 Supported style: `NOTCHED_6`, `NOTCHED_10`, `NOTCHED_12`, `NOTCHED_20`, `SOLID`
 
-<Note>
+<Callout>
   You can remove the boss bar with the tag `<bossbar:cancel>`
-</Note>
+</Callout>
 
 ```yaml title='Example'
 - "<bossbar:'Teleporting...':50:RED:SOLID:100>"
