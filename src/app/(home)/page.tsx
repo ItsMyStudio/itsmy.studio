@@ -80,11 +80,6 @@ export default function HomePage() {
 
       <section className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-6xl flex-col justify-center px-6 pb-16 pt-20 sm:px-8 lg:px-10 lg:pb-20 lg:pt-24">
         <div className="max-w-4xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.24em] text-black/60 backdrop-blur-sm dark:border-white/10 dark:bg-white/6 dark:text-white/60">
-            <span className="size-2 rounded-full bg-(--itsmyconfig-color)" />
-            ItsMyStudio
-          </div>
-
           <h1
             className={cn(
               spaceGrotesk.className,
@@ -95,8 +90,7 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-8 text-black/68 sm:text-lg dark:text-white/68">
-            ItsMyStudio builds tools for Discord, Minecraft, and more. The documentation lives here, but the products stay at the
-            center.
+            ItsMyStudio builds tools for Discord, Minecraft, and more.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
