@@ -1,0 +1,41 @@
+---
+title: "Anti Staff Ping"
+description: "Prevent your users from pinging the staff members you want to protect."
+author: "EsteName_ & Theo"
+tags:
+  - "No Addons"
+---
+
+```yaml title="scripting/script/anti-ping.yml"
+actions:
+  - triggers: messageCreate
+    conditions:
+      - id: '!isBot' # Ensure the message is not from a bot
+      - id: textContains
+        args:
+          input: "%message_content%"
+          output:
+            - "<@764571098334494772>" # User ID that cannot be mentioned
+            - "<@719073880421171282>" # User ID that cannot be mentioned
+      - id: '!hasRole'
+        args:
+          value: "1068239702500581497" # Id of the role you are allowed to mention, can be a list
+    actions:
+      - id: deleteMessage # Delete the message if it contains a mention of protected users
+      - id: sendMessage # Send a message to the user explaining why their message was deleted
+        args:
+          components:
+            - type: container
+              components:
+                - type: text-display
+                  content: |
+                    ### 🚫 Mention Not Allowed
+                    Hello %user_mention%, your message was deleted because you mentioned a protected user.
+                    **Protected Users:**
+                    - <@764571098334494772> (EsteName_)
+                    - <@719073880421171282> (Nicqlass)
+
+                    Please make sure to follow the server rules. Only bots or users with specific roles are allowed to mention them.
+              color: "#c21313"
+```
+

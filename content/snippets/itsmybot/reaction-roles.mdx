@@ -1,0 +1,132 @@
+---
+title: "Reaction Roles"
+description: "Easily create a reaction role, here is an example with a language selection"
+author: "Cereale & Theo"
+tags:
+  - "Presets Addon"
+---
+
+```yaml title="scriptings/script/reaction-roles.yml"
+actions:
+  - triggers: buttonClick
+    actions:
+      # Repeat that for each role
+      - conditions:
+        - id: textEquals
+          args:
+            input: '[[button_custom_id]]'
+            output: "script_lang_french" # Verify the value matches your button ID
+        - id: hasRole
+          args:
+            value: "1305585840747053056" # French role ID or any role ID
+            inherit: false
+          not-met-actions:
+            - id: addRole
+              args:
+                value: "1305585840747053056" # French role ID
+            - id: reply
+              args:
+                components:
+                  - type: text-display
+                    content: "🇫🇷 French role added!"
+                ephemeral: true
+        actions:
+          - id: removeRole
+            args:
+              value: "1305585840747053056"
+          - id: reply
+            args:
+              components:
+                - type: text-display
+                  content: "🇫🇷 French role removed!"
+              ephemeral: true
+      ###################################
+      - conditions:
+          - id: textEquals
+            args:
+              input: '[[button_custom_id]]'
+              output: "script_lang_english"
+          - id: hasRole
+            args:
+              value: "1305585841371873382" # English role ID
+              inherit: false
+            not-met-actions:
+              - id: addRole
+                args:
+                  value: "1305585841371873382"
+              - id: reply
+                args:
+                  components:
+                    - type: text-display
+                      content: "🇬🇧 English role added!"
+                  ephemeral: true
+        actions:
+          - id: removeRole
+            args:
+              value: "1305585841371873382"
+          - id: reply
+            args:
+              components:
+                - type: text-display
+                  content: "🇬🇧 English role added!"
+              ephemeral: true
+      ###################################
+      - conditions:
+          - id: textEquals
+            args:
+              input: '[[button_custom_id]]'
+              output: "script_lang_spanish"
+          - id: hasRole
+            args:
+              value: "1305585844165541951" # Spanish role ID
+              inherit: false
+            not-met-actions:
+              - id: addRole
+                args:
+                  value: "1305585844165541951"
+              - id: reply
+                args:
+                  components:
+                    - type: text-display
+                      content: "🇪🇸 Spanish role added!"
+                  ephemeral: true
+        actions:
+          - id: removeRole
+            args:
+              value: "1305585844165541951"
+          - id: reply
+            args:
+              components:
+                - type: text-display
+                  content: "🇪🇸 Spanish role removed!"
+              ephemeral: true
+```
+
+```yaml title="configs/Embeds/embeds/reaction-roles.yml"
+
+components:
+  - type: container
+    components:
+      - type: text-display
+        content: "### 🌐 Language Selection"
+      - type: text-display
+        content: |
+          ### 🌐 Language Selection
+          Please select your preferred language by clicking on one of the buttons below. This will set the language for your experience on the server. 🌍
+    color: "#4b9cd3"
+  - type: action-row
+    components:
+      - type: button
+        label: "🇫🇷 French"
+        style: "primary"
+        custom-id: "script_lang_french" # Button French
+      - type: button
+        label: "🇬🇧 English"
+        style: "primary"
+        custom-id: "script_lang_english" # Button English
+      - type: button
+        label: "🇪🇸 Spanish"
+        style: "primary"
+        custom-id: "script_lang_spanish" # Button Spanish
+```
+

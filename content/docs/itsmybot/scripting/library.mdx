@@ -1,0 +1,36 @@
+---
+title: Library
+description: Browse reusable ItsMyBot scripts, actions, conditions, and triggers shared by the community. Find inspiration for your own customizations or easily copy and paste snippets into your server.
+icon: "Package"
+---
+
+import { SnippetLibrary } from '@/components/snippets-library';
+
+<SnippetLibrary product="itsmybot" />
+
+## Add a snippet to the library
+If you have created a useful script, action, condition, or trigger that you think others could benefit from, consider sharing it in the library! You can create a pull request with your snippet or share it in the Discord server. To create a snippet, follow these steps:
+
+Create a file in `content/snippets/itsmybot/<your-snippet-slug>.mdx`, add the metadata at the top, then paste one or more fenced code blocks below it.
+
+````mdx title="welcome-flow.mdx"
+---
+title: "Welcome flow"
+description: "Posts a welcome card when a member joins."
+author: "Your name"
+tags:
+  - No Addons
+  - Presets Addon
+---
+
+```yaml title="welcome-message.yml"
+actions:
+  - id: sendMessage
+    args:
+      components:
+        - type: text-display
+          content: "Welcome [[member_mention]]!"
+    triggers:
+      - id: guildMemberAdd
+    channel: "welcome-channel" # The channel where the welcome message will be sent.
+```

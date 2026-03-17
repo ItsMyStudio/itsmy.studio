@@ -1,0 +1,34 @@
+---
+title: "Join Message & Role"
+description: "Join message and role assignment"
+author: "Cereale & Theo"
+tags:
+  - "No Addons"
+---
+
+```yaml title="scripting/scripts/join.yml"
+actions:
+  - triggers: guildMemberAdd
+    conditions:
+      - id: '!isBot' # Check user was not a bot
+    actions:
+      - id: addRole
+        args:
+          value:
+              - "1305585831725109361" # Add a role
+      - id: sendMessage
+        args:
+          components:
+            - type: container
+              components:
+                - type: section
+                  components:
+                    - type: text-display
+                      content: "Welcome to the server %user_mention%! Please read the rules and enjoy your stay!"
+                  accessory:
+                    type: thumbnail
+                    url: '%user_pfp%'
+        target:
+          channel: "1249662703660961833"  # Channel where the message will be sent
+```
+

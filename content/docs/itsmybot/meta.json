@@ -15,7 +15,14 @@
     "configuration/placeholders",
     "configuration/variables",
     "---Scripting---",
-    "...scripting",
+    "scripting/index",
+    "scripting/actions",
+    "scripting/conditions",
+    "scripting/triggers",
+    "scripting/target",
+    "scripting/custom-command",
+    "scripting/meta",
+    "scripting/library",
     "---Developers---"
   ]
 }

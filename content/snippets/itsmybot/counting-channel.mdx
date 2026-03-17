@@ -1,0 +1,43 @@
+---
+title: "Counting Channel"
+description: "Add engagement with a counting channel! It even works with calculations like 3*2 to say 6"
+author: "Theo"
+tags:
+  - "Meta"
+  - "No Addons"
+---
+
+```yaml title="scripting/scripts/counting.yml"
+actions:
+  - triggers: messageCreate
+    conditions:
+      - id: inChannel
+        args:
+          value: 'counting-channel' # The channel where the counting will take place.
+      - id: '!isBot' # The message must not be sent by a bot.
+      - expression: '%message_content% == %meta_counting%+1' # The message must be the next number in the sequence.
+        not-met-actions: # If the message is not the next number in the sequence, send a reply.
+          - id: reply
+            args:
+              components:
+                - type: text-display
+                  content: "You need to send the next number in the sequence: %math_{meta_counting}+1%"
+              follow-up-actions:
+                - id: deleteMessage # Delete the reply after 10 seconds.
+                  args:
+                    delay: 10
+          - id: deleteMessage # Delete the original message.
+    actions:
+      - id: metaAdd # Add the number to the meta data.
+        args:
+          key: 'counting'
+          value: '1' # The value to add to the meta data.
+```
+
+```yaml title="scriptings/metas/counting.yml"
+metas:
+  - key: counting
+    mode: channel
+    type: number
+```
+

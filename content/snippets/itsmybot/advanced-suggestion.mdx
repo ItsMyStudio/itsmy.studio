@@ -1,0 +1,147 @@
+---
+title: "Advanced Suggestion"
+description: "Advanced suggestion script, allowing two buttons on each message posted in the desired channel. Each button has a vote counter, and votes can be added or removed."
+author: "Theo"
+tags:
+  - "Meta"
+  - "No Addons"
+---
+
+```yaml title="scripting/scripts/suggestion.yml"
+actions:
+  - triggers: messageCreate # Trigger when a message is created.
+    conditions:
+      - id: '!isBot' # The message must not be sent by a bot.
+      - id: 'inChannel' # The message must be in the suggestion channel.
+        args:
+          value: "1384204954977304706"
+    actions:
+      - id: deleteMessage # Delete the original message.
+      - id: sendMessage # Send a message to the suggestion channel.
+        args:
+          disable-mentions: true
+          components:
+            - type: text-display
+              content: |
+                ### New suggestion from %user_display_name%
+                %message_content%
+            - type: action-row # Action row to hold the buttons.
+              components:
+                - type: button
+                  style: primary
+                  label: "Like (0)"
+                  custom-id: "script_suggestion-like" # Button to like the suggestion.
+                - type: button
+                  style: secondary
+                  label: "Dislike (0)"
+                  custom-id: "script_suggestion-dislike" # Button to dislike the suggestion.
+          follow-up-actions:
+            - id: metaSet # Set the meta data for the suggestion.
+              args:
+                key: "suggestion"
+                value: "%message_content%"
+            - id: metaSet # Set the meta data for the suggestion author.
+              args:
+                key: "suggestion-author"
+                value: "%user_display_name%"
+            - id: createThread # Create a thread for the suggestion.
+              args:
+                value: "Suggestion by %user_display_name%"
+
+  - triggers: buttonClick # Trigger when a button is clicked.
+    conditions:
+      - id: 'textEquals' # Check the id of the button.
+        args:
+          input: "[[button_custom_id]]"
+          value:
+            - "script_suggestion-like"
+            - "script_suggestion-dislike"
+    actions:
+      - conditions:
+          - id: 'textEquals' # Check if the button clicked is the like button.
+            args:
+              input: "[[button_custom_id]]"
+              value: "script_suggestion-like"
+          - id: '!metaIncludes' # Check if the user has not already liked the suggestion.
+            args:
+              key: "suggestion-likes"
+              value: "%user_id%"
+            not-met-actions: # If the user has already liked the suggestion, remove their like and edit the message.
+              - id: metaListRemove
+                args:
+                  key: "suggestion-likes"
+                  value: "%user_id%"
+        actions:
+          - id: metaListAdd
+            args:
+              key: "suggestion-likes"
+              value: "%user_id%"
+          - id: metaListRemove # Remove the user's dislike if they liked the suggestion.
+            args:
+              key: "suggestion-dislikes"
+              value: "%user_id%"
+      - conditions:
+          - id: 'textEquals' # Check if the button clicked is the dislike button.
+            args:
+              input: "[[button_custom_id]]"
+              value: "script_suggestion-dislike"
+          - id: '!metaIncludes' # Check if the user has not already liked the suggestion.
+            args:
+              key: "suggestion-dislikes"
+              value: "%user_id%"
+            not-met-actions: # If the user has already liked the suggestion, remove their like and edit the message.
+              - id: metaListRemove
+                args:
+                  key: "suggestion-dislikes"
+                  value: "%user_id%"
+        actions:
+          - id: metaListAdd
+            args:
+              key: "suggestion-dislikes"
+              value: "%user_id%"
+          - id: metaListRemove # Remove the user's dislike if they liked the suggestion.
+            args:
+              key: "suggestion-likes"
+              value: "%user_id%"
+      - id: reply # Reply to the user that their like has been recorded.
+        args:
+          ephemeral: true
+          components:
+            - type: text-display
+              content: "Your vote has been recorded! Thank you for your feedback."
+      - id: editMessage # Edit the message to update the count.
+        args:
+          disable-mentions: true
+          components:
+            - type: text-display
+              content: |
+                ### New suggestion from %meta_suggestion-author%
+                %meta_suggestion%
+            - type: action-row
+              components:
+                - type: button
+                  style: primary
+                  label: "Like (%meta_suggestion-likes_length%)"
+                  custom-id: "script_suggestion-like"
+                - type: button
+                  style: secondary
+                  label: "Dislike (%meta_suggestion-dislikes_length%)"
+                  custom-id: "script_suggestion-dislike"
+```
+
+```yaml title="scripting/metas/suggestion.yml"
+metas:
+  - key: suggestion-author
+    mode: message
+    type: string
+  - key: suggestion
+    mode: message
+    type: string
+  - key: suggestion-likes
+    mode: message
+    type: list
+  - key: suggestion-dislikes
+    mode: message
+    type: list
+```
+

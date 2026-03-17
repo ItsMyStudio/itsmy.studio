@@ -1,0 +1,85 @@
+---
+title: "Bug Report Command"
+description: "A custom command to let your members report bugs easily"
+author: "Barni"
+tags:
+  - "Custom Command"
+  - "No Addons"
+---
+
+```yaml title="scripting/scripts/bugreport.yml"
+name: bugreport
+description: Report a bug or issue
+options:
+  - name: type
+    description: Select the type of issue
+    type: string
+    required: true
+    choices:
+      - name: 🐛 Bug/Error
+        value: 🐛 Bug/Error
+      - name: ⚠️ Technical issue
+        value: ⚠️ Technical issue
+      - name: 🔧 Feature not working
+        value: 🔧 Feature not working
+      - name: 🎨 Visual bug
+        value: 🎨 Visual bug
+      - name: 📱 Other issue
+        value: 📱 Other issue
+  - name: description
+    description: Describe the bug in detail
+    type: string
+    required: true
+    min-length: 10
+  - name: severity
+    description: How urgent is this issue?
+    type: string
+    required: false
+    choices:
+      - name: 🔴 Critical
+        value: 🔴 Critical
+      - name: 🟠 High
+        value: 🟠 High
+      - name: 🟡 Medium
+        value: 🟡 Medium
+      - name: 🟢 Low
+        value: 🟢 Low
+actions:
+  - id: reply # Auto-reply to the user
+    args:
+      ephemeral: true
+      disable-mentions: true
+      components:
+        - type: 'container'
+          components:
+            - type: 'text-display'
+              content: "✅ Thank you for reporting this issue/bug! Our team will look into it soon."
+  - id: sendMessage # Send the bug report to a specific channel
+    target:
+      channel: "1234567891234567891" # Enter your bug report channel ID here
+    args:
+      disable-mentions: true
+      components:
+        - type: 'container'
+          components:
+            - type: 'text-display'
+              content: "### 🐛 New Bug Report"
+            - type: 'separator'
+              spacing: 1
+            - type: 'text-display'
+              content: "**Type:** [[option_bug_type]]"
+            - type: 'text-display'
+              content: "**Severity:** [[option_severity]]"
+            - type: 'separator'
+              spacing: 1
+            - type: 'text-display'
+              content: "**Description:**"
+            - type: 'text-display'
+              content: "[[option_description]]"
+            - type: 'separator'
+              spacing: 1
+            - type: 'text-display'
+              content: "-# Reported by: %user_mention%"
+              # For easier editing, use: https://discord.builders/itsmybot-code-generator
+```
+

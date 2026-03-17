@@ -1,0 +1,46 @@
+---
+title: "Basic Levels"
+description: "Add a simple experience and level system to your servers. The amount of experience required for leveling is currently linear (level*100)."
+author: "Theo"
+tags:
+  - "Meta"
+  - "No Addons"
+---
+
+```yaml title="scripting/scripts/levels.yml"
+actions:
+  - triggers: messageCreate
+    conditions:
+      - id: '!isBot' # The message must not be sent by a bot.
+    actions:
+      - id: metaAdd # Add the message length to the user's meta data.
+        args:
+          key: 'experience' # The key is the experience of the user.
+          value: '1' # The length of the message.
+      - conditions:
+          - id: isExpressionTrue
+            args:
+              value: '%meta_experience% >= %meta_level%*100' # Check if the user has enough experience to level up. (1*level)
+        actions:
+          - id: metaAdd # Add 1 to the user's level.
+            args:
+              key: 'level'
+              value: '1'
+          - id: metaRemove # Remove the meta experience from the user's data.
+            args:
+              key: 'experience'
+          - id: reply # Reply to the user with their new level.
+            args:
+              content: "Congratulations %user_mention%! You leveled up to level %meta_level%!"
+```
+
+```yaml title="scripting/metas/level.yml"
+metas:
+  - key: level
+    mode: user
+    type: number
+  - key: experience
+    mode: user
+    type: number
+```
+

@@ -1,0 +1,64 @@
+---
+title: "Feedback Command"
+description: "A custom command that allows your users to give feedback on a service or a purchase"
+author: "M4rk, Barni & Théo"
+tags:
+  - "Custom Command"
+  - "No Addons"
+---
+
+```yaml title="scripting/custom-commands/feedback.yml"
+name: feedback
+description: Please rate your experience with us
+options:
+  - name: rating
+    description: Pick a star rating
+    type: string
+    required: true
+    choices:
+      - name: ⭐
+        value: ⭐
+      - name: ⭐⭐
+        value: ⭐⭐
+      - name: ⭐⭐⭐
+        value: ⭐⭐⭐
+      - name: ⭐⭐⭐⭐
+        value: ⭐⭐⭐⭐
+      - name: ⭐⭐⭐⭐⭐
+        value: ⭐⭐⭐⭐⭐
+  - name: comment
+    description: Comment about your feedback
+    type: string
+    required: true
+    min-length: 5
+actions:
+  - id: reply
+    args:
+      ephemeral: true # Make the reply visible only to the user
+      disable-mentions: true # Disable mentions in the reply so the user doesn't get pinged
+      components:
+        - type: 'container'
+          components:
+            - type: 'text-display'
+              content: "Thank you for your feedback! 🎉" # Auto-reply
+  - id: sendMessage
+    target:
+      channel: "1234567891234567891" # Channel (ID) to send the feedback
+    args:
+      disable-mentions: true
+      components:
+        - type: 'container'
+          components:
+            - type: 'text-display'
+              content: "## Feedback"
+            - type: 'separator'
+              spacing: 1
+            - type: 'text-display'
+              content: "[[option_rating]]"
+            - type: 'text-display'
+              content: "[[option_comment]]"
+            - type: 'text-display'
+              content: "-# Feedback by: %user_mention%"
+              # For easier editing, use: https://discord.builders/itsmybot-code-generator
+```
+
