@@ -1,0 +1,25 @@
+---
+title: Message Builder
+description: Build common ItsMyBot messages interactively and copy the generated YAML configuration.
+---
+
+import { MessageBuilder } from '@/components/message-builder';
+
+This page gives you an internal builder for the most common ItsMyBot message layouts. Build the message visually, check the preview, then copy the generated YAML directly into `sendMessage`, `reply`, `editMessage`, presets, or any other message field.
+
+<MessageBuilder />
+
+## Supported today
+- `text-display`
+- `container`
+- `section`
+- `action-row`
+- `select-menu`
+- `media-gallery`
+- `file`
+- `repeat`
+- `button`
+- `separator`
+- `thumbnail`
+
+The builder focuses on the most common fields for each component. Advanced cases like complex conditions or random-value arrays can still be finished manually in the generated YAML if needed.

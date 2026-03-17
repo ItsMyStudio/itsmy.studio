@@ -9,8 +9,10 @@
     "installation",
     "addons",
     "commands",
+    "library",
     "---Configurations---",
     "configuration/message",
+    "configuration/message-builder",
     "configuration/modal",
     "configuration/placeholders",
     "configuration/variables",
@@ -22,8 +24,6 @@
     "scripting/target",
     "scripting/custom-command",
     "scripting/meta",
-    "scripting/library",
     "---Developers---"
   ]
 }
-
