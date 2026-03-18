@@ -1,4 +1,5 @@
 import { createIdFactory, type BuilderDefinition } from './core';
+import { asArray, asRecord, readBoolean, readInteger, readString } from './import-utils';
 
 export type ButtonStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'link';
 export type AddableComponentType =
@@ -445,16 +446,20 @@ export function describeComponent(type: DisplayComponentType) {
 export function previewButtonClassName(style: ButtonStyle) {
   switch (style) {
     case 'primary':
-      return 'bg-[#5865F2] text-white';
+      return 'bg-[#3C3E4A] text-white';
     case 'secondary':
-      return 'bg-[#4E5058] text-white';
+      return 'bg-[#3C3E4A] text-white';
     case 'success':
       return 'bg-[#248046] text-white';
     case 'danger':
       return 'bg-[#DA373C] text-white';
     case 'link':
-      return 'border bg-white text-[#1c64f2]';
+      return 'bg-[#3C3E4A] text-white';
   }
+}
+
+function isHexColor(value: string) {
+  return /^#([0-9a-fA-F]{6})$/.test(value.trim());
 }
 
 export function serializeMessageConfig(config: MessageBuilderState) {
@@ -471,6 +476,206 @@ export function serializeMessageConfig(config: MessageBuilderState) {
   }
 
   return lines.join('\n');
+}
+
+export function deserializeMessageConfig(value: unknown): MessageBuilderState {
+  const root = asRecord(value, 'message');
+
+  return {
+    ephemeral: readBoolean(root.ephemeral),
+    disableMentions: readBoolean(root['disable-mentions']),
+    components: deserializeMessageComponents(root.components, 'components'),
+  };
+}
+
+export function deserializeMessageComponents(value: unknown, path = 'components'): BuilderComponent[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((component, index) =>
+    deserializeBuilderComponent(component, `${path}[${index}]`),
+  );
+}
+
+export function serializeMessageComponents(components: BuilderComponent[], indentLevel: number) {
+  return serializeComponents(components, indentLevel);
+}
+
+function deserializeBuilderComponent(value: unknown, path: string): BuilderComponent {
+  const component = asRecord(value, path);
+  const type = readString(component.type);
+
+  switch (type) {
+    case 'text-display':
+      return createTextDisplay(readString(component.content));
+    case 'separator':
+      return {
+        ...createSeparator(),
+        spacing: readInteger(component.spacing, 1) === 2 ? 2 : 1,
+        divider: readBoolean(component.divider, true),
+      };
+    case 'action-row':
+      return createActionRow(
+        Array.isArray(component.components)
+          ? component.components.map((child, index) =>
+              deserializeActionRowChild(child, `${path}.components[${index}]`),
+            )
+          : [],
+      );
+    case 'section':
+      return {
+        ...createSection(),
+        components: Array.isArray(component.components)
+          ? component.components
+              .map((child, index) =>
+                deserializeSectionTextDisplay(child, `${path}.components[${index}]`),
+              )
+              .filter((child): child is TextDisplayComponent => child !== null)
+          : [],
+        accessory:
+          component.accessory === undefined
+            ? null
+            : deserializeAccessory(component.accessory, `${path}.accessory`),
+      };
+    case 'container':
+      return {
+        ...createContainer(),
+        color: readString(component.color),
+        spoiler: readBoolean(component.spoiler),
+        components: Array.isArray(component.components)
+          ? component.components.map((child, index) =>
+              deserializeBuilderComponent(child, `${path}.components[${index}]`),
+            )
+          : [],
+      };
+    case 'media-gallery':
+      return createMediaGallery(
+        Array.isArray(component.items)
+          ? component.items.map((item, index) =>
+              deserializeMediaGalleryItem(item, `${path}.items[${index}]`),
+            )
+          : [],
+      );
+    case 'file':
+      return createFile({
+        url: readString(component.url),
+        spoiler: readBoolean(component.spoiler),
+      });
+    case 'repeat':
+      return createRepeat({
+        dataSource: readString(component['data-source']),
+        template: Array.isArray(component.template)
+          ? component.template.map((child, index) =>
+              deserializeBuilderComponent(child, `${path}.template[${index}]`),
+            )
+          : [],
+      });
+    default:
+      throw new Error(`${path}.type "${type}" is not supported by the message builder.`);
+  }
+}
+
+function deserializeSectionTextDisplay(
+  value: unknown,
+  path: string,
+): TextDisplayComponent | null {
+  const component = asRecord(value, path);
+
+  if (readString(component.type) !== 'text-display') {
+    return null;
+  }
+
+  return createTextDisplay(readString(component.content));
+}
+
+function deserializeActionRowChild(value: unknown, path: string): ActionRowChildComponent {
+  const component = asRecord(value, path);
+  const type = readString(component.type);
+
+  switch (type) {
+    case 'button':
+      return deserializeButton(component);
+    case 'select-menu':
+      return deserializeSelectMenu(component, path);
+    default:
+      throw new Error(`${path}.type "${type}" is not supported inside action-row.`);
+  }
+}
+
+function deserializeAccessory(value: unknown, path: string): SectionAccessory | null {
+  const component = asRecord(value, path);
+  const type = readString(component.type);
+
+  switch (type) {
+    case 'button':
+      return deserializeButton(component);
+    case 'thumbnail':
+      return createThumbnail(readString(component.url));
+    default:
+      throw new Error(`${path}.type "${type}" is not supported as a section accessory.`);
+  }
+}
+
+function deserializeButton(component: Record<string, unknown>): ButtonComponent {
+  const rawStyle = readString(component.style, 'primary').toLowerCase();
+  const style = normalizeButtonStyle(rawStyle);
+
+  return createButton({
+    label: readString(component.label),
+    style,
+    customId: style === 'link' ? '' : readString(component['custom-id']),
+    url: style === 'link' ? readString(component.url) : '',
+    emoji: readString(component.emoji),
+    disabled: readBoolean(component.disabled),
+  });
+}
+
+function deserializeSelectMenu(value: unknown, path: string): SelectMenuComponent {
+  const component = asRecord(value, path);
+
+  return createSelectMenu({
+    customId: readString(component['custom-id']),
+    placeholder: readString(component.placeholder),
+    minValues: readInteger(component['min-values'], 1),
+    maxValues: readInteger(component['max-values'], 1),
+    options: Array.isArray(component.options)
+      ? component.options.map((option, index) =>
+          deserializeSelectMenuOption(option, `${path}.options[${index}]`),
+        )
+      : [],
+  });
+}
+
+function deserializeSelectMenuOption(value: unknown, path: string): SelectMenuOption {
+  const option = asRecord(value, path);
+
+  return createSelectMenuOption({
+    label: readString(option.label),
+    value: readString(option.value),
+  });
+}
+
+function deserializeMediaGalleryItem(value: unknown, path: string): MediaGalleryItem {
+  const item = asRecord(value, path);
+
+  return createMediaGalleryItem({
+    url: readString(item.url),
+    description: readString(item.description),
+    spoiler: readBoolean(item.spoiler),
+  });
+}
+
+function normalizeButtonStyle(style: string): ButtonStyle {
+  switch (style) {
+    case 'url':
+    case 'link':
+      return 'link';
+    case 'secondary':
+    case 'success':
+    case 'danger':
+      return style;
+    default:
+      return 'primary';
+  }
 }
 
 function serializeComponents(components: BuilderComponent[], indentLevel: number) {
@@ -555,8 +760,8 @@ function serializeSection(component: SectionComponent, indentLevel: number) {
 function serializeContainer(component: ContainerComponent, indentLevel: number) {
   const lines = [`${indent(indentLevel)}- type: container`];
 
-  if (component.color.trim().length > 0) {
-    lines.push(`${indent(indentLevel + 1)}color: ${quoteString(component.color)}`);
+  if (isHexColor(component.color)) {
+    lines.push(`${indent(indentLevel + 1)}color: ${quoteString(component.color.trim())}`);
   }
 
   if (component.spoiler) {
@@ -732,9 +937,7 @@ export const MESSAGE_BUILDER_DEFINITION: BuilderDefinition<MessageBuilderState> 
     title: 'Generated YAML',
     description:
       'Copy this output into sendMessage, reply, editMessage, presets, or any other message field.',
-    lang: 'yaml',
-    copyLabel: 'Copy YAML',
-    copiedLabel: 'Copied',
+    lang: 'yaml'
   },
   createInitialState: createInitialMessageBuilderState,
   serialize: serializeMessageConfig,

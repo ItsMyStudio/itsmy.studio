@@ -24,7 +24,7 @@ export function BuilderShell({
 }: {
   options?: BuilderShellSection;
   editor: BuilderShellSection;
-  preview: BuilderShellSection;
+  preview?: BuilderShellSection;
   output: string;
   outputConfig: BuilderOutputDefinition;
 }) {
@@ -37,8 +37,8 @@ export function BuilderShell({
   }
 
   return (
-    <section className="not-prose flex flex-col gap-6">
-      <div className="flex min-w-0 flex-col gap-6">
+    <section className="not-prose flex min-w-0 flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-4 bg-fd-primary-foreground p-3 rounded-lg border border-fd-border/70">
         {options ? (
           <BuilderPanel
             title={options.title}
@@ -58,30 +58,24 @@ export function BuilderShell({
         </BuilderPanel>
       </div>
 
-      <div className="flex min-w-0 flex-col gap-6 xl:sticky xl:top-20 xl:self-start">
-        <BuilderPanel
-          title={preview.title}
-          description={preview.description}
-          action={preview.action}
-        >
-          {preview.children}
-        </BuilderPanel>
+      <div className="flex min-w-0 w-full flex-col gap-6 xl:sticky xl:top-20">
+        {preview ? (
+          <BuilderPanel
+            title={preview.title}
+            description={preview.description}
+            action={preview.action}
+          >
+            <div className="min-w-0 overflow-x-auto">{preview.children}</div>
+          </BuilderPanel>
+        ) : null}
 
         <BuilderPanel
           title={outputConfig.title}
           description={outputConfig.description}
-          action={
-            <button
-              type="button"
-              onClick={copyOutput}
-              className={cn(buttonVariants({ color: 'secondary', size: 'sm' }), 'gap-2')}
-            >
-              <Copy className="size-3.5" />
-              {copied ? outputConfig.copiedLabel ?? 'Copied' : outputConfig.copyLabel ?? 'Copy'}
-            </button>
-          }
         >
-          <DynamicCodeBlock lang={outputConfig.lang ?? 'yaml'} code={output} />
+          <div className="min-w-0 overflow-x-auto">
+            <DynamicCodeBlock lang={outputConfig.lang ?? 'yaml'} code={output} />
+          </div>
         </BuilderPanel>
       </div>
     </section>

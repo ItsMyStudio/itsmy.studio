@@ -2,8 +2,6 @@ export type BuilderOutputDefinition = {
   title: string;
   description: string;
   lang?: string;
-  copyLabel?: string;
-  copiedLabel?: string;
 };
 
 export type BuilderDefinition<TState> = {

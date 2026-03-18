@@ -1,9 +1,7 @@
 'use client';
 
 import { Plus } from 'lucide-react';
-import {
-  BuilderDescriptionTip,
-} from '@/components/builders/ui';
+import { useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { moveItem, removeAt, replaceAt } from '@/lib/builders/core';
 import {
@@ -24,7 +22,45 @@ import { RepeatEditor } from './repeat-editor';
 import { SectionEditor } from './section-editor';
 import { SeparatorEditor } from './separator-editor';
 import { TextDisplayEditor } from './text-display-editor';
-import { ReorderActions } from './shared';
+import { CollapsibleEditorCard, ReorderActions } from './shared';
+
+function summarizeTextDisplay(content: string) {
+  const summary = content
+    .split('\n')
+    .map((line) => line.trim())
+    .find((line) => line.length > 0);
+
+  return summary ?? 'Empty text';
+}
+
+function summarizeComponent(component: BuilderComponent) {
+  switch (component.type) {
+    case 'text-display':
+      return summarizeTextDisplay(component.content);
+    case 'separator':
+      return `${component.spacing === 2 ? 'Large' : 'Compact'} • ${component.divider ? 'Divider' : 'Spacing only'}`;
+    case 'action-row': {
+      const child = component.components[0];
+
+      if (!child) return 'Empty row';
+      if (child.type === 'select-menu') {
+        return `Select menu • ${child.options.length} option${child.options.length === 1 ? '' : 's'}`;
+      }
+
+      return `${component.components.length} button${component.components.length === 1 ? '' : 's'}`;
+    }
+    case 'section':
+      return `${component.components.length} text block${component.components.length === 1 ? '' : 's'} • ${formatComponentType(component.accessory?.type ?? 'button')} accessory`;
+    case 'container':
+      return `${component.components.length} nested component${component.components.length === 1 ? '' : 's'}${component.color ? ` • ${component.color}` : ''}${component.spoiler ? ' • spoiler' : ''}`;
+    case 'media-gallery':
+      return `${component.items.length} media item${component.items.length === 1 ? '' : 's'}`;
+    case 'file':
+      return `${component.url || 'No file URL'}${component.spoiler ? ' • spoiler' : ''}`;
+    case 'repeat':
+      return `${component.dataSource || 'No data source'} • ${component.template.length} template block${component.template.length === 1 ? '' : 's'}`;
+  }
+}
 
 function AddComponentRow({
   allowedTypes,
@@ -58,6 +94,7 @@ function ComponentEditor({
   onRemove,
   canMoveUp,
   canMoveDown,
+  defaultOpen = false,
 }: {
   component: BuilderComponent;
   onChange: (component: BuilderComponent) => void;
@@ -66,17 +103,15 @@ function ComponentEditor({
   onRemove: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  defaultOpen?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-fd-border/80 bg-fd-primary-foreground p-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex flex-1 items-center gap-1.5">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-fd-muted-foreground">
-            {formatComponentType(component.type)}
-          </p>
-          <BuilderDescriptionTip description={describeComponent(component.type)} />
-        </div>
-
+    <CollapsibleEditorCard
+      label={formatComponentType(component.type)}
+      description={describeComponent(component.type)}
+      summary={summarizeComponent(component)}
+      defaultOpen={defaultOpen}
+      actions={
         <ReorderActions
           itemLabel="component"
           canMoveUp={canMoveUp}
@@ -85,7 +120,9 @@ function ComponentEditor({
           onMoveDown={onMoveDown}
           onRemove={onRemove}
         />
-      </div>
+      }
+      className="rounded-xl border-fd-border/80"
+    >
 
       {component.type === 'text-display' ? (
         <TextDisplayEditor component={component} onChange={onChange} />
@@ -132,7 +169,7 @@ function ComponentEditor({
           />
         </RepeatEditor>
       ) : null}
-    </div>
+    </CollapsibleEditorCard>
   );
 }
 
@@ -147,6 +184,8 @@ export function ComponentListEditor({
   allowedTypes: AddableComponentType[];
   emptyLabel: string;
 }) {
+  const [lastAddedComponentId, setLastAddedComponentId] = useState<string | null>(null);
+
   return (
     <div className="flex flex-col gap-2 rounded-lg bg-fd-background p-2">
       {components.length > 0 ? (
@@ -154,6 +193,7 @@ export function ComponentListEditor({
           <ComponentEditor
             key={component.id}
             component={component}
+            defaultOpen={component.id === lastAddedComponentId}
             onChange={(next) => onChange(replaceAt(components, index, next))}
             onMoveUp={() => onChange(moveItem(components, index, index - 1))}
             onMoveDown={() => onChange(moveItem(components, index, index + 1))}
@@ -170,7 +210,11 @@ export function ComponentListEditor({
 
       <AddComponentRow
         allowedTypes={allowedTypes}
-        onAdd={(type) => onChange([...components, createComponent(type)])}
+        onAdd={(type) => {
+          const nextComponent = createComponent(type);
+          setLastAddedComponentId(nextComponent.id);
+          onChange([...components, nextComponent]);
+        }}
       />
     </div>
   );

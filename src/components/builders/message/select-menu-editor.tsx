@@ -1,9 +1,13 @@
 'use client';
 
 import { BuilderField, builderInputClassName } from '@/components/builders/ui';
-import { createSelectMenuOption, type SelectMenuComponent, type SelectMenuOption } from '@/lib/builders/message';
+import {
+  createSelectMenuOption,
+  type SelectMenuComponent,
+  type SelectMenuOption,
+} from '@/lib/builders/message';
 import { moveItem, removeAt, replaceAt } from '@/lib/builders/core';
-import { AddItemButton, EditorHeader, NestedEditorCard, ReorderActions } from './shared';
+import { AddItemButton, CollapsibleEditorCard, ReorderActions } from './shared';
 
 function clampInteger(value: string, min: number, max: number, fallback: number) {
   const parsed = Number(value);
@@ -14,9 +18,11 @@ function clampInteger(value: string, min: number, max: number, fallback: number)
 function SelectMenuOptionsEditor({
   options,
   onChange,
+  createOption,
 }: {
   options: SelectMenuOption[];
   onChange: (options: SelectMenuOption[]) => void;
+  createOption: () => SelectMenuOption;
 }) {
   return (
     <div className="flex flex-col gap-2 rounded-lg bg-fd-background p-2">
@@ -62,7 +68,7 @@ function SelectMenuOptionsEditor({
         </div>
       ))}
 
-      <AddItemButton label="Add option" onClick={() => onChange([...options, createSelectMenuOption()])} />
+      <AddItemButton label="Add option" onClick={() => onChange([...options, createOption()])} />
     </div>
   );
 }
@@ -72,25 +78,37 @@ export function SelectMenuEditor({
   onChange,
   onRemove,
   allowRemove,
+  collapsible = true,
+  title = 'Select Menu',
+  description = 'A single select menu can be placed inside an action row.',
+  createOption = createSelectMenuOption,
 }: {
   menu: SelectMenuComponent;
   onChange: (menu: SelectMenuComponent) => void;
   onRemove?: () => void;
   allowRemove: boolean;
+  collapsible?: boolean;
+  title?: string;
+  description?: string;
+  createOption?: () => SelectMenuOption;
 }) {
-  return (
-    <NestedEditorCard>
-      <EditorHeader
-        label="Select Menu"
-        description="A single select menu can be placed inside an action row."
-        actions={
-          allowRemove ? (
-            <ReorderActions itemLabel="select menu" onRemove={onRemove} />
-          ) : null
-        }
-      />
+  const summary = [
+    menu.placeholder || 'No placeholder',
+    `${menu.options.length} option${menu.options.length === 1 ? '' : 's'}`,
+    menu.customId || 'No custom ID',
+  ].join(' • ');
 
-      <div className="pt-4">
+  return (
+    <CollapsibleEditorCard
+      label={title}
+      description={description}
+      summary={summary}
+      collapsible={collapsible}
+      actions={
+        allowRemove ? <ReorderActions itemLabel="select menu" onRemove={onRemove} /> : null
+      }
+    >
+      <div className="pt-1">
         <div className="grid gap-3 md:grid-cols-2">
           <BuilderField
             label="Custom ID"
@@ -113,7 +131,7 @@ export function SelectMenuEditor({
             />
           </BuilderField>
 
-          <BuilderField label="Min Values">
+          <BuilderField label="Min Values" direction='row'>
             <input
               type="number"
               min={1}
@@ -126,7 +144,7 @@ export function SelectMenuEditor({
             />
           </BuilderField>
 
-          <BuilderField label="Max Values">
+          <BuilderField label="Max Values" direction='row'>
             <input
               type="number"
               min={1}
@@ -145,10 +163,11 @@ export function SelectMenuEditor({
             <SelectMenuOptionsEditor
               options={menu.options}
               onChange={(options) => onChange({ ...menu, options })}
+              createOption={createOption}
             />
           </BuilderField>
         </div>
       </div>
-    </NestedEditorCard>
+    </CollapsibleEditorCard>
   );
 }

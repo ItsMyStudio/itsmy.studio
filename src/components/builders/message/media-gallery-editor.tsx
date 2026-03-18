@@ -13,9 +13,9 @@ function MediaGalleryItemsEditor({
   onChange: (items: MediaGalleryItem[]) => void;
 }) {
   return (
-    <div className="flex flex-col gap-3 border-l border-fd-border/80 pl-4">
+    <div className="flex flex-col gap-2 rounded-lg bg-fd-background p-2">
       {items.map((item, index) => (
-        <div key={item.id} className="rounded-lg border border-fd-border/70 p-3">
+        <div key={item.id} className="rounded-lg border border-fd-border/70 p-3 bg-fd-primary-foreground">
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-fd-muted-foreground">
               Media Item {index + 1}
@@ -59,7 +59,6 @@ function MediaGalleryItemsEditor({
               label="Spoiler"
               description="Hide the media until the user clicks on it."
               checked={item.spoiler}
-              variant="inline"
               onCheckedChange={(checked) =>
                 onChange(replaceAt(items, index, { ...item, spoiler: checked }))
               }

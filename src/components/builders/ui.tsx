@@ -9,8 +9,6 @@ import { cn } from '@/lib/cn';
 
 export const builderInputClassName =
   'h-9 w-full rounded-lg border bg-fd-background px-3 text-sm text-fd-foreground outline-none transition focus:border-fd-primary';
-export const builderTextareaClassName =
-  'min-h-24 w-full rounded-lg border bg-fd-background mt-2 px-3 py-2 -mb-1.5 text-sm text-fd-foreground outline-none transition focus:border-fd-primary';
 export const builderSelectClassName =
   'h-9 w-full rounded-lg border bg-fd-background px-3 text-sm text-fd-foreground outline-none transition focus:border-fd-primary';
 
@@ -26,8 +24,8 @@ export function BuilderPanel({
   children: ReactNode;
 }) {
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+    <div className="min-w-0">
+      <div className="mb-2 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold">{title}</h3>
           {description ? <p className="mt-1 text-sm text-fd-muted-foreground">{description}</p> : null}
@@ -44,23 +42,16 @@ export function BuilderToggleField({
   description,
   checked,
   onCheckedChange,
-  variant = 'card',
 }: {
   label: string;
   description: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
-  variant?: 'card' | 'inline';
 }) {
   const inputId = useId();
 
   return (
-    <div
-      className={cn(
-        'flex items-center justify-between gap-3',
-        variant === 'card' ? 'rounded-xl border border-fd-border/70 bg-fd-secondary/20 px-4 py-3' : 'py-1',
-      )}
-    >
+    <div className='flex items-center justify-between gap-3 py-1'>
       <input
         id={inputId}
         type="checkbox"

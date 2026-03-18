@@ -11,7 +11,7 @@ import {
   type ButtonComponent,
   type ButtonStyle,
 } from '@/lib/builders/message';
-import { EditorHeader, NestedEditorCard, ReorderActions } from './shared';
+import { CollapsibleEditorCard, ReorderActions } from './shared';
 
 const buttonStyleOptions: { value: ButtonStyle; label: string; hint: string }[] = BUTTON_STYLES.map(
   (style) => ({
@@ -30,6 +30,8 @@ export function ButtonEditor({
   canMoveUp = false,
   canMoveDown = false,
   allowRemove,
+  defaultOpen = false,
+  collapsible = true,
 }: {
   button: ButtonComponent;
   onChange: (button: ButtonComponent) => void;
@@ -39,26 +41,36 @@ export function ButtonEditor({
   canMoveUp?: boolean;
   canMoveDown?: boolean;
   allowRemove: boolean;
+  defaultOpen?: boolean;
+  collapsible?: boolean;
 }) {
-  return (
-    <NestedEditorCard>
-      <EditorHeader
-        label="Button"
-        actions={
-          allowRemove ? (
-            <ReorderActions
-              itemLabel="button"
-              canMoveUp={canMoveUp}
-              canMoveDown={canMoveDown}
-              onMoveUp={onMoveUp}
-              onMoveDown={onMoveDown}
-              onRemove={onRemove}
-            />
-          ) : null
-        }
-      />
+  const summaryParts = [
+    button.label || 'No label',
+    button.style,
+    button.style === 'link' ? button.url || 'No URL' : button.customId || 'No custom ID',
+  ];
 
-      <div className="pt-4">
+  return (
+    <CollapsibleEditorCard
+      label="Button"
+      summary={summaryParts.join(' • ')}
+      defaultOpen={defaultOpen}
+      collapsible={collapsible}
+      actions={
+        allowRemove ? (
+          <ReorderActions
+            itemLabel="button"
+            canMoveUp={canMoveUp}
+            canMoveDown={canMoveDown}
+            onMoveUp={onMoveUp}
+            onMoveDown={onMoveDown}
+            onRemove={onRemove}
+          />
+        ) : null
+      }
+    >
+
+      <div className="pt-1">
         <div className="grid gap-3 md:grid-cols-2">
           <div className="grid gap-3 md:col-span-2 md:grid-cols-3">
             <BuilderField label="Label">
@@ -125,12 +137,11 @@ export function ButtonEditor({
               label="Disabled"
               description="Disable the button to make it visible but not clickable."
               checked={button.disabled}
-              variant="inline"
               onCheckedChange={(checked) => onChange({ ...button, disabled: checked })}
             />
           </div>
         </div>
       </div>
-    </NestedEditorCard>
+    </CollapsibleEditorCard>
   );
 }

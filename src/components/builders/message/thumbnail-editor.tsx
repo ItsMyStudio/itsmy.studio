@@ -2,28 +2,31 @@
 
 import { BuilderField, builderInputClassName } from '@/components/builders/ui';
 import type { ThumbnailComponent } from '@/lib/builders/message';
-import { EditorHeader, NestedEditorCard } from './shared';
+import { CollapsibleEditorCard } from './shared';
 
 export function ThumbnailEditor({
   thumbnail,
   onChange,
+  collapsible = true,
 }: {
   thumbnail: ThumbnailComponent;
   onChange: (thumbnail: ThumbnailComponent) => void;
+  collapsible?: boolean;
 }) {
   return (
-    <NestedEditorCard>
-      <EditorHeader
-        label="Thumbnail"
-        description="Display an image accessory on the right side of the section."
-        actions={
-          thumbnail.url ? (
-            <img src={thumbnail.url} alt="" className="size-12 rounded-lg border object-cover" />
-          ) : null
-        }
-      />
+    <CollapsibleEditorCard
+      label="Thumbnail"
+      description="Display an image accessory on the right side of the section."
+      summary={thumbnail.url || 'No image URL'}
+      collapsible={collapsible}
+      actions={
+        thumbnail.url ? (
+          <img src={thumbnail.url} alt="" className="size-12 rounded-lg border object-cover" />
+        ) : null
+      }
+    >
 
-      <div className="pt-4">
+      <div className="pt-1">
         <BuilderField label="Thumbnail URL" description="Use an image URL accessible by Discord.">
           <input
             value={thumbnail.url}
@@ -38,6 +41,6 @@ export function ThumbnailEditor({
           />
         </BuilderField>
       </div>
-    </NestedEditorCard>
+    </CollapsibleEditorCard>
   );
 }

@@ -234,7 +234,7 @@ export function SnippetLibraryClient({ snippets }: Props) {
           <button
             type="button"
             aria-label="Close snippet modal"
-            className="fixed inset-0 z-40 bg-black/25 backdrop-blur-sm"
+            className="fixed inset-0 z-50 backdrop-blur-xs bg-fd-overlay data-open:animate-fd-fade-in data-closed:animate-fd-fade-out"
             onClick={closeModal}
           />
 

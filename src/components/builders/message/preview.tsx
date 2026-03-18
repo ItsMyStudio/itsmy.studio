@@ -4,34 +4,35 @@ import { ChevronDown } from 'lucide-react';
 import { previewButtonClassName, type BuilderComponent, type MessageBuilderState } from '@/lib/builders/message';
 import { cn } from '@/lib/cn';
 
-export function MessagePreview({ config }: { config: MessageBuilderState }) {
-  return (
-    <div className="rounded-2xl border bg-fd-background/80 p-4 shadow-sm">
-      <div className="mb-4 flex flex-wrap gap-2">
-        <PreviewBadge label={config.ephemeral ? 'Ephemeral' : 'Normal'} />
-        <PreviewBadge label={config.disableMentions ? 'Mentions disabled' : 'Mentions enabled'} />
-      </div>
-
-      <div className="flex flex-col gap-3">
-        {config.components.length > 0 ? (
-          config.components.map((component) => (
-            <PreviewComponent key={component.id} component={component} />
-          ))
-        ) : (
-          <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-fd-muted-foreground">
-            No components yet.
-          </div>
-        )}
-      </div>
-    </div>
-  );
+function isHexColor(value: string) {
+  return /^#([0-9a-fA-F]{6})$/.test(value.trim());
 }
 
-function PreviewBadge({ label }: { label: string }) {
+export function MessagePreview({ config }: { config: MessageBuilderState }) {
   return (
-    <span className="rounded-full border bg-fd-card px-2.5 py-1 text-xs text-fd-muted-foreground">
-      {label}
-    </span>
+    <div className='rounded-xl border bg-[#323339] overflow-hidden'>
+      <div className={cn('py-4 pl-18 pr-6', config.ephemeral ? 'border-l-2 border-[#5866F2] bg-[#333543]' : 'border-l-2 border-transparent')}>
+        <div>
+          <img src="/avatar.webp" alt="Avatar" className="size-10 rounded-full absolute left-5" />
+          <div className="flex items-center gap-2">
+            <h3 className="text-[1rem] font-normal text-white">ItsMyBot</h3>
+            <span className='bg-[#5865F2] text-[12px] text-white font-semibold h-3.75 leading-3.75 rounded-sm px-1'>APP</span>
+            <p className="text-xs text-[#9d9ea5]">Just now</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          {config.components.length > 0 ? (
+            config.components.map((component) => (
+              <PreviewComponent key={component.id} component={component} />
+            ))
+          ) : (
+            <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-fd-muted-foreground">
+              No components yet.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -44,7 +45,7 @@ function PreviewComponent({
 }) {
   if (component.type === 'text-display') {
     return (
-      <div className="rounded-xl bg-fd-card/70 p-3">{renderTextDisplayPreview(component.content)}</div>
+      <div className='text-white'>{renderTextDisplayPreview(component.content)}</div>
     );
   }
 
@@ -58,7 +59,7 @@ function PreviewComponent({
 
   if (component.type === 'action-row') {
     return (
-      <div className="flex flex-wrap gap-2 rounded-xl bg-fd-card/70 p-3">
+      <div className="flex flex-wrap gap-2">
         {component.components.map((child) =>
           child.type === 'button' ? (
             <button
@@ -66,7 +67,7 @@ function PreviewComponent({
               type="button"
               disabled={child.disabled}
               className={cn(
-                'inline-flex min-h-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition',
+                'inline-flex min-h-8 items-center justify-center rounded-lg px-2.75 text-sm font-medium transition',
                 previewButtonClassName(child.style),
                 child.disabled ? 'opacity-60' : '',
               )}
@@ -77,7 +78,7 @@ function PreviewComponent({
           ) : (
             <div
               key={child.id}
-              className="flex min-h-9 min-w-[220px] items-center justify-between rounded-lg border bg-fd-background px-3 text-sm text-fd-muted-foreground"
+              className="flex min-h-9 min-w-55 items-center justify-between rounded-lg border bg-fd-background px-3 text-sm text-fd-muted-foreground"
             >
               <span className="truncate">
                 {child.placeholder || `Select (${child.options.length} options)`}
@@ -92,7 +93,7 @@ function PreviewComponent({
 
   if (component.type === 'section') {
     return (
-      <div className="flex items-start justify-between gap-3 rounded-xl bg-fd-card/70 p-3">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1 space-y-2">
           {component.components.map((text) => (
             <div key={text.id}>{renderTextDisplayPreview(text.content)}</div>
@@ -131,7 +132,7 @@ function PreviewComponent({
 
   if (component.type === 'media-gallery') {
     return (
-      <div className="grid grid-cols-2 gap-2 rounded-xl bg-fd-card/70 p-3">
+      <div className="grid grid-cols-2 gap-2">
         {component.items.map((item) => (
           <div key={item.id} className="relative overflow-hidden rounded-lg border bg-fd-background">
             <img src={item.url} alt="" className="aspect-video w-full object-cover" />
@@ -203,7 +204,7 @@ function PreviewComponent({
   return (
     <div
       className="rounded-xl border bg-fd-card/70 p-3"
-      style={component.color ? { borderLeftWidth: '4px', borderLeftColor: component.color } : undefined}
+      style={isHexColor(component.color) ? { borderLeftWidth: '4px', borderLeftColor: component.color.trim() } : undefined}
     >
       {component.spoiler ? (
         <div className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-fd-muted-foreground">

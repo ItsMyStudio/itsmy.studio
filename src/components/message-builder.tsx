@@ -11,10 +11,34 @@ import {
   type MessageBuilderState,
 } from '@/lib/builders/message';
 
-export function MessageBuilder() {
-  const [config, setConfig] = useState<MessageBuilderState>(
+function resolveNextState<T>(updater: T | ((current: T) => T), current: T) {
+  return typeof updater === 'function' ? (updater as (current: T) => T)(current) : updater;
+}
+
+export function MessageBuilder({
+  config: controlledConfig,
+  onChange,
+}: {
+  config?: MessageBuilderState;
+  onChange?: (config: MessageBuilderState) => void;
+}) {
+  const [internalConfig, setInternalConfig] = useState<MessageBuilderState>(
     MESSAGE_BUILDER_DEFINITION.createInitialState,
   );
+  const isControlled = controlledConfig !== undefined && onChange !== undefined;
+  const config = isControlled ? controlledConfig : internalConfig;
+
+  function setConfig(updater: MessageBuilderState | ((current: MessageBuilderState) => MessageBuilderState)) {
+    const next = resolveNextState(updater, config);
+
+    if (isControlled) {
+      onChange(next);
+      return;
+    }
+
+    setInternalConfig(next);
+  }
+
   const output = MESSAGE_BUILDER_DEFINITION.serialize(config);
 
   return (
@@ -44,7 +68,6 @@ export function MessageBuilder() {
       }}
       editor={{
         title: 'Components',
-        description: 'Add, reorder, and edit the building blocks of the message.',
         children: (
           <ComponentListEditor
             components={config.components}

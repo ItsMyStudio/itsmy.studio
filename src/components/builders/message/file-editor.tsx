@@ -24,7 +24,6 @@ export function FileEditor({
         label="Spoiler"
         description="Hide the file until the user clicks on it."
         checked={component.spoiler}
-        variant="inline"
         onCheckedChange={(checked) => onChange({ ...component, spoiler: checked })}
       />
     </div>
