@@ -1,6 +1,6 @@
 {
   "title": "Developers",
-  "defaultOpen": true,
+  "defaultOpen": false,
   "pages": [
     "index",
     "getting-started",

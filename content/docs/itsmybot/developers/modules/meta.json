@@ -1,6 +1,6 @@
 {
   "title": "Addon Parts",
-  "defaultOpen": true,
+  "defaultOpen": false,
   "pages": [
     "interactions",
     "events",
