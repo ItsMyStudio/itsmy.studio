@@ -158,13 +158,33 @@ type EmojiLike =
       animated?: boolean;
     };
 
+const SHORTCODE_ALIAS_FIXUPS: Record<string, string> = {
+  construction_site: 'building_construction',
+};
+
 export function resolveEmojiShortcode(value: string) {
   const match = /^:([a-z0-9_+-]{1,32}):$/i.exec(value.trim());
   if (!match) {
     return null;
   }
 
-  return getEmojiByShortcode(match[1].toLowerCase()) ?? null;
+  const alias = match[1].toLowerCase();
+  const normalizedAlias = alias.replace(/-/g, '_');
+  const candidates = [
+    alias,
+    normalizedAlias,
+    SHORTCODE_ALIAS_FIXUPS[alias],
+    SHORTCODE_ALIAS_FIXUPS[normalizedAlias],
+  ].filter(Boolean) as string[];
+
+  for (const candidate of candidates) {
+    const resolved = getEmojiByShortcode(candidate);
+    if (resolved) {
+      return resolved;
+    }
+  }
+
+  return null;
 }
 
 export function resolveEmojiAsset(value: EmojiLike) {
