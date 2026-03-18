@@ -203,7 +203,7 @@ function PreviewComponent({
 
   return (
     <div
-      className="rounded-xl border bg-fd-card/70 p-3"
+      className="rounded-lg border bg-[#393a41] border-[#44454C] p-3"
       style={isHexColor(component.color) ? { borderLeftWidth: '4px', borderLeftColor: component.color.trim() } : undefined}
     >
       {component.spoiler ? (
