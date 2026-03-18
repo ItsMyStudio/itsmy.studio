@@ -173,6 +173,21 @@ function renderNode(node: ParsedNode | null | undefined, jumbo: boolean): ReactN
       );
     }
 
+    case 'channel':
+    case 'role':
+    case 'user': {
+      const prefix = node.type === 'channel' ? '#' : node.type === 'role' ? '@&' : '@';
+      const id = node.id ?? '';
+      const name = node.name ?? id;
+
+      return (
+        <span className="rounded bg-[#40456C] px-1 text-[#CCD6FE]">
+          {prefix}
+          {name}
+        </span>
+      );
+    }
+
     default: {
       if (typeof node.content === 'string') {
         return node.content;

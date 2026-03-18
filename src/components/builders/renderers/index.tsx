@@ -269,7 +269,7 @@ function MessageComponentRenderer({
 
     case 'separator': {
       const hasDivider = component.divider ?? true;
-      const paddingClassName = component.spacing === 2 ? 'py-4' : 'py-2';
+      const paddingClassName = component.spacing === 2 ? 'py-2' : 'py-0';
 
       return (
         <div className={paddingClassName}>
