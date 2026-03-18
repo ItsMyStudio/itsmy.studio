@@ -1,0 +1,146 @@
+---
+title: Addon Examples
+description: Use the bundled example addon and official addons as references when building your own.
+---
+
+This page highlights the most useful reference points in the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot) when you want to build your own addon.
+
+## `_Example`
+
+The best starting point is the `_Example` addon.
+
+Why it matters:
+
+- it shows the minimal shape of an addon class
+- it demonstrates typed configs
+- it contains a slash command, a button, and an event
+- it is skipped by the loader because its folder starts with `_`
+
+That last point is intentional: it behaves like a template, not a production addon.
+
+## Example: addon class
+
+The `_Example/index.ts` file shows the recommended base structure:
+
+```ts
+export default class ExampleAddon extends Addon {
+  version = '0.0.1';
+  authors = ['@itsme.to'];
+  description = 'This is an example addon';
+
+  configs = {} as Configs;
+
+  async load() {
+    this.configs.config = await this.createConfig('config.yml', AddonConfig);
+    this.configs.categories = await this.createConfigSection('categories', CategoryConfig);
+  }
+
+  async initialize() {}
+}
+```
+
+Use this pattern when:
+
+- you want strongly typed access to config files
+- you have both a single config file and a folder of config sections
+
+## Example: slash command
+
+The example addon includes a command class that extends `Command<ExampleAddon>`.
+
+Key takeaways:
+
+- define the command in `build()`
+- return a `CommandBuilder`
+- implement `execute()` and optionally `autocomplete()`
+- use the generic type parameter to access addon-specific config or methods
+
+## Example: button interaction
+
+The example button shows a less obvious but useful feature:
+
+```ts
+export default class ExampleButton extends Button<ExampleAddon> {
+  customId = 'example_id';
+  usingPermissionFrom = 'helloWorld';
+}
+```
+
+`usingPermissionFrom` lets a component interaction reuse the permission model of an existing command. That is a good pattern when you want buttons to stay aligned with command access rules.
+
+## Example: event
+
+The example event shows the event priority model:
+
+```ts
+export default class MessageCreateEvent extends Event<ExampleAddon> {
+  name = Events.MessageCreate;
+  priority = 3;
+}
+```
+
+Useful details:
+
+- lower priority numbers run first
+- `cancelEvent()` stops the remaining handlers for the same cycle
+- `every` lets you run an event only every X occurrences
+
+## Example: custom scripting action
+
+The Presets addon contains a custom action called `sendPreset`.
+
+That example is important if you want your addon to extend the scripting engine:
+
+- it defines a custom validator for `args`
+- it resolves addon config from the action payload
+- it sends a message using the current script context
+- it triggers follow-up actions after completion
+
+This is the best official reference if you want your addon to add new script capabilities rather than only Discord commands.
+
+## Example: custom placeholder expansion
+
+The MCStatus addon exposes a placeholder expansion through `expansions/minecraftStatus.ts`.
+
+That example is useful because it shows:
+
+- how to define an expansion namespace with `name`
+- how to parse placeholder arguments
+- how to cache expensive external lookups
+- how to return dynamic text back into the placeholder system
+
+If your addon needs custom placeholders, this is the reference to study.
+
+## Example: leaderboard
+
+The core repo also contains a leaderboard implementation under `core/services/leaderboards/impl/messages.ts`.
+
+That example is useful for understanding:
+
+- what `getData()` is expected to return
+- how leaderboard rows can be formatted with variables
+- how `Utils.userVariables()` and `Utils.applyVariables()` are commonly combined
+
+If your addon needs a custom leaderboard, model it after the `Leaderboard` base class and the built-in messages leaderboard.
+
+## Recommended order to study the repo
+
+If you are new to the codebase, read the examples in this order:
+
+1. `src/addons/_Example/index.ts`
+2. `src/addons/_Example/interactions/helloWorldCommand.ts`
+3. `src/addons/_Example/interactions/exampleButton.ts`
+4. `src/addons/_Example/events/messageCreate.ts`
+5. `src/addons/Presets/actions/sendPreset.ts`
+6. `src/addons/MCStatus/expansions/minecraftStatus.ts`
+7. `src/core/services/leaderboards/impl/messages.ts`
+
+That order moves from simple addon setup to deeper runtime extension points.
+
+## Common mistakes to avoid
+
+- Creating an addon in `src/addons` but forgetting to run `npm run build`
+- Using duplicate command names or component `customId`s
+- Putting default YAML outside `resources/`
+- Putting reloadable setup in `initialize()` instead of `load()`
+- Naming your real addon folder with a leading `_`

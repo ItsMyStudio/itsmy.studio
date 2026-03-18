@@ -1,0 +1,144 @@
+---
+title: Leaderboards
+description: Create addon leaderboards that plug into the built-in `/leaderboard` command.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Use `leaderboards/` when your addon should expose ranked data inside the built-in `/leaderboard` command.
+
+## What this part is for
+
+A leaderboard adds a new subcommand under `/leaderboard`.
+
+Use this folder when the addon should expose ranked rows such as:
+
+- top message senders
+- top economy balances
+- top ticket helpers
+
+## Accepted structure
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="leaderboards" defaultOpen>
+          <File name="messages.ts" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Rules:
+
+- each file should export one default class
+- that class must extend `Leaderboard<TAddon>`
+- `name`, `description`, and `getData()` are required
+- `getData()` must return one rendered string per row
+
+## Base leaderboard API
+
+<TypeTable
+  type={{
+    name: {
+      description: 'Subcommand name used under `/leaderboard`.',
+      type: 'string',
+      required: true,
+    },
+    description: {
+      description: 'Description shown in the generated leaderboard subcommand.',
+      type: 'string',
+      required: true,
+    },
+    getData: {
+      description: 'Return rendered rows for the leaderboard.',
+      type: '() => Promise<string[]>',
+      required: true,
+    },
+  }}
+/>
+
+## Minimal example
+
+```ts
+import { Leaderboard } from '@itsmybot';
+import MyAddon from '..';
+
+export default class ExampleLeaderboard extends Leaderboard<MyAddon> {
+  name = 'example';
+  description = 'Example leaderboard';
+
+  async getData() {
+    return ['First row', 'Second row'];
+  }
+}
+```
+
+## Example with formatted rows
+
+If you want richer row output, follow the same pattern as the built-in messages leaderboard: query your ranked rows, build variables, then resolve a format string.
+
+```ts
+import { Leaderboard, User, Utils } from '@itsmybot';
+import { Op } from 'sequelize';
+import MyAddon from '..';
+
+export default class ExampleLeaderboard extends Leaderboard<MyAddon> {
+  name = 'example';
+  description = 'Example leaderboard';
+
+  async getData() {
+    const users = await User.findAll({
+      order: [['messages', 'DESC']],
+      where: {
+        messages: {
+          [Op.gt]: 0,
+        },
+        isBot: false,
+      },
+    });
+
+    const format = this.manager.lang.getString('leaderboard.messages-format');
+
+    return Promise.all(
+      users.map((user, index) => {
+        const variables = [
+          { name: 'position', value: index + 1 },
+          ...Utils.userVariables(user, 'position_user'),
+        ];
+
+        return Utils.applyVariables(format, variables, { user });
+      }),
+    );
+  }
+}
+```
+
+## What `getData()` should return
+
+Return one rendered string per row. The built-in `/leaderboard` command handles the rest:
+
+- command registration
+- pagination
+- page navigation
+- wrapping the rows into a message
+
+So the addon only owns the ranking query and the final row formatting.
+
+## Practical tip
+
+If your leaderboard rows need formatted variables, study the built-in messages leaderboard. It uses:
+
+- `Utils.userVariables()`
+- `Utils.applyVariables()`
+- `Pagination`
+
+That is the cleanest pattern if your leaderboard rows need rich formatting rather than plain text.
+
+## Practical tips
+
+- filter empty rows out at the query layer when possible
+- keep the row text short enough to paginate cleanly
+- use language strings for row templates so addon users can restyle the output without editing code

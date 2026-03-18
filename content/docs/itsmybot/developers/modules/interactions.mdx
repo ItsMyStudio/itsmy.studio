@@ -1,0 +1,370 @@
+---
+title: Interactions
+description: Build slash commands, buttons, select menus, modals, and context menus inside your addon.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Use `interactions/` for anything a Discord user can trigger directly.
+
+## What this part is for
+
+Use this folder when the entry point is a Discord interaction:
+
+- slash command
+- context menu
+- button click
+- select menu choice
+- modal submission
+
+## Accepted structure
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="interactions" defaultOpen>
+          <File name="pingCommand.ts" />
+          <File name="closeTicketButton.ts" />
+          <File name="presetSelectMenu.ts" />
+          <File name="feedbackModal.ts" />
+          <File name="editMessageContextMenu.ts" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Rules:
+
+- each file should export one default class
+- that class must extend a supported interaction base class
+- commands need `build()` and `execute()`
+- buttons, select menus, and modals need a `customId` and `execute()`
+- command names and `customId` values must be unique
+
+## Which interaction should you create?
+
+- use a `Command` when the entry point is `/something`
+- use a `Button` when the action starts from a message component click
+- use a `SelectMenu` when the user must choose one or more options from a list
+- use a `Modal` when the user must submit text or a larger form
+- use a `ContextMenu` when the action starts from a right-click on a user or message
+
+## Supported interaction classes
+
+<TypeTable
+  type={{
+    Command: {
+      description: 'Slash command interaction with `build()`, `execute()`, and optional `autocomplete()`.',
+      type: 'class',
+    },
+    ContextMenu: {
+      description: 'Message or user context menu interaction.',
+      type: 'class',
+    },
+    Button: {
+      description: 'Button interaction resolved by `customId`.',
+      type: 'class',
+    },
+    SelectMenu: {
+      description: 'Select menu interaction resolved by `customId`.',
+      type: 'class',
+    },
+    Modal: {
+      description: 'Modal submit interaction resolved by `customId`.',
+      type: 'class',
+    },
+  }}
+/>
+
+## Slash commands
+
+Slash commands extend `Command<TAddon>`.
+
+<TypeTable
+  type={{
+    build: {
+      description: 'Return the `CommandBuilder` definition.',
+      type: '() => CommandBuilder',
+      required: true,
+    },
+    execute: {
+      description: 'Handle the executed command.',
+      type: '(interaction, user) => Promise<void>',
+      required: true,
+    },
+    autocomplete: {
+      description: 'Optional autocomplete handler.',
+      type: '(interaction) => Promise<void>',
+      required: false,
+    },
+  }}
+/>
+
+Example:
+
+```ts
+import { Command, CommandBuilder, User } from '@itsmybot';
+import { ChatInputCommandInteraction } from 'discord.js';
+import MyAddon from '..';
+
+export default class PingCommand extends Command<MyAddon> {
+  build() {
+    return new CommandBuilder()
+      .setName('ping')
+      .setDescription('Check if the addon is alive');
+  }
+
+  async execute(interaction: ChatInputCommandInteraction<'cached'>, user: User) {
+    await interaction.reply({ content: 'Pong!' });
+  }
+}
+```
+
+If your command needs suggestions while the user types, implement `autocomplete()` too:
+
+```ts
+import { AutocompleteInteraction } from 'discord.js';
+
+async autocomplete(interaction: AutocompleteInteraction<'cached'>) {
+  await interaction.respond([
+    { name: 'Europe', value: 'eu' },
+    { name: 'United States', value: 'us' },
+  ]);
+}
+```
+
+## Buttons
+
+Buttons extend `Button<TAddon>`.
+
+Use a button handler when your addon sends a message with a known `customId` and wants to react when the user presses it.
+
+<TypeTable
+  type={{
+    customId: {
+      description: 'Unique identifier used to resolve the handler.',
+      type: 'string',
+      required: true,
+    },
+    execute: {
+      description: 'Handle the button click.',
+      type: '(interaction, user) => Promise<void>',
+      required: true,
+    },
+    usingPermissionFrom: {
+      description: 'Optional command ID used to reuse a command permission rule.',
+      type: 'string',
+      required: false,
+    },
+  }}
+/>
+
+Example:
+
+```ts
+import { Button, User } from '@itsmybot';
+import { ButtonInteraction } from 'discord.js';
+import MyAddon from '..';
+
+export default class ExampleButton extends Button<MyAddon> {
+  customId = 'example_button';
+  usingPermissionFrom = 'ping';
+
+  async execute(interaction: ButtonInteraction<'cached'>, user: User) {
+    await interaction.reply({ content: 'Button clicked.' });
+  }
+}
+```
+
+## Select menus
+
+Select menus extend `SelectMenu<TAddon>`.
+
+Use a select menu handler when the user should pick from predefined values. The important part is that the `customId` in your handler must match the `customId` used in the component you send.
+
+<TypeTable
+  type={{
+    customId: {
+      description: 'Unique identifier used to resolve the handler.',
+      type: 'string',
+      required: true,
+    },
+    execute: {
+      description: 'Handle the select menu interaction.',
+      type: '(interaction, user) => Promise<void>',
+      required: true,
+    },
+    usingPermissionFrom: {
+      description: 'Optional command ID used to reuse a command permission rule.',
+      type: 'string',
+      required: false,
+    },
+  }}
+/>
+
+Example:
+
+```ts
+import { SelectMenu, User } from '@itsmybot';
+import { AnySelectMenuInteraction } from 'discord.js';
+import MyAddon from '..';
+
+export default class ExampleSelectMenu extends SelectMenu<MyAddon> {
+  customId = 'example_select';
+
+  async execute(interaction: AnySelectMenuInteraction<'cached'>, user: User) {
+    if (!interaction.isStringSelectMenu()) return;
+
+    const selected = interaction.values[0];
+    await interaction.reply({ content: `Selected preset: ${selected}` });
+  }
+}
+```
+
+That pattern is usually paired with a configured message component, for example:
+
+```yaml
+components:
+  - type: action-row
+    components:
+      - type: select-menu
+        custom-id: example_select
+        placeholder: Choose a preset
+        options:
+          - label: Welcome
+            value: welcome
+          - label: Rules
+            value: rules
+```
+
+## Modals
+
+Modals extend `Modal<TAddon>`.
+
+Use a modal handler when another interaction opens a form and you want to process the submitted values later.
+
+<TypeTable
+  type={{
+    customId: {
+      description: 'Unique identifier used to resolve the submitted modal.',
+      type: 'string',
+      required: true,
+    },
+    execute: {
+      description: 'Handle the modal submission.',
+      type: '(interaction, user) => Promise<void>',
+      required: true,
+    },
+  }}
+/>
+
+Example:
+
+```ts
+import { Modal, User } from '@itsmybot';
+import { ModalSubmitInteraction } from 'discord.js';
+import MyAddon from '..';
+
+export default class ExampleModal extends Modal<MyAddon> {
+  customId = 'example_modal';
+
+  async execute(interaction: ModalSubmitInteraction<'cached'>, user: User) {
+    const value = interaction.fields.getTextInputValue('reason');
+    await interaction.reply({ content: `Received: ${value}` });
+  }
+}
+```
+
+Showing the modal usually happens from a command, button, or context menu:
+
+```ts
+const modal = new ModalBuilder()
+  .setCustomId('example_modal')
+  .setTitle('Feedback')
+  .addLabelComponents(
+    new LabelBuilder()
+      .setLabel('Reason')
+      .setTextInputComponent(
+        new TextInputBuilder()
+          .setCustomId('reason')
+          .setRequired(true),
+      ),
+  );
+
+await interaction.showModal(modal);
+```
+
+## Context menus
+
+Context menus extend `ContextMenu<TAddon>`.
+
+<TypeTable
+  type={{
+    build: {
+      description: 'Return the `ContextMenuBuilder` definition.',
+      type: '() => ContextMenuBuilder',
+      required: true,
+    },
+    execute: {
+      description: 'Handle the executed context menu action.',
+      type: '(interaction, user) => Promise<void>',
+      required: true,
+    },
+  }}
+/>
+
+Example:
+
+```ts
+import { ContextMenu, ContextMenuBuilder, User } from '@itsmybot';
+import { LabelBuilder, MessageContextMenuCommandInteraction, ModalBuilder, PermissionFlagsBits, TextInputBuilder } from 'discord.js';
+import MyAddon from '..';
+
+export default class EditMessageContextMenu extends ContextMenu<MyAddon> {
+  build() {
+    return new ContextMenuBuilder()
+      .setName('Edit preset')
+      .setType(3)
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages);
+  }
+
+  async execute(interaction: MessageContextMenuCommandInteraction<'cached'>, user: User) {
+    const modal = new ModalBuilder()
+      .setCustomId(`edit_${interaction.targetMessage.id}`)
+      .setTitle('Edit preset')
+      .addLabelComponents(
+        new LabelBuilder()
+          .setLabel('Preset name')
+          .setTextInputComponent(
+            new TextInputBuilder()
+              .setCustomId('preset')
+              .setRequired(true),
+          ),
+      );
+
+    await interaction.showModal(modal);
+  }
+}
+```
+
+That is close to the real Presets addon pattern in the ItsMyBot repo: a message context menu targets an existing bot message and opens a modal to edit it.
+
+## Practical rules
+
+- keep one interaction per file
+- keep `customId` values stable once they are used by messages or modals
+- build before testing, because the runtime reads `build/addons/<Addon>/interactions`
+
+## Language integration
+
+If a command description is omitted in `build()`, the base command class attempts to populate it from the language files.
+
+That means addon translations and interactions work well together if you keep command strings in `resources/lang/*.yml`.
+
+## Practical advice
+
+- start with one slash command and one button before introducing modals or select menus
+- keep `customId` values prefixed by your addon name, for example `tickets_close` or `presets_edit`
+- if an interaction opens another interaction, document the flow in code comments so the `customId` relationship stays obvious

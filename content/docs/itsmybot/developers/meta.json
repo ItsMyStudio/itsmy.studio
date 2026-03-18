@@ -1,0 +1,10 @@
+{
+  "title": "Developers",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "getting-started",
+    "modules",
+    "reference"
+  ]
+}

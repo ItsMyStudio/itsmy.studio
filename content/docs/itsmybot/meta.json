@@ -25,6 +25,7 @@
     "scripting/target",
     "scripting/custom-command",
     "scripting/meta",
-    "---Developers---"
+    "---Developers---",
+    "...developers"
   ]
 }

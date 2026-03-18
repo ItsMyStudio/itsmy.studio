@@ -1,0 +1,298 @@
+---
+title: Important Utils
+description: Learn the helper methods from Utils that are the most useful when writing addons.
+---
+
+ItsMyBot exposes a large `Utils` helper class. You do not need all of it at once, but a small subset is genuinely useful in real addon code.
+
+This page focuses on the helpers you are most likely to use when building commands, actions, events, and placeholder-driven features.
+
+## Most useful helpers
+
+<TypeTable
+  type={{
+    'Utils.applyVariables()': {
+      description: 'Resolve `[[variables]]` and `%placeholders%` in a string using the provided context and variable list.',
+      type: '(value, variables, context?) => Promise<string>',
+    },
+    'Utils.blockPlaceholders()': {
+      description: 'Prevent placeholder syntax from being interpreted immediately when handling raw user input.',
+      type: '(value) => string',
+    },
+    'Utils.setupMessage()': {
+      description: 'Build a full Discord message payload from config.',
+      type: '({ config, context, variables }) => Promise<MessageOutput>',
+    },
+    'Utils.setupModal()': {
+      description: 'Build a Discord modal from config.',
+      type: '({ config, context, variables }) => Promise<ModalBuilder>',
+    },
+    'Utils.setupComponent()': {
+      description: 'Build one or more Discord components from config.',
+      type: '({ config, context, variables }) => Promise<Component[] | undefined>',
+    },
+    'Utils.setupButton()': {
+      description: 'Build a single button from config.',
+      type: '({ config, context, variables }) => Promise<ButtonBuilder>',
+    },
+    'Utils.setupSelectMenu()': {
+      description: 'Build a single select menu from config.',
+      type: '({ config, context, variables }) => Promise<StringSelectMenuBuilder | undefined>',
+    },
+    'Utils.setupContainer()': {
+      description: 'Build a Components V2 container from config.',
+      type: '({ config, context, variables }) => Promise<ContainerBuilder>',
+    },
+    'Utils.setupLabel()': {
+      description: 'Build a modal label component from config.',
+      type: '({ config, context, variables }) => Promise<LabelBuilder>',
+    },
+    'Utils.setupTextDisplay()': {
+      description: 'Build a Components V2 text-display component from config.',
+      type: '({ config, context, variables }) => Promise<TextDisplayBuilder>',
+    },
+    'Utils.setupThumbnail()': {
+      description: 'Build a thumbnail component from config.',
+      type: '({ config, context, variables }) => Promise<ThumbnailBuilder>',
+    },
+    'Utils.findChannel()': {
+      description: 'Resolve a channel by ID or name.',
+      type: '(identifier, guild?) => Channel | null',
+    },
+    'Utils.findTextChannel()': {
+      description: 'Resolve a text channel by ID or name.',
+      type: '(identifier, guild?) => TextChannel | null',
+    },
+    'Utils.findRole()': {
+      description: 'Resolve a role by ID or name.',
+      type: '(identifier, guild?) => Role | null',
+    },
+    'Utils.userVariables()': {
+      description: 'Generate variables from a user/member for later placeholder expansion.',
+      type: '(user, prefix?) => Variable[]',
+    },
+    'Utils.channelVariables()': {
+      description: 'Generate variables from a channel.',
+      type: '(channel, prefix?) => Variable[]',
+    },
+    'Utils.roleVariables()': {
+      description: 'Generate variables from a role.',
+      type: '(role, prefix?) => Variable[]',
+    },
+    'Utils.timeVariables()': {
+      description: 'Generate time-based variables that can be injected into formatted output.',
+      type: '(timestamp, prefix?) => Variable[]',
+    },
+    'Utils.evaluateBoolean()': {
+      description: 'Evaluate a boolean expression.',
+      type: '(expression) => boolean | null',
+    },
+    'Utils.evaluateNumber()': {
+      description: 'Evaluate a numeric expression.',
+      type: '(expression) => number | null',
+    },
+    'Utils.parseTime()': {
+      description: 'Parse a duration such as `1d2h30m` into milliseconds.',
+      type: '(time) => number',
+    },
+    'Utils.formatTime()': {
+      description: 'Format a duration in seconds into a human-readable string.',
+      type: '(seconds) => string',
+    },
+    'Utils.getColorFromString()': {
+      description: 'Convert a color string like `#5865F2` into a Discord numeric color.',
+      type: '(color) => number | undefined',
+    },
+    'Utils.getRandom()': {
+      description: 'Pick a random item from an array.',
+      type: '(array) => T',
+    },
+    'Utils.hasRole()': {
+      description: 'Check whether a member has one or more roles, optionally with inherited hierarchy logic.',
+      type: '(member, identifiers, inherited?) => boolean',
+    },
+    'Utils.formatValidationErrors()': {
+      description: 'Turn validation error objects into readable output.',
+      type: '(errors, dynamicChildren?) => string[]',
+    },
+    Cooldown: {
+      description: 'In-memory cooldown helper used to throttle repeated operations.',
+      type: 'class',
+    },
+    Pagination: {
+      description: 'Paged UI helper used by features like leaderboards.',
+      type: 'class',
+    },
+    Logger: {
+      description: 'Structured logger used by the manager, services, and addons.',
+      type: 'class',
+    },
+  }}
+/>
+
+### `Utils.applyVariables()`
+
+Use this when your addon needs to resolve:
+
+- `[[variable]]` replacements
+- `%placeholder_name%` expansions
+
+Example:
+
+```ts
+const text = await Utils.applyVariables(
+  'Hello [[username]], server: %guild_name%',
+  variables,
+  context,
+);
+```
+
+This is one of the most important helpers in the framework because it connects addon code to the scripting and placeholder systems.
+
+### `Utils.blockPlaceholders()`
+
+Use this when you accept raw user input that should not immediately behave like a real placeholder.
+
+This is commonly used in commands before saving a string into config or using it as a literal identifier.
+
+### `Utils.setupMessage()`
+
+Use this when you want to send a full configured message from a config section.
+
+Example:
+
+```ts
+const payload = await Utils.setupMessage({ config, context, variables });
+await channel.send(payload);
+```
+
+This is the main bridge between YAML message configuration and Discord.js output.
+
+### `Utils.setupModal()`, `Utils.setupComponent()`, `Utils.setupButton()`, `Utils.setupSelectMenu()`
+
+Use these when you need lower-level component construction instead of a whole message.
+
+They are especially useful if your addon stores reusable UI config and wants to build Discord components dynamically.
+
+For Components V2 and modal-heavy addons, the more specialized helpers are also worth knowing:
+
+- `Utils.setupContainer()`
+- `Utils.setupTextDisplay()`
+- `Utils.setupThumbnail()`
+- `Utils.setupLabel()`
+
+### `Utils.findChannel()`, `Utils.findTextChannel()`, `Utils.findRole()`
+
+Use these when config may contain either a name or an ID.
+
+This saves you from rewriting the same guild lookup logic in every addon.
+
+### `Utils.userVariables()`, `Utils.channelVariables()`, `Utils.roleVariables()`
+
+Use these when you want to generate a variable set from a Discord entity and pass it into `Utils.applyVariables()`.
+
+This is heavily used in the core itself for custom commands, leaderboards, and placeholder-rich message generation.
+
+`Utils.timeVariables()` follows the same idea for dates and timestamps.
+
+### `Utils.evaluateBoolean()` and `Utils.evaluateNumber()`
+
+Use these when your addon accepts expressions rather than fixed values.
+
+Typical use cases:
+
+- configurable formulas
+- conditions
+- computed amounts
+
+### `Utils.formatTime()` and `Utils.parseTime()`
+
+Use these when your addon stores cooldowns, durations, or scheduling-like values.
+
+Examples:
+
+```ts
+Utils.parseTime('1d2h30m')
+Utils.formatTime(3661)
+```
+
+### `Utils.getRandom()`
+
+Use this when config may contain multiple candidates and you want to choose one simply.
+
+### `Utils.hasRole()`
+
+Use this when your addon needs a quick role check, optionally with inherited hierarchy logic.
+
+### `Utils.getColorFromString()`
+
+Useful when your addon accepts colors from config and needs a Discord numeric color value.
+
+It accepts values like:
+
+- `#5865F2`
+- `5865F2`
+- decimal color numbers
+
+### `Utils.formatValidationErrors()`
+
+Use this when you run validation manually and want to log or display the result in a readable form instead of dumping raw validator objects.
+
+## Helpful utility classes
+
+### `Cooldown`
+
+Use `Cooldown` when your addon needs in-memory throttling.
+
+The MCStatus expansion uses this pattern to avoid re-fetching remote data too often.
+
+### `Pagination`
+
+Use `Pagination` when your addon needs paged message UIs.
+
+The leaderboard service uses it to build the built-in paginated leaderboard command.
+
+### `Logger`
+
+Use `Logger` or `this.logger` for addon-scoped logging. Every addon and most framework base classes already expose a logger instance.
+
+## Practical patterns
+
+### Build a message from config
+
+```ts
+const payload = await Utils.setupMessage({ config, context, variables });
+await interaction.reply(payload);
+```
+
+### Resolve variables safely from config input
+
+```ts
+const raw = Utils.blockPlaceholders(interaction.options.getString('name', true));
+const resolved = await Utils.applyVariables(raw, [], { guild: interaction.guild });
+```
+
+### Format leaderboard rows
+
+```ts
+const variables = [
+  { name: 'position', value: index + 1 },
+  ...Utils.userVariables(user, 'position_user'),
+];
+
+return Utils.applyVariables(format, variables, { user });
+```
+
+## Recommendation
+
+If you are learning addon development, the helpers worth memorizing first are:
+
+1. `Utils.applyVariables()`
+2. `Utils.blockPlaceholders()`
+3. `Utils.setupMessage()`
+4. `Utils.findChannel()` / `Utils.findRole()`
+5. `Utils.userVariables()`
+6. `Cooldown`
+7. `Pagination`
+
+Those are the helpers that show up most often in real addon code.

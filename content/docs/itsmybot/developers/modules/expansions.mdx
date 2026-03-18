@@ -1,0 +1,93 @@
+---
+title: Expansions
+description: Add custom placeholders that can be resolved anywhere the bot supports placeholder parsing.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Use `expansions/` when your addon needs custom placeholders.
+
+## What this part is for
+
+An expansion adds a placeholder namespace that can be used in text.
+
+That produces placeholders like:
+
+```txt
+%myexpansion_value%
+```
+
+## Accepted structure
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="expansions" defaultOpen>
+          <File name="myExpansion.ts" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Rules:
+
+- each file should export one default class
+- that class must extend `Expansion<TAddon>`
+- `name` is the placeholder namespace
+- `onRequest()` should return a string or `undefined`
+
+## Base expansion API
+
+<TypeTable
+  type={{
+    name: {
+      description: 'Placeholder namespace, such as `mcstatus`.',
+      type: 'string',
+      required: true,
+    },
+    onRequest: {
+      description: 'Resolve the placeholder value.',
+      type: '(context, placeholderName) => Promise<string | undefined>',
+      required: true,
+    },
+  }}
+/>
+
+## Example
+
+```ts
+import { Expansion, Context } from '@itsmybot';
+import MyAddon from '..';
+
+export default class ExampleExpansion extends Expansion<MyAddon> {
+  name = 'example';
+
+  async onRequest(context: Context, placeholderName: string) {
+    if (placeholderName === 'status') return 'online';
+    return undefined;
+  }
+}
+```
+
+This would allow:
+
+```txt
+%example_status%
+```
+
+## Good expansion patterns
+
+- keep the placeholder namespace short and stable
+- parse the placeholder tail yourself inside `onRequest()`
+- cache expensive remote calls when needed
+- return `undefined` when the placeholder should not be replaced
+
+The MCStatus addon is the best reference in the repo for a real-world expansion with caching and placeholder parsing.
+
+## Nested placeholders
+
+The expansion service also supports nested placeholder resolution inside placeholder arguments.
+
+That means expansion logic should assume placeholder input may already have been partially resolved before `onRequest()` receives it.

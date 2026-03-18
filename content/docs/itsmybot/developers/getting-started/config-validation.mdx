@@ -1,0 +1,378 @@
+---
+title: Config Validation
+description: Learn how to define validator classes, ship default YAML files, and read validated config through ConfigFile and ConfigFolder.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Config validation is one of the most important parts of addon development in ItsMyBot.
+
+The framework does three things for you:
+
+1. copies default YAML files from `resources/`
+2. validates loaded YAML against a [class-validator](https://github.com/typestack/class-validator) schema
+3. exposes the result through typed helpers like `getString()` and `getSubsection()`
+
+## Where config lives
+
+A typical addon config setup looks like this:
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="resources" defaultOpen>
+          <File name="config.ts" />
+          <File name="config.yml" />
+          <Folder name="categories" defaultOpen>
+            <File name="default.yml" />
+          </Folder>
+          <Folder name="lang" defaultOpen>
+            <File name="en-US.yml" />
+          </Folder>
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+At runtime, user-editable files are read from:
+
+<Files>
+  <Folder name="configs" defaultOpen>
+    <Folder name="MyAddon" defaultOpen>
+      <File name="config.yml" />
+      <Folder name="categories">
+        <File name="default.yml" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+The default files inside `resources/` are used as the source of truth when the addon creates missing config files.
+
+## Config loading methods
+
+<TypeTable
+  type={{
+    'createConfig()': {
+      description: 'Load one main addon config file, validate it, and return it as a `ConfigFile`.',
+      type: '(configFilePath, configClass?) => Promise<ConfigFile>',
+      parameters: [
+        {
+          name: 'configFilePath',
+          description: 'Relative file path inside the addon config directory, such as `config.yml`.',
+        },
+        {
+          name: 'configClass',
+          description: 'Optional validator class used for schema validation.',
+        },
+      ],
+      returns: 'A validated `ConfigFile` instance.',
+    },
+    'createConfigSection()': {
+      description: 'Load a folder of addon config files and return them as a `Collection<string, ConfigFile>`.',
+      type: '(configFolderPath, configClass) => Promise<Collection<string, ConfigFile>>',
+      parameters: [
+        {
+          name: 'configFolderPath',
+          description: 'Relative folder path inside the addon config directory, such as `categories`.',
+        },
+        {
+          name: 'configClass',
+          description: 'Validator class used for every file in the folder.',
+        },
+      ],
+      returns: 'A collection keyed by file path without the `.yml` extension.',
+    },
+  }}
+/>
+
+## Single config file with `createConfig()`
+
+Use `createConfig()` when your addon has one main YAML file.
+
+```ts
+import { Addon, ConfigFile } from '@itsmybot';
+import AddonConfig from './resources/config.js';
+
+interface Configs {
+  config: ConfigFile;
+}
+
+export default class MyAddon extends Addon {
+  configs = {} as Configs;
+
+  async load() {
+    this.configs.config = await this.createConfig('config.yml', AddonConfig);
+  }
+}
+```
+
+This will:
+
+- look for `configs/MyAddon/config.yml`
+- create it from `build/addons/MyAddon/resources/config.yml` if missing
+- validate it with `AddonConfig`
+- return a `ConfigFile`
+
+## Folder of config files with `createConfigSection()`
+
+Use `createConfigSection()` when your addon has many files of the same shape.
+
+```ts
+import { Collection } from 'discord.js';
+import { Addon, ConfigFile } from '@itsmybot';
+import CategoryConfig from './resources/category.js';
+
+interface Configs {
+  categories: Collection<string, ConfigFile>;
+}
+
+export default class MyAddon extends Addon {
+  configs = {} as Configs;
+
+  async load() {
+    this.configs.categories = await this.createConfigSection('categories', CategoryConfig);
+  }
+}
+```
+
+Important behavior:
+
+- the whole default folder is copied the first time if the target folder is missing
+- files whose name starts with `_` are ignored
+- each `.yml` file becomes a `ConfigFile`
+- the collection key is the file path without the `.yml` extension
+
+## Writing the validator class
+
+Validator classes use [class-validator](https://github.com/typestack/class-validator).
+
+Basic example:
+
+```ts
+import { IsDefined, IsString, IsBoolean, IsNumber } from 'class-validator';
+
+export default class AddonConfig {
+  @IsDefined()
+  @IsString()
+  channel: string;
+
+  @IsBoolean()
+  enabled: boolean;
+
+  @IsNumber()
+  interval: number;
+}
+```
+
+## Useful validation rules
+
+<TypeTable
+  type={{
+    '@IsDefined()': {
+      description: 'Marks a property as required. Missing values can be auto-restored from the default YAML when available.',
+      type: 'decorator',
+    },
+    '@IsString()': {
+      description: 'Require a string value.',
+      type: 'decorator',
+    },
+    '@IsBoolean()': {
+      description: 'Require a boolean value.',
+      type: 'decorator',
+    },
+    '@IsNumber()': {
+      description: 'Require a numeric value.',
+      type: 'decorator',
+    },
+    '@IsArray()': {
+      description: 'Require an array value.',
+      type: 'decorator',
+    },
+    '@ValidateNested()': {
+      description: 'Validate nested objects or subsections.',
+      type: 'decorator',
+    },
+    '@Type(() => SomeClass)': {
+      description: 'Used with nested validation so child objects are transformed into the correct class.',
+      type: 'decorator',
+    },
+  }}
+/>
+
+You can also use the custom validators exposed by the core for specific ItsMyBot concepts, such as valid permission flags, channel types, text input styles, and script action or condition argument schemas.
+
+### ItsMyBot-specific validators
+
+<TypeTable
+  type={{
+    IsPermissionFlag: {
+      description: 'Validate a Discord permission flag string.',
+      type: 'custom validator',
+    },
+    IsChannelType: {
+      description: 'Validate a Discord channel type string supported by the framework.',
+      type: 'custom validator',
+    },
+    IsTextInputStyle: {
+      description: 'Validate a Discord text input style string.',
+      type: 'custom validator',
+    },
+    IsCommandOptionType: {
+      description: 'Validate a command option type string.',
+      type: 'custom validator',
+    },
+    IsValidActionArgs: {
+      description: 'Validate action args against the registered action validator class.',
+      type: 'custom validator',
+    },
+    IsValidConditionArgs: {
+      description: 'Validate condition args against the registered condition validator class.',
+      type: 'custom validator',
+    },
+  }}
+/>
+
+## Nested config example
+
+If your YAML contains nested objects, use [class-transformer](https://github.com/typestack/class-transformer) and nested validation:
+
+```ts
+import { Type } from 'class-transformer';
+import { IsDefined, IsString, ValidateNested } from 'class-validator';
+
+class ChannelSettings {
+  @IsDefined()
+  @IsString()
+  id: string;
+}
+
+export default class AddonConfig {
+  @ValidateNested()
+  @Type(() => ChannelSettings)
+  channel: ChannelSettings;
+}
+```
+
+## What happens during validation
+
+The `ConfigFile` loader validates with these rules:
+
+<TypeTable
+  type={{
+    whitelist: {
+      description: 'Unknown properties are stripped from the validated class instance.',
+      type: 'boolean',
+      default: 'true',
+    },
+    forbidNonWhitelisted: {
+      description: 'Unexpected properties are treated as validation errors.',
+      type: 'boolean',
+      default: 'true',
+    },
+    skipMissingProperties: {
+      description: 'Missing fields are allowed during validation, then required ones may be restored from defaults.',
+      type: 'boolean',
+      default: 'true',
+    },
+  }}
+/>
+
+If validation fails and a default file exists, the loader attempts one automatic correction:
+
+- missing required values are copied from the default YAML when possible
+
+If the file is still invalid, startup fails with formatted validation errors.
+
+## Reading validated config
+
+Once loaded, `ConfigFile` gives you strongly structured getters.
+
+### Most useful getters
+
+<TypeTable
+  type={{
+    'getString(path)': {
+      description: 'Read a string value.',
+      type: 'string',
+    },
+    'getStringOrNull(path)': {
+      description: 'Read a string value, or `undefined` if missing.',
+      type: 'string | undefined',
+    },
+    'getStrings(path)': {
+      description: 'Read a string array. A single string is also accepted and normalized to an array.',
+      type: 'string[]',
+    },
+    'getBool(path)': {
+      description: 'Read a boolean value.',
+      type: 'boolean',
+    },
+    'getNumber(path)': {
+      description: 'Read a numeric value.',
+      type: 'number',
+    },
+    'getSubsection(path)': {
+      description: 'Read a nested object as a `Config` subsection.',
+      type: 'Config',
+    },
+    'getSubsections(path)': {
+      description: 'Read a list of nested objects as `Config[]`.',
+      type: 'Config[]',
+    },
+    'has(path)': {
+      description: 'Check whether a path exists.',
+      type: 'boolean',
+    },
+  }}
+/>
+
+Example:
+
+```ts
+const channelId = this.configs.config.getString('channel');
+const enabled = this.configs.config.getBool('enabled');
+const interval = this.configs.config.getNumber('interval');
+```
+
+Nested example:
+
+```ts
+const channel = this.configs.config.getSubsection('channel');
+const channelId = channel.getString('id');
+```
+
+## Working with config folders
+
+When you use `createConfigSection()`, you get a `Collection<string, ConfigFile>`.
+
+Example:
+
+```ts
+const category = this.configs.categories.get('tickets/support');
+if (!category) return;
+
+const name = category.getString('name');
+const roles = category.getStrings('roles');
+```
+
+This pattern is used by the bundled `_Example` addon.
+
+Real-world use cases for config folders:
+
+- ticket categories
+- preset libraries
+- panel definitions
+- reward tables
+- template-driven message packs
+
+## Best practices
+
+- keep validator classes next to default YAML in `resources/`
+- load config inside `load()`, not `initialize()`
+- use `@IsDefined()` for required settings that must exist in production
+- store config references on `this.configs` with explicit typing
+- use `getSubsection()` and `getSubsections()` instead of manual object traversal
+- use folder configs for repeatable entities like categories, panels, presets, or templates

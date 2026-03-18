@@ -1,0 +1,313 @@
+---
+title: Creating Addons
+description: Create your own ItsMyBot addon, understand the lifecycle, and wire up config, translations, and interactions.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+This page covers the minimum you need to build a working addon for ItsMyBot.
+
+<Steps>
+<Step>
+## Prerequisites
+
+Before you start:
+
+- use the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot)
+- know basic TypeScript
+- classes and `extends`
+- `async` / `await`
+- typing function parameters and class fields
+- imports / exports
+- decorators used by `class-validator`
+
+If TypeScript still feels unfamiliar, learn those basics first. The [TypeScript documentation](https://www.typescriptlang.org/docs/) is the best starting point, and the [class-validator documentation](https://github.com/typestack/class-validator) becomes important as soon as you start validating config or action arguments.
+</Step>
+
+<Step>
+## Create the addon folder
+
+You can scaffold an addon with:
+
+```bash
+npm run make:addon
+```
+
+That script creates a minimal `src/addons/<Name>/index.ts` file that extends `Addon`.
+
+You can also create the folder manually:
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <File name="index.ts" />
+        <Folder name="interactions" />
+        <Folder name="events" />
+        <Folder name="actions" />
+        <Folder name="conditions" />
+        <Folder name="expansions" />
+        <Folder name="leaderboards" />
+        <Folder name="models" />
+        <Folder name="resources" defaultOpen>
+          <File name="config.ts" />
+          <File name="config.yml" />
+          <Folder name="lang" defaultOpen>
+            <File name="en-US.yml" />
+          </Folder>
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+You do not need every folder on day one. Start with `index.ts`, `interactions/`, and `resources/`.
+</Step>
+
+<Step>
+## Export a default addon class
+
+Every addon must export a default class that extends `Addon`.
+
+```ts
+import { Addon, ConfigFile } from '@itsmybot';
+
+interface Configs {
+  config: ConfigFile;
+}
+
+export default class MyAddon extends Addon {
+  version = '0.0.1';
+  authors = ['YourName'];
+  description = 'My first ItsMyBot addon';
+
+  configs = {} as Configs;
+
+  async load() {
+    this.configs.config = await this.createConfig('config.yml', AddonConfig);
+  }
+
+  async initialize() {
+    // One-time setup for this addon
+  }
+}
+```
+
+Required fields:
+
+<TypeTable
+  type={{
+    version: {
+      description: 'Addon version string displayed in logs and addon metadata.',
+      type: 'string',
+      required: true,
+    },
+    authors: {
+      description: 'List of addon authors.',
+      type: 'string[]',
+      required: true,
+    },
+    description: {
+      description: 'Short description of the addon.',
+      type: 'string',
+      required: false,
+    },
+    website: {
+      description: 'Optional website or product page for the addon.',
+      type: 'string',
+      required: false,
+    },
+    configs: {
+      description: 'Typed container you define yourself to store loaded config files and config folders.',
+      type: 'object',
+      required: false,
+    },
+  }}
+/>
+</Step>
+
+<Step>
+## Understand the addon lifecycle
+
+<TypeTable
+  type={{
+    load: {
+      description: 'Reload-friendly setup. Use this for config loading and anything that should be safe to rebuild later.',
+      type: '() => Promise<void>',
+      required: false,
+    },
+    initialize: {
+      description: 'One-time startup logic. Use this for setup that should run after config and language loading.',
+      type: '() => Promise<void>',
+      required: false,
+    },
+    unload: {
+      description: 'Optional hook called before an addon is unloaded or reloaded.',
+      type: '() => Promise<void>',
+      required: false,
+    },
+    reload: {
+      description: 'Base helper that unloads, reloads lang, and runs `load()` again.',
+      type: '() => Promise<void>',
+      required: false,
+    },
+  }}
+/>
+
+When an addon is initialized, the runtime does this:
+
+1. Load addon database models from `models/*.js`
+2. Load addon translations from `resources/lang`
+3. Call `load()`
+4. Call `initialize()`
+5. Register interactions from `interactions/`
+
+The base class also exposes:
+
+- `unload()`
+- `reload()`
+
+So if you expect something to be reloaded later, keep it in `load()` rather than `initialize()`.
+</Step>
+
+<Step>
+## Add config validation and default config
+
+ItsMyBot expects a validator class in `resources/config.ts` and a default file in `resources/config.yml`.
+
+Validator example:
+
+```ts
+import { IsDefined, IsString } from 'class-validator';
+
+export default class AddonConfig {
+  @IsDefined()
+  @IsString()
+  name: string;
+}
+```
+
+Default YAML example:
+
+```yaml
+name: "My addon"
+```
+
+Then load it in `load()`:
+
+```ts
+this.configs.config = await this.createConfig('config.yml', AddonConfig);
+```
+
+If you need a whole folder of config files, use:
+
+```ts
+this.configs.categories = await this.createConfigSection('categories', CategoryConfig);
+```
+
+This is the pattern used in the bundled `_Example` addon.
+
+Use [Config Validation](/docs/itsmybot/developers/getting-started/config-validation) for the full workflow, including nested sections, folders of config files, validation behavior, and how to read values back through `ConfigFile`.
+</Step>
+
+<Step>
+## Add your first interaction
+
+Most addons begin with one or more interactions inside `interactions/`.
+
+### Slash command example
+
+```ts
+import { Command, CommandBuilder, User } from '@itsmybot';
+import { ChatInputCommandInteraction } from 'discord.js';
+import MyAddon from '..';
+
+export default class PingCommand extends Command<MyAddon> {
+  build() {
+    return new CommandBuilder()
+      .setName('ping')
+      .setDescription('Check if the addon is alive');
+  }
+
+  async execute(interaction: ChatInputCommandInteraction<'cached'>, user: User) {
+    await interaction.reply({ content: 'Pong!' });
+  }
+}
+```
+
+The interaction service automatically scans `interactions/**/*.js` and registers classes by type.
+
+Important rules:
+
+- command names must be unique
+- button, modal, and select menu `customId` values must be unique
+- each file should export one default class
+
+Use [Addon Parts](/docs/itsmybot/developers/modules) for the other folders such as `events/`, `actions/`, `conditions/`, `expansions/`, and `leaderboards/`.
+</Step>
+
+<Step>
+## Add translations
+
+Addon translations live in:
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="resources" defaultOpen>
+          <Folder name="lang" defaultOpen>
+            <File name="en-US.yml" />
+          </Folder>
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+The addon base class initializes a dedicated `LangDirectory` for each addon. You can access it through:
+
+```ts
+this.lang.getString('path.to.key')
+```
+
+One helpful detail: command descriptions can be filled from language files if you do not set them directly in the builder.
+</Step>
+
+<Step>
+## Build before testing
+
+The runtime loads addons from `build/addons/<AddonName>`, not `src/addons/<AddonName>`.
+
+That means this is the normal development loop:
+
+```bash
+npm run build
+npm run start
+```
+
+The build step does two things that matter for addon development:
+
+- compiles TypeScript to `build/`
+- copies every `src/**/*.yml` resource into `build/`
+
+If you skip the build step, your addon code and default YAML resources will not be visible to the runtime.
+</Step>
+
+<Step>
+## Use `_Example` as your template
+
+The repo ships with `src/addons/_Example`, which is intentionally skipped because its folder name starts with `_`.
+
+That addon is the best starting point if you want to see:
+
+- a typed `configs` object
+- `createConfig()` and `createConfigSection()`
+- a slash command
+- a button interaction
+- an event class
+
+Continue with [Addon Parts](/docs/itsmybot/developers/modules) for the other folders your addon can use.
+</Step>
+</Steps>

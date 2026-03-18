@@ -1,0 +1,126 @@
+---
+title: Events
+description: Create addon events, control execution order, and understand how events relate to script triggers.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Use `events/` for Discord gateway handlers and runtime event hooks.
+
+## What this part is for
+
+Use this folder when the addon should react to a Discord event such as:
+
+- `MessageCreate`
+- `InteractionCreate`
+- `GuildMemberAdd`
+
+## Accepted structure
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="events" defaultOpen>
+          <File name="messageCreate.ts" />
+          <File name="interactionCreate.ts" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Rules:
+
+- each file should export one default class
+- that class must extend `Event<TAddon>`
+- `name` should be a Discord `Events.*` value
+- `execute()` arguments must match that Discord event
+
+## Base event API
+
+<TypeTable
+  type={{
+    name: {
+      description: 'Discord event name from `Events`.',
+      type: 'string',
+      required: true,
+    },
+    once: {
+      description: 'Run only once if set to `true`.',
+      type: 'boolean',
+      default: 'false',
+    },
+    priority: {
+      description: 'Lower numbers run first when several handlers share the same event.',
+      type: 'number',
+      default: '3',
+    },
+    every: {
+      description: 'Run the handler only every X occurrences.',
+      type: 'number',
+      default: '1',
+    },
+    execute: {
+      description: 'Main event handler.',
+      type: '(...args) => Promise<void> | void',
+      parameters: [{
+        name: '...args',
+        description: 'The arguments depend on the event name. Refer to the Discord.js documentation for the corresponding event to know the arguments.',
+      }],
+      returns: 'Promise<void> | void',
+      required: true,
+    },
+    'cancelEvent()': {
+      description: 'Stop remaining lower-priority handlers for the current event cycle.',
+      type: 'method',
+    },
+  }}
+/>
+
+## Example
+
+```ts
+import { Event, Events } from '@itsmybot';
+import { Message } from 'discord.js';
+import MyAddon from '..';
+
+export default class MessageCreateEvent extends Event<MyAddon> {
+  name = Events.MessageCreate;
+  priority = 3;
+
+  async execute(message: Message) {
+    this.logger.debug(message.content);
+  }
+}
+```
+
+## How priority works
+
+If multiple event classes listen to the same `name`, the executor sorts them by `priority`.
+
+- lower number = earlier execution
+- same number = execution order depends on registration order
+- `cancelEvent()` stops later handlers for that same event cycle
+
+## `once` and `every`
+
+Use `once` when the event should only run one time after startup.
+
+Use `every` when the event is frequent but your addon only needs periodic processing.
+
+Example:
+
+```ts
+every = 10;
+```
+
+That means the handler only runs once every ten received events.
+
+## Event names and script triggers
+
+Use an `Event` when addon code itself should react to runtime activity.
+
+Use a trigger when YAML scripts should react to it.
+
+Continue with [Triggers](/docs/itsmybot/developers/modules/triggers) for the developer-facing view of script trigger emission.

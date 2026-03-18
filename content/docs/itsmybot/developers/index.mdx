@@ -1,6 +1,81 @@
 ---
-title: Creating Addons
-description: Learn how to create addons for ItsMyBot and extend its functionality.
+title: Addon Development
+description: Understand how ItsMyBot loads addons and where to start when building your own.
 ---
 
-# Soon
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+ItsMyBot is an addon-driven bot. If you want to extend it, focus on the addon folders, the config system, and the runtime build flow.
+
+## Recommended path
+
+<Steps>
+<Step>
+## Use the source repo and know basic TypeScript
+
+Use the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot), not only a marketplace build.
+
+You should already be comfortable with:
+
+- classes
+- `async` / `await`
+- imports / exports
+- simple typing
+- `class-validator` decorators
+
+Useful references:
+
+- [TypeScript documentation](https://www.typescriptlang.org/docs/)
+- [class-validator documentation](https://github.com/typestack/class-validator)
+</Step>
+
+<Step>
+## Build and run the bot locally
+
+Before writing your own addon, make sure you can:
+
+1. build the project
+2. start the bot
+3. generate the config files
+4. understand where `build/addons` comes from
+
+The runtime loads addons from `build/addons`, not directly from `src/addons`.
+</Step>
+
+<Step>
+## Start with one small addon
+
+Do not begin with a big multi-system addon.
+
+The best first target is usually:
+
+1. one config file
+2. one slash command
+3. one button or one event
+
+Once that works, move to custom actions, conditions, expansions, or leaderboards.
+</Step>
+
+<Step>
+## Keep the right docs nearby
+
+When your first addon exists, keep these pages nearby:
+
+- [Creating Addons](/docs/itsmybot/developers/getting-started/creating-addons)
+- [Config Validation](/docs/itsmybot/developers/getting-started/config-validation)
+- [Addon Parts](/docs/itsmybot/developers/modules)
+- [Addon Examples](/docs/itsmybot/developers/reference/examples-addons)
+
+Those four pages cover almost everything you need to build an addon.
+</Step>
+</Steps>
+
+## One runtime rule to remember
+
+The runtime scans `build/addons/*` and looks for an `index.js` file.
+
+- `src/addons/_Example` is skipped because folders starting with `_` are ignored
+- your real addon must `export default` a class that extends `Addon`
+- after changes, run `npm run build` before testing
+
+Use [Important Utils](/docs/itsmybot/developers/reference/important-utils) only after the basic addon structure already makes sense.

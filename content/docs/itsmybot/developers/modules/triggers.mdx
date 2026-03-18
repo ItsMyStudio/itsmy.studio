@@ -1,0 +1,143 @@
+---
+title: Triggers
+description: Understand how script trigger names work and how addon code can emit them even though there is no dedicated Trigger addon class.
+---
+
+Triggers are part of the scripting engine, not a standalone addon folder or class.
+
+There is no `triggers/` folder for addons.
+
+This page matters only because addon code can still emit trigger names manually.
+
+## Accepted structure
+
+There is no dedicated file structure for triggers.
+
+If your addon wants to create one, emit it from code that already exists in another addon part, usually:
+
+- an `Event`
+- an `Interaction`
+- an `Action`
+
+## What a trigger is
+
+A trigger is just a string key used by the script engine to decide when actions should run.
+
+Examples from the current runtime:
+
+- `messageCreate`
+- `buttonClick`
+- `selectMenu`
+- `modalSubmit`
+- `everyMinute`
+- `everyHour`
+- `botReady`
+
+Scripts subscribe to these names through YAML:
+
+```yaml
+actions:
+  - id: sendMessage
+    triggers:
+      - messageCreate
+      - ticketCreated
+```
+
+## Emitting a trigger manually
+
+Addon code can emit a trigger through the engine service:
+
+<TypeTable
+  type={{
+    'manager.services.engine.event.emit()': {
+      description: 'Emit a trigger name into the script engine.',
+      type: '(event, context, variables?) => boolean',
+      parameters: [
+        {
+          name: 'event',
+          description: 'The trigger name that scripts listen for.',
+        },
+        {
+          name: 'context',
+          description: 'The runtime context passed to matching actions.',
+        },
+        {
+          name: 'variables',
+          description: 'Optional extra variables passed into matching actions.',
+        },
+      ],
+      returns: 'Whether any listener was attached to that trigger name.',
+    },
+  }}
+/>
+
+## Example: emit a custom trigger from an event
+
+```ts
+import { Event, Events, Context, Variable } from '@itsmybot';
+import { Message } from 'discord.js';
+import MyAddon from '..';
+
+export default class TicketCreateEvent extends Event<MyAddon> {
+  name = Events.MessageCreate;
+
+  async execute(message: Message<true>) {
+    if (!message.content.startsWith('!ticket')) return;
+
+    const user = message.member
+      ? await this.manager.services.user.findOrCreate(message.member)
+      : await this.manager.services.user.findOrNull(message.author.id);
+
+    if (!user) return;
+
+    const context: Context = {
+      message,
+      member: message.member || undefined,
+      user,
+      guild: message.guild,
+      channel: message.channel,
+      content: message.content,
+    };
+
+    const variables: Variable[] = [
+      { name: 'ticket_reason', value: 'manual request' },
+    ];
+
+    this.manager.services.engine.event.emit('ticketCreated', context, variables);
+  }
+}
+```
+
+Then a script can listen to it:
+
+```yaml
+actions:
+  - id: sendMessage
+    triggers: ticketCreated
+    args:
+      components:
+        - type: text-display
+          content: "Ticket opened for [[ticket_reason]]"
+```
+
+## Recommended naming
+
+Because trigger names are just strings, collisions are possible.
+
+Use a clear and specific name for custom triggers, for example:
+
+- `ticketCreated`
+- `ticketsPanelOpened`
+- `storePurchaseCompleted`
+
+If your addon emits many triggers, adding a prefix or namespace can still help.
+
+## When to use a custom trigger
+
+Use a custom emitted trigger when:
+
+- addon code detects a domain-specific event
+- you want YAML scripts to react to it
+- there is no built-in trigger name that fits
+
+If you only need runtime logic inside the addon itself, emit nothing and keep the logic inside your addon class.

@@ -1,0 +1,156 @@
+---
+title: Conditions
+description: Add custom scripting conditions that can be reused across YAML scripts.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Use `conditions/` when your addon needs reusable checks inside scripts.
+
+## What this part is for
+
+A condition is a reusable boolean check for YAML scripts.
+
+Use this folder when addon users should be able to write:
+
+```yaml
+conditions:
+  - id: isSomethingAllowed
+```
+
+## Accepted structure
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="conditions" defaultOpen>
+          <File name="isSomethingAllowed.ts" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Rules:
+
+- each file should export one default class
+- that class must extend `Condition<TAddon>`
+- `id` must be unique
+- `isMet()` is required
+- `argumentsValidator` is optional, but recommended when the condition accepts `args`
+
+## Base condition API
+
+<TypeTable
+  type={{
+    id: {
+      description: 'Unique condition identifier used in YAML scripts.',
+      type: 'string',
+      required: true,
+    },
+    isMet: {
+      description: 'Return whether the condition is met in the current context.',
+      type: '(condition, context, variables) => Promise<boolean> | boolean',
+      required: true,
+    },
+    argumentsValidator: {
+      description: 'Optional validator class for the condition `args` section.',
+      type: 'class',
+      required: false,
+    },
+  }}
+/>
+
+## Minimal example
+
+```ts
+import { Condition, ConditionData, Context, Variable } from '@itsmybot';
+import MyAddon from '..';
+
+export default class AlwaysTrueCondition extends Condition<MyAddon> {
+  id = 'alwaysTrue';
+
+  async isMet(condition: ConditionData, context: Context, variables: Variable[]) {
+    return true;
+  }
+}
+```
+
+## Example with validated args
+
+```ts
+import { Condition, ConditionArgumentValidator, ConditionData, Context, Variable, Utils } from '@itsmybot';
+import { IsDefined, IsString } from 'class-validator';
+import MyAddon from '..';
+
+class ArgumentsValidator extends ConditionArgumentValidator {
+  @IsDefined()
+  @IsString()
+  channel: string;
+}
+
+export default class IsInConfiguredChannel extends Condition<MyAddon> {
+  id = 'isInConfiguredChannel';
+  argumentsValidator = ArgumentsValidator;
+
+  async isMet(condition: ConditionData, context: Context, variables: Variable[]) {
+    if (!context.guild || !context.channel) return false;
+
+    const expected = Utils.findChannel(condition.args.getString('channel'), context.guild);
+    return expected?.id === context.channel.id;
+  }
+}
+```
+
+Matching YAML:
+
+```yaml
+actions:
+  - id: sendMessage
+    triggers: messageCreate
+    conditions:
+      - id: isInConfiguredChannel
+        args:
+          channel: support
+    args:
+      components:
+        - type: text-display
+          content: "This only runs in #support."
+```
+
+That is the main value of a custom condition: the YAML stays readable and the TypeScript logic stays centralized in one place.
+
+## Reading condition args
+
+Inside `isMet()`, `condition.args` behaves like the other config helpers in the framework. In practice you will usually use:
+
+- `getString()` for names, ids, and expressions
+- `getNumber()` for thresholds and counters
+- `getBool()` for feature flags
+- `getSubsection()` when the condition takes a nested object
+
+## When to create a custom condition
+
+Create a condition when:
+
+- you want the logic reusable across many scripts
+- the logic should read naturally in YAML
+- you want argument validation and a clear `id`
+
+Do not create a condition if the logic is only relevant inside one action implementation. In that case, keep it inside the action itself.
+
+## Argument validation
+
+Conditions support validator classes in the same style as actions.
+
+This is useful when your condition expects arguments such as:
+
+- a number
+- a channel name or ID
+- a role
+- a string expression
+
+The framework resolves and validates condition arguments automatically once the condition is registered.
+
+If a condition can fail in a useful way, combine it with `not-met-actions` in YAML so addon users can react explicitly when the check returns `false`.

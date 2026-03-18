@@ -1,0 +1,13 @@
+{
+  "title": "Addon Parts",
+  "defaultOpen": true,
+  "pages": [
+    "interactions",
+    "events",
+    "actions",
+    "conditions",
+    "triggers",
+    "expansions",
+    "leaderboards"
+  ]
+}

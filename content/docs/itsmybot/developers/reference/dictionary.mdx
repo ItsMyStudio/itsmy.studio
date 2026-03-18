@@ -1,0 +1,215 @@
+---
+title: Dictionary
+description: Quick definitions for the most important ItsMyBot terms used in addon and scripting documentation.
+---
+
+This page is a glossary for the terms that come up most often in the ItsMyBot documentation.
+
+It is meant to answer one question fast: "What does this word mean in the framework?"
+
+## Core terms
+
+<TypeTable
+  type={{
+    Addon: {
+      description: 'A runtime extension package loaded from `build/addons/<Name>` that can register folders such as interactions, events, actions, conditions, expansions, and leaderboards.',
+      type: 'Core Concept',
+      typeDescriptionLink: '/docs/itsmybot/developers/getting-started/creating-addons',
+    },
+    Manager: {
+      description: 'The central runtime object that initializes the Discord client, config, database, services, and addons.',
+      type: 'Core Class',
+    },
+    Service: {
+      description: 'A manager-owned runtime service such as the interaction service, event service, action service, or expansion service.',
+      type: 'Core Class',
+    },
+    'Primary Guild': {
+      description: 'The main guild configured in the core config. Many built-in features register and operate against this guild.',
+      type: 'Runtime Term',
+    },
+    Resource: {
+      description: 'A file shipped by the addon inside `resources/`, typically config defaults, validator helpers, or translations.',
+      type: 'Runtime Term',
+    },
+    'build/addons': {
+      description: 'The compiled runtime location from which addons are actually loaded. This is why `npm run build` is required before testing addon changes.',
+      type: 'Path',
+    },
+  }}
+/>
+
+## Addon structure terms
+
+<TypeTable
+  type={{
+    Interaction: {
+      description: 'A Discord-facing handler such as a slash command, button, select menu, modal, or context menu.',
+      type: 'Addon Part',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/interactions',
+    },
+    Event: {
+      description: 'A gateway or runtime event handler registered from `events/`.',
+      type: 'Addon Part',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/events',
+    },
+    Action: {
+      description: 'A custom scripting action registered from `actions/` and used by `id` in YAML.',
+      type: 'Addon Part',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/actions',
+    },
+    Condition: {
+      description: 'A reusable scripting check registered from `conditions/` and used by `id` in YAML.',
+      type: 'Addon Part',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/conditions',
+    },
+    Expansion: {
+      description: 'A custom placeholder namespace registered from `expansions/`.',
+      type: 'Addon Part',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/expansions',
+    },
+    Leaderboard: {
+      description: 'A ranked data provider registered from `leaderboards/` and exposed through the built-in `/leaderboard` command.',
+      type: 'Addon Part',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/leaderboards',
+    },
+    Model: {
+      description: 'A Sequelize model registered from `models/` and auto-synced during addon initialization.',
+      type: 'Addon Part',
+    },
+    'Validator Class': {
+      description: 'A class-validator schema used to validate addon config or action/condition arguments.',
+      type: 'Addon Term',
+      typeDescriptionLink: '/docs/itsmybot/developers/getting-started/config-validation',
+    },
+  }}
+/>
+
+## Config terms
+
+<TypeTable
+  type={{
+    Config: {
+      description: 'The framework wrapper around loaded YAML values, with typed getters such as `getString()` and `getSubsection()`.',
+      type: 'Config Class',
+      typeDescriptionLink: '/docs/itsmybot/developers/getting-started/config-validation',
+    },
+    ConfigFile: {
+      description: 'A validated YAML config file loaded through `createConfig()` or directly by the framework.',
+      type: 'Config Class',
+      typeDescriptionLink: '/docs/itsmybot/developers/getting-started/config-validation',
+    },
+    ConfigFolder: {
+      description: 'A collection of config files loaded from a folder through `createConfigSection()`.',
+      type: 'Config Class',
+      typeDescriptionLink: '/docs/itsmybot/developers/getting-started/config-validation',
+    },
+    'Default Config': {
+      description: 'The YAML file shipped in `resources/` and copied into the user config directory when no config file exists yet.',
+      type: 'Config Term',
+    },
+    'Config Section': {
+      description: 'A folder of config files of the same shape, often used for repeatable entities like categories, presets, or templates.',
+      type: 'Config Term',
+    },
+    LangDirectory: {
+      description: 'The translation loader used by the core and by each addon for `resources/lang/*.yml`.',
+      type: 'Config/Localization Class',
+    },
+  }}
+/>
+
+## Scripting terms
+
+<TypeTable
+  type={{
+    Script: {
+      description: 'A YAML-defined automation unit that contains actions, triggers, conditions, and optional target changes.',
+      type: 'Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/scripting',
+    },
+    Trigger: {
+      description: 'An event name used by the scripting engine, such as `messageCreate`, `everyMinute`, or `botReady`. There is no standalone addon `Trigger` class, but addon code can emit trigger names through the engine event emitter.',
+      type: 'Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/developers/modules/triggers',
+    },
+    Target: {
+      description: 'A context override applied before an action runs, for example changing the active channel or message.',
+      type: 'Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/scripting/target',
+    },
+    'Follow-up Action': {
+      description: 'An action executed after another action completes, when the action type supports follow-up actions.',
+      type: 'Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/scripting/actions',
+    },
+    Meta: {
+      description: 'Script-side state handled by the meta system and used by several actions and conditions.',
+      type: 'Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/scripting/meta',
+    },
+    'Custom Command': {
+      description: 'A command defined through YAML rather than a compiled addon interaction class.',
+      type: 'Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/scripting/custom-command',
+    },
+  }}
+/>
+
+## Message and placeholder terms
+
+<TypeTable
+  type={{
+    Placeholder: {
+      description: 'A value resolved in text using the `%namespace_key%` syntax through the expansion service.',
+      type: 'Message/Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/configuration/placeholders',
+    },
+    Variable: {
+      description: 'A named value injected into scripts or message rendering and resolved using the `[[name]]` syntax.',
+      type: 'Message/Scripting Concept',
+      typeDescriptionLink: '/docs/itsmybot/configuration/variables',
+    },
+    Context: {
+      description: 'The runtime object passed around actions, conditions, expansions, and events, containing things like the current user, message, member, channel, or guild.',
+      type: 'Runtime Concept',
+    },
+    'Message Builder': {
+      description: 'The interactive documentation tool that generates message component YAML.',
+      type: 'Docs Tool',
+      typeDescriptionLink: '/docs/itsmybot/builder?tab=message',
+    },
+    'Modal Builder': {
+      description: 'The interactive documentation tool that generates modal YAML.',
+      type: 'Docs Tool',
+      typeDescriptionLink: '/docs/itsmybot/builder?tab=modal',
+    },
+  }}
+/>
+
+## Utility terms
+
+<TypeTable
+  type={{
+    Utils: {
+      description: 'The shared helper API used throughout the framework for variable resolution, config-driven rendering, lookups, parsing, and formatting.',
+      type: 'Utility API',
+      typeDescriptionLink: '/docs/itsmybot/developers/reference/important-utils',
+    },
+    Cooldown: {
+      description: 'A helper class for in-memory throttling, often used in expansions or runtime logic.',
+      type: 'Utility Class',
+      typeDescriptionLink: '/docs/itsmybot/developers/reference/important-utils',
+    },
+    Pagination: {
+      description: 'A helper class for paginated Discord UI flows.',
+      type: 'Utility Class',
+      typeDescriptionLink: '/docs/itsmybot/developers/reference/important-utils',
+    },
+    Logger: {
+      description: 'The framework logger used by the manager, services, and addons.',
+      type: 'Utility Class',
+      typeDescriptionLink: '/docs/itsmybot/developers/reference/important-utils',
+    },
+  }}
+/>

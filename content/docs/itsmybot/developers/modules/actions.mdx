@@ -1,0 +1,128 @@
+---
+title: Actions
+description: Add custom scripting actions to the ItsMyBot YAML engine.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Use `actions/` when your addon should extend the scripting engine itself.
+
+## What this part is for
+
+An action is something a YAML script can run by `id`.
+
+Use this folder when addon users should be able to write:
+
+```yaml
+actions:
+  - id: myAction
+```
+
+## Accepted structure
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <Folder name="actions" defaultOpen>
+          <File name="myAction.ts" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Rules:
+
+- each file should export one default class
+- that class must extend `Action<TAddon>`
+- `id` must be unique
+- `onTrigger()` is required
+- `argumentsValidator` is optional, but recommended when the action accepts `args`
+
+## Base action API
+
+<TypeTable
+  type={{
+    id: {
+      description: 'Unique action identifier used in YAML scripts.',
+      type: 'string',
+      required: true,
+    },
+    onTrigger: {
+      description: 'Main action logic.',
+      type: '(script, context, variables) => Promise<any>',
+      required: true,
+    },
+    argumentsValidator: {
+      description: 'Optional validator class for the action `args` section.',
+      type: 'class',
+      required: false,
+    },
+    'triggerFollowUpActions()': {
+      description: 'Run follow-up actions after your main logic completes.',
+      type: 'method',
+    },
+  }}
+/>
+
+## Example from the repo
+
+The Presets addon exposes a custom action called `sendPreset`.
+
+Its pattern is the right mental model:
+
+1. define an action-specific validator
+2. resolve data from `script.args`
+3. use the current `context`
+4. send or edit Discord state
+5. optionally call `triggerFollowUpActions()`
+
+## Minimal action example
+
+```ts
+import { Action, ActionArgumentsValidator, ActionData, Context, Variable } from '@itsmybot';
+import { IsDefined, IsString } from 'class-validator';
+import MyAddon from '..';
+
+class ArgumentsValidator extends ActionArgumentsValidator {
+  @IsDefined()
+  @IsString()
+  message: string;
+}
+
+export default class ExampleAction extends Action<MyAddon> {
+  id = 'exampleAction';
+  argumentsValidator = ArgumentsValidator;
+
+  async onTrigger(script: ActionData, context: Context, variables: Variable[]) {
+    const message = script.args.getString('message');
+    this.logger.info(`Running example action with: ${message}`);
+  }
+}
+```
+
+## Accessing arguments
+
+`script.args` is a config-like object, so you can use getters such as:
+
+- `getString()`
+- `getBool()`
+- `getNumber()`
+- `getSubsection()`
+- `getSubsections()`
+
+If your action accepts dynamic values, combine those with [Important Utils](/docs/itsmybot/developers/reference/important-utils):
+
+- `Utils.applyVariables()`
+- `Utils.evaluateNumber()`
+- `Utils.findChannel()`
+- `Utils.findRole()`
+
+## Validating action args
+
+Action args use validator classes the same way addon config does.
+
+The framework already contains custom validation wiring for action argument schemas, so once your `argumentsValidator` is attached, YAML action configs are checked automatically.
+
+Use [Config Validation](/docs/itsmybot/developers/getting-started/config-validation) if you want the same validation style inside your addon config files.
