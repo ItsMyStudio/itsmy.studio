@@ -1,81 +1,90 @@
 ---
-title: Addon Development
-description: Understand how ItsMyBot loads addons and where to start when building your own.
+title: Introduction
+description: Understand what addon development is, when you should use it, and where to start.
 ---
 
-import { Step, Steps } from 'fumadocs-ui/components/steps';
+Addon development is how you add new code-driven features to ItsMyBot.
 
-ItsMyBot is an addon-driven bot. If you want to extend it, focus on the addon folders, the config system, and the runtime build flow.
+If you only need automations, custom messages, or custom commands built from existing blocks, start with scripts first.
 
-## Recommended path
+## What an addon is
 
-<Steps>
-<Step>
-## Use the source repo and know basic TypeScript
+An addon is a compiled package loaded by the bot from `build/addons/<AddonName>`.
 
-Use the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot), not only a marketplace build.
+An addon can add:
 
-You should already be comfortable with:
+- Discord interactions
+- Discord events
+- scripting actions and conditions
+- custom triggers
+- placeholder expansions
+- leaderboards
+- config files
+- translations
 
-- classes
-- `async` / `await`
-- imports / exports
-- simple typing
-- `class-validator` decorators
+That is the important distinction: addons add new capabilities to the bot. Scripts mostly use capabilities that already exist.
 
-Useful references:
+## When to build an addon
 
-- [TypeScript documentation](https://www.typescriptlang.org/docs/)
-- [class-validator documentation](https://github.com/typestack/class-validator)
-</Step>
+Build an addon when:
 
-<Step>
-## Build and run the bot locally
+- you want to add a real new feature to the bot
+- you need custom TypeScript logic
+- you need database models, API calls, or custom services
+- you want to extend the scripting engine itself
 
-Before writing your own addon, make sure you can:
+Do not start with an addon when:
 
-1. build the project
-2. start the bot
-3. generate the config files
-4. understand where `build/addons` comes from
+- you only want to automate existing bot behavior
+- you only need custom messages, modals, or buttons
+- you only need custom commands built from existing actions
 
-The runtime loads addons from `build/addons`, not directly from `src/addons`.
-</Step>
+For those cases, use these first:
 
-<Step>
-## Start with one small addon
+- [Scripting](/docs/itsmybot/scripting)
+- [Custom Commands](/docs/itsmybot/scripting/custom-command)
+- [Builder](/docs/itsmybot/builder)
+- [Scripts Library](/docs/itsmybot/scripting/library)
 
-Do not begin with a big multi-system addon.
+## What you need before starting
 
-The best first target is usually:
+Before learning addon development, make sure you have:
 
-1. one config file
-2. one slash command
-3. one button or one event
+- the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot), not only a marketplace build
+- basic TypeScript knowledge
+- basic understanding of `class-validator`
+- a local build of the bot that you can start and test
 
-Once that works, move to custom actions, conditions, expansions, or leaderboards.
-</Step>
+If those basics are still unclear, it is better to learn them first. Addon development becomes much easier once TypeScript classes, async code, and validation decorators already make sense.
 
-<Step>
-## Keep the right docs nearby
+## Where to study real addons
 
-When your first addon exists, keep these pages nearby:
+Start with:
 
-- [Creating Addons](/docs/itsmybot/developers/getting-started/creating-addons)
-- [Config Validation](/docs/itsmybot/developers/getting-started/config-validation)
-- [Addon Parts](/docs/itsmybot/developers/modules)
-- [Addon Examples](/docs/itsmybot/developers/reference/examples-addons)
+- [Addons docs](/docs/itsmybot/addons) for documented official addons
+- the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot), especially `src/addons`
 
-Those four pages cover almost everything you need to build an addon.
-</Step>
-</Steps>
+The bundled addons are useful references:
 
-## One runtime rule to remember
+- `_Example` for the starter template
+- `Presets` for script-related extensions
+- `MCStatus` for placeholder expansions
+- `StatsChannel` for a more practical addon with config and interactions
 
-The runtime scans `build/addons/*` and looks for an `index.js` file.
+## Where to start
 
-- `src/addons/_Example` is skipped because folders starting with `_` are ignored
-- your real addon must `export default` a class that extends `Addon`
-- after changes, run `npm run build` before testing
+Read the developer section in this order:
 
-Use [Important Utils](/docs/itsmybot/developers/reference/important-utils) only after the basic addon structure already makes sense.
+<Cards>
+  <Card title="First Addon" href="/docs/itsmybot/developers/getting-started">
+    Start here for the first setup, first addon class, first config file, and first working command.
+  </Card>
+  <Card title="Additional Features" href="/docs/itsmybot/developers/additional-features">
+    Continue here when the addon needs more than the basics, such as events, leaderboards, actions, conditions, triggers, or expansions.
+  </Card>
+  <Card title="Reference" href="/docs/itsmybot/developers/reference/examples-addons">
+    Use examples, utils, and the dictionary once the addon structure already makes sense.
+  </Card>
+</Cards>
+
+If you are still unsure whether you need an addon, start with scripts first. They are faster to learn, faster to test, and already cover many common automations.

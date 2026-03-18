@@ -1,0 +1,64 @@
+---
+title: Additional Features
+description: Learn which extra addon folders to add after your first addon works, what each one does, where it lives, and what it adds to the bot.
+---
+
+Open this section after your first addon already makes sense.
+
+This section groups the extra things an addon can add to ItsMyBot.
+
+Each page answers the same practical questions:
+
+- what it is
+- where to create it
+- how to create it
+- what it adds to the bot
+
+## Choose the right feature
+
+<TypeTable
+  type={{
+    'interactions/': {
+      description: 'User-triggered entry points such as slash commands, buttons, select menus, modals, and context menus.',
+      type: 'Adds new Discord interactions',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/interactions',
+    },
+    'events/': {
+      description: 'Handlers that react to Discord gateway events or runtime activity automatically.',
+      type: 'Adds automatic runtime behavior',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/events',
+    },
+    'leaderboards/': {
+      description: 'Ranked data providers used by the built-in `/leaderboard` command.',
+      type: 'Adds a new leaderboard source',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/leaderboards',
+    },
+    'actions/': {
+      description: 'Reusable YAML actions that scripts can execute by `id`.',
+      type: 'Adds a new script action',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/actions',
+    },
+    'conditions/': {
+      description: 'Reusable YAML checks that scripts can evaluate before running actions.',
+      type: 'Adds a new script condition',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/conditions',
+    },
+    'triggers': {
+      description: 'Trigger names emitted from addon code so YAML scripts can react to custom events.',
+      type: 'Adds a new script trigger',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/triggers',
+    },
+    'expansions/': {
+      description: 'Placeholder namespaces resolved by the expansion service.',
+      type: 'Adds new placeholders',
+      typeDescriptionLink: '/docs/itsmybot/developers/additional-features/expansions',
+    },
+  }}
+/>
+
+## Recommended reading order
+
+1. Start with `interactions/` if a user should trigger the feature directly
+2. Open `events/` if the addon should react automatically to Discord activity
+3. Open `leaderboards/` only if the addon should appear inside `/leaderboard`
+4. Open `actions/`, `conditions/`, `triggers`, and `expansions/` only if you are extending the YAML scripting engine

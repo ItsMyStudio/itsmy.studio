@@ -7,7 +7,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 Use `leaderboards/` when your addon should expose ranked data inside the built-in `/leaderboard` command.
 
-## What this part is for
+## What it is
 
 A leaderboard adds a new subcommand under `/leaderboard`.
 
@@ -17,7 +17,7 @@ Use this folder when the addon should expose ranked rows such as:
 - top economy balances
 - top ticket helpers
 
-## Accepted structure
+## Where to create it
 
 <Files>
   <Folder name="src" defaultOpen>
@@ -30,6 +30,16 @@ Use this folder when the addon should expose ranked rows such as:
     </Folder>
   </Folder>
 </Files>
+
+Create one file per leaderboard source.
+
+## What it adds
+
+This folder adds a new leaderboard dataset to the built-in `/leaderboard` command.
+
+The core command handles the command UI, while your addon provides the ranked rows.
+
+## How to create it
 
 Rules:
 

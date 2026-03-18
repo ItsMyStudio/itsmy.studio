@@ -1,13 +1,13 @@
 {
-  "title": "Addon Parts",
+  "title": "Additional Features",
   "defaultOpen": false,
   "pages": [
     "interactions",
     "events",
+    "leaderboards",
     "actions",
     "conditions",
     "triggers",
-    "expansions",
-    "leaderboards"
+    "expansions"
   ]
 }

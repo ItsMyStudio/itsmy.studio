@@ -7,7 +7,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 Use `events/` for Discord gateway handlers and runtime event hooks.
 
-## What this part is for
+## What it is
 
 Use this folder when the addon should react to a Discord event such as:
 
@@ -15,7 +15,7 @@ Use this folder when the addon should react to a Discord event such as:
 - `InteractionCreate`
 - `GuildMemberAdd`
 
-## Accepted structure
+## Where to create it
 
 <Files>
   <Folder name="src" defaultOpen>
@@ -29,6 +29,16 @@ Use this folder when the addon should react to a Discord event such as:
     </Folder>
   </Folder>
 </Files>
+
+Create one file per event handler.
+
+## What it adds
+
+This folder adds automatic behavior to the bot.
+
+Instead of waiting for a user to call a slash command, the addon can react when Discord emits an event.
+
+## How to create it
 
 Rules:
 
@@ -123,4 +133,4 @@ Use an `Event` when addon code itself should react to runtime activity.
 
 Use a trigger when YAML scripts should react to it.
 
-Continue with [Triggers](/docs/itsmybot/developers/modules/triggers) for the developer-facing view of script trigger emission.
+Continue with [Triggers](/docs/itsmybot/developers/additional-features/triggers) for the developer-facing view of script trigger emission.

@@ -9,7 +9,11 @@ There is no `triggers/` folder for addons.
 
 This page matters only because addon code can still emit trigger names manually.
 
-## Accepted structure
+## What it is
+
+A trigger is just a string key used by the script engine to decide when actions should run.
+
+## Where to create it
 
 There is no dedicated file structure for triggers.
 
@@ -19,9 +23,11 @@ If your addon wants to create one, emit it from code that already exists in anot
 - an `Interaction`
 - an `Action`
 
-## What a trigger is
+## What it adds
 
-A trigger is just a string key used by the script engine to decide when actions should run.
+Triggers add a new event name that YAML scripts can listen to.
+
+That lets addon code wake up scripts when something specific happens in your domain.
 
 Examples from the current runtime:
 
@@ -42,6 +48,8 @@ actions:
       - messageCreate
       - ticketCreated
 ```
+
+## How to create it
 
 ## Emitting a trigger manually
 

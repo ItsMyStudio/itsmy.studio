@@ -2,8 +2,8 @@
   "title": "Reference",
   "defaultOpen": false,
   "pages": [
+    "examples-addons",
     "important-utils",
-    "dictionary",
-    "examples-addons"
+    "dictionary"
   ]
 }

@@ -1,0 +1,157 @@
+---
+title: First Addon
+description: Start with the right mental model, then build one small addon before opening the more advanced developer pages.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+If you want to learn addon development, start here.
+
+This section is written for the first real addon, not for advanced scripting extensions or large production addons.
+
+## Before you begin
+
+<Callout type="warn">
+Use the [ItsMyBot GitHub repository](https://github.com/itsme-to/ItsMyBot), not only a marketplace build. You need the source code, the addon folders, and `_Example` to learn how addons are structured.
+</Callout>
+
+Before writing addon code, be comfortable with:
+
+- TypeScript classes
+- `extends`
+- `async` / `await`
+- imports / exports
+- basic typing
+- [class-validator](https://github.com/typestack/class-validator) decorators
+
+If those basics still feel unclear, learn them first:
+
+- [TypeScript documentation](https://www.typescriptlang.org/docs/)
+- [class-validator documentation](https://github.com/typestack/class-validator)
+
+## What you are building first
+
+Your first addon should stay intentionally small:
+
+- one addon class
+- one config file
+- one slash command or one event
+
+That is enough to understand the full addon flow without mixing too many concepts at once.
+
+## How addons work in ItsMyBot
+
+The important rule is simple:
+
+1. you write source files in `src/addons/<AddonName>`
+2. you build the project
+3. the bot loads the compiled addon from `build/addons/<AddonName>`
+
+For example:
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="addons" defaultOpen>
+      <Folder name="MyAddon" defaultOpen>
+        <File name="index.ts" />
+        <Folder name="interactions">
+          <File name="pingCommand.ts" />
+        </Folder>
+        <Folder name="resources">
+          <File name="config.ts" />
+          <File name="config.yml" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+  <Folder name="build">
+    <Folder name="addons">
+      <Folder name="MyAddon">
+        <File name="index.js" />
+        <Folder name="interactions">
+          <File name="pingCommand.js" />
+        </Folder>
+        <Folder name="resources">
+          <File name="config.js" />
+          <File name="config.yml" />
+        </Folder>
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+That is why the build step matters so much. The runtime does not read your TypeScript files directly from `src/addons`.
+
+## What each part does
+
+For the first addon, you only need to understand these pieces:
+
+<TypeTable
+  type={{
+    'index.ts': {
+      description: 'The addon class. This is the entry point of the addon.',
+      type: 'Required',
+    },
+    'load()': {
+      description: 'Use this to load config and perform setup that should happen when the addon is loaded.',
+      type: 'Addon lifecycle',
+    },
+    'initialize()': {
+      description: 'Use this for startup work that should run after loading is complete.',
+      type: 'Addon lifecycle',
+    },
+    'interactions/': {
+      description: 'Contains slash commands, buttons, modals, select menus, and context menus.',
+      type: 'Optional folder',
+    },
+    'events/': {
+      description: 'Contains Discord event handlers such as `messageCreate` or `guildMemberAdd`.',
+      type: 'Optional folder',
+    },
+    'resources/': {
+      description: 'Contains default YAML files, validator classes, and translations.',
+      type: 'Usually required',
+    },
+  }}
+/>
+
+## Read this section in order
+
+<Steps>
+<Step>
+## Create one small working addon
+
+Open [Create Your First Addon](/docs/itsmybot/developers/getting-started/creating-addons).
+
+That page covers:
+
+- the minimal folder structure
+- the addon class
+- one config file
+- one slash command
+- the correct build loop
+</Step>
+
+<Step>
+## Add configuration properly
+
+Then open [Add Configuration](/docs/itsmybot/developers/getting-started/config-validation).
+
+That page explains:
+
+- what `resources/config.ts` does
+- what `resources/config.yml` does
+- where user-editable config is stored
+- how `createConfig()` and `createConfigSection()` work
+</Step>
+
+<Step>
+## Continue only when the first addon works
+
+Once the addon class, config, and first command already make sense, continue with:
+
+- [Additional Features](/docs/itsmybot/developers/additional-features) for interactions, events, leaderboards, actions, conditions, triggers, and expansions
+- [Reference](/docs/itsmybot/developers/reference/examples-addons) for examples and helper APIs
+</Step>
+</Steps>

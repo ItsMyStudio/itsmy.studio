@@ -7,7 +7,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 Use `interactions/` for anything a Discord user can trigger directly.
 
-## What this part is for
+## What it is
 
 Use this folder when the entry point is a Discord interaction:
 
@@ -17,7 +17,7 @@ Use this folder when the entry point is a Discord interaction:
 - select menu choice
 - modal submission
 
-## Accepted structure
+## Where to create it
 
 <Files>
   <Folder name="src" defaultOpen>
@@ -34,6 +34,22 @@ Use this folder when the entry point is a Discord interaction:
     </Folder>
   </Folder>
 </Files>
+
+Create one file per interaction.
+
+## What it adds
+
+This folder adds new user-facing entry points to the bot.
+
+That can mean:
+
+- a new slash command
+- a new context menu
+- a new button handler
+- a new select menu handler
+- a new modal submit handler
+
+## How to create it
 
 Rules:
 

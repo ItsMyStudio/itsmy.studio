@@ -7,7 +7,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 Use `expansions/` when your addon needs custom placeholders.
 
-## What this part is for
+## What it is
 
 An expansion adds a placeholder namespace that can be used in text.
 
@@ -17,7 +17,7 @@ That produces placeholders like:
 %myexpansion_value%
 ```
 
-## Accepted structure
+## Where to create it
 
 <Files>
   <Folder name="src" defaultOpen>
@@ -30,6 +30,16 @@ That produces placeholders like:
     </Folder>
   </Folder>
 </Files>
+
+Create one file per expansion.
+
+## What it adds
+
+This folder adds new placeholders that the bot can resolve in text and scripts.
+
+That is useful when addon data should be reusable in many messages.
+
+## How to create it
 
 Rules:
 

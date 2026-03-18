@@ -7,7 +7,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 Use `conditions/` when your addon needs reusable checks inside scripts.
 
-## What this part is for
+## What it is
 
 A condition is a reusable boolean check for YAML scripts.
 
@@ -18,7 +18,7 @@ conditions:
   - id: isSomethingAllowed
 ```
 
-## Accepted structure
+## Where to create it
 
 <Files>
   <Folder name="src" defaultOpen>
@@ -31,6 +31,16 @@ conditions:
     </Folder>
   </Folder>
 </Files>
+
+Create one file per condition.
+
+## What it adds
+
+This folder adds a new reusable script check that can be called by `id` in YAML.
+
+That keeps repeated logic out of individual scripts.
+
+## How to create it
 
 Rules:
 
