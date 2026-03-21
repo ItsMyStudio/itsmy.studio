@@ -76,6 +76,37 @@ Retrieve the information of a guild.
 %guild_offline_members%
 ```
 
+### Leaderboard
+Retrieve information from a registered leaderboard.
+
+This works with built-in leaderboards such as `messages`, addon leaderboards such as `invites`, and leaderboards generated from user number metas.
+
+```
+%leaderboard_<leaderboard-name>_top_<position>%
+%leaderboard_<leaderboard-name>_top_<position>_user%
+%leaderboard_<leaderboard-name>_top_<position>_value%
+%leaderboard_<leaderboard-name>_top_<position>_value_formatted%
+%leaderboard_<leaderboard-name>_top_<position>_user_id%
+%leaderboard_<leaderboard-name>_top_<position>_user_username%
+%leaderboard_<leaderboard-name>_top_<position>_user_display_name%
+%leaderboard_<leaderboard-name>_top_<position>_user_mention%
+%leaderboard_<leaderboard-name>_top_<position>_user_avatar%
+%leaderboard_<leaderboard-name>_top_<position>_user_create_date%
+%leaderboard_<leaderboard-name>_top_<position>_user_join_date%
+%leaderboard_<leaderboard-name>_top_<position>_user_roles%
+%leaderboard_<leaderboard-name>_top_<position>_user_messages%
+%leaderboard_<leaderboard-name>_top_<position>_user_coins%
+```
+
+```
+%leaderboard_messages_top_1%
+%leaderboard_messages_top_1_value%
+%leaderboard_messages_top_1_value_formatted%
+%leaderboard_messages_top_1_user_mention%
+```
+
+You can use any user variable after `_user_`, following the same names as the `User` extension.
+
 ### Math 
 Perform simple math operations.
 

@@ -383,9 +383,6 @@ components:
 A button is a component that can be clicked by the user. It can be used to trigger an action or to navigate to a URL. You can also use the `custom-id` option to identify the button when it is clicked.
 
 The label, style, custom-id, url & emoji option can be a list of strings, ItsMyBot will randomly select one of the results.
-<Callout>
-  To detect a button click with a script, the custom-id of the button needs to starts with `script_`.
-</Callout>
 
 <TypeTable
   type={{
@@ -457,10 +454,6 @@ components:
 A select menu is a component that allows the user to select an option from a list.
 
 The placeholder options can be a string or a list of strings, ItsMyBot will randomly select one of the results. 
-
-<Callout>
-  To detect a select menu selection with a script, the custom-id of the select menu needs to starts with `script_`.
-</Callout>
 
 <TypeTable
   type={{
@@ -607,3 +600,10 @@ components:
       - type: separator
         spacing: 1
 ```
+
+---
+
+## Script Interactions
+Buttons and select menus can trigger scripts when their `custom-id` starts with `script_`.
+
+See [Script interaction custom-id format](/docs/itsmybot/scripting/triggers#interaction-custom-id) for the format and arguments, [buttonClick](/docs/itsmybot/scripting/triggers#buttonclick) for button variables, and [selectMenuSubmit](/docs/itsmybot/scripting/triggers#selectmenusubmit) for select menu variables.

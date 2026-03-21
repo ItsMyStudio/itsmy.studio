@@ -113,15 +113,18 @@ If your addon needs custom placeholders, this is the reference to study.
 
 ## Example: leaderboard
 
-The core repo also contains a leaderboard implementation under `core/services/leaderboards/impl/messages.ts`.
+The core repo contains a built-in leaderboard implementation under `src/core/services/leaderboards/impl/messages.ts`.
+
+There is also an addon example under `src/addons/InviteTracker/leaderboards/invites.ts`.
 
 That example is useful for understanding:
 
-- what `getData()` is expected to return
-- how leaderboard rows can be formatted with variables
-- how `Utils.userVariables()` and `Utils.applyVariables()` are commonly combined
+- the new `LeaderboardEntry[]` return shape
+- how `formatValue(entry)` is used
+- how `additionalData` can support richer formatting
+- how leaderboard values are now separated from the core row layout
 
-If your addon needs a custom leaderboard, model it after the `Leaderboard` base class and the built-in messages leaderboard.
+If your addon needs a custom leaderboard, study both the built-in messages leaderboard and the InviteTracker leaderboard together.
 
 ## Recommended order to study the repo
 
@@ -134,6 +137,7 @@ If you are new to the codebase, read the examples in this order:
 5. `src/addons/Presets/actions/sendPreset.ts`
 6. `src/addons/MCStatus/expansions/minecraftStatus.ts`
 7. `src/core/services/leaderboards/impl/messages.ts`
+8. `src/addons/InviteTracker/leaderboards/invites.ts`
 
 That order moves from simple addon setup to deeper runtime extension points.
 

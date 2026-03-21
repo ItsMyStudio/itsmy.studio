@@ -800,6 +800,47 @@ actions:
           content: "This is a message"
 ```
 
+## showModal
+Display a modal to the current user. You can see the [modal configuration](/docs/itsmybot/configuration/modal) for more information.
+
+This action only works when the current context contains an interaction that can open a modal, such as a slash command, a button click, or a select menu submit.
+
+<TypeTable
+  type={{
+    title: {
+      description: 'The title of the modal.',
+      type: 'string',
+      required: true
+    },
+    'custom-id': {
+      description: 'The custom id of the modal. Use a `script_` prefix if you want the modal submission to trigger the `modalSubmit` script trigger.',
+      type: 'string',
+      required: true
+    },
+    components: {
+      description: 'List of modal components. Uses the same structure as the modal configuration.',
+      type: 'Component[]',
+      typeDescriptionLink: '/docs/itsmybot/configuration/modal#modal-configuration',
+      required: true
+    }
+  }}
+/>
+```yaml title='Example'
+actions:
+  - id: showModal
+    args:
+      title: "Feedback"
+      custom-id: "script_feedback_modal:premium"
+      components:
+        - type: label
+          label: "Your message"
+          component:
+            type: text-input
+            custom-id: "message"
+            style: "Paragraph"
+            required: true
+```
+
 ## sendPreset
 Send a preset message. Requires the [Presets](/docs/itsmybot/addons/presets/) addon.
 

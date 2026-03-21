@@ -5,17 +5,22 @@ description: Learn about all the triggers you can use in ItsMyBot to execute you
 
 The triggers are the events that will trigger the script to run. The triggers are defined in the `triggers` section of the script.
 
---- 
+---
 
 ## All Triggers
 
 ### buttonClick
-Triggers when a button is clicked. _Only button starting with `script_` will work._
+Triggers when a button is clicked. _Only buttons starting with `script_` will work._ [More information](#interaction-custom-id)
+
 - **Provided Context:** Guild, Member, User, Channel, Message, Interaction
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[button_custom_id]]`  | The custom ID of the button clicked|
+| Variable | Value |
+| --- | --- |
+| `[[button_custom_id]]` | The custom ID of the button clicked |
+| `[[button_args_count]]` | The number of custom-id arguments |
+| `[[button_args]]` | All custom-id arguments joined with `, ` |
+| `[[button_arg_0]]` | The first custom-id argument |
+| `[[button_arg_<index>]]` | The Nth custom-id argument |
 
 ### channelCreate
 Triggers when a channel is created.
@@ -33,25 +38,25 @@ Triggers when a user display name is updated.
 Triggers every day.
 - **Provided Context:** Guild
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[date]]`  | The current date|
+| Variable | Value |
+| --- | --- |
+| `[[date]]` | The current date |
 
 ### everyHour
 Triggers every hour.
 - **Provided Context:** Guild
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[hour]]`  | The current hour (0-23)|
+| Variable | Value |
+| --- | --- |
+| `[[hour]]` | The current hour (0-23) |
 
 ### everyMinute
 Triggers every minute.
 - **Provided Context:** Guild
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[minute]]`  | The current minute (0-59)|
+| Variable | Value |
+| --- | --- |
+| `[[minute]]` | The current minute (0-59) |
 
 ### guildBoostAdd
 Triggers when a user boosts the guild.
@@ -85,61 +90,146 @@ Triggers when a message is deleted.
 Triggers when a reaction is added to a message.
 - **Provided Context:** Guild, Member, User, Channel, Message
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[reaction_emoji]]`  | The emoji of the reaction added|
+| Variable | Value |
+| --- | --- |
+| `[[reaction_emoji]]` | The emoji of the reaction added |
 
 ### messageReactionRemove
 Triggers when a reaction is removed from a message.
 - **Provided Context:** Guild, Member, User, Channel, Message
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[reaction_emoji]]`  | The emoji of the reaction removed|
+| Variable | Value |
+| --- | --- |
+| `[[reaction_emoji]]` | The emoji of the reaction removed |
 
 ### messageUpdate
 Triggers when a message is updated.
 - **Provided Context:** Guild, Member, User, Channel, Message
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[message_old_content]]`  | The old content of the message before the update
+| Variable | Value |
+| --- | --- |
+| `[[message_old_content]]` | The old content of the message before the update |
+
+### modalSubmit
+Triggers when a modal is submitted. _Only modals starting with `script_` will work._ [More information](#interaction-custom-id)
+- **Provided Context:** Guild, Member, User, Channel, Interaction
+
+| Variable | Value |
+| --- | --- |
+| `[[modal_custom_id]]` | The custom ID of the modal |
+| `[[modal_args_count]]` | The number of custom-id arguments |
+| `[[modal_args]]` | All custom-id arguments joined with `, ` |
+| `[[modal_arg_0]]` | The first custom-id argument |
+| `[[modal_arg_<index>]]` | The Nth custom-id argument |
+| `[[modal_text_input_<custom-id>]]` | The value of a text input component |
+| `[[modal_select_<custom-id>_values_count]]` | The number of selected values in a modal select menu |
+| `[[modal_select_<custom-id>_values]]` | All selected values joined with `, ` in a modal select menu |
+| `[[modal_select_<custom-id>_value_0]]` | The first selected value in a modal select menu |
+| `[[modal_select_<custom-id>_value_<index>]]` | The Nth selected value in a modal select menu |
+| `[[modal_file_upload_<custom-id>_attachments_count]]` | The number of uploaded files in a file upload component |
+| `[[modal_file_upload_<custom-id>_attachment_0]]` | The URL of the first uploaded file |
+| `[[modal_file_upload_<custom-id>_attachment_<index>]]` | The URL of the Nth uploaded file |
 
 ### presenceUpdate
 Triggers when a user presence is updated.
 - **Provided Context:** Guild, Member, User
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[old_status]]`  | The old status of the user|
-| `[[new_status]]`  | The new status of the user|
+| Variable | Value |
+| --- | --- |
+| `[[old_status]]` | The old status of the user |
+| `[[new_status]]` | The new status of the user |
+
+### selectMenuSubmit
+Triggers when a select menu is submitted. _Only select menus starting with `script_` will work._ [More information](#interaction-custom-id)
+- **Provided Context:** Guild, Member, User, Channel, Message, Interaction
+
+| Variable | Value |
+| --- | --- |
+| `[[select_menu_custom_id]]` | The custom ID of the select menu |
+| `[[select_menu_values_count]]` | The number of selected values |
+| `[[select_menu_values]]` | All selected values joined with `, ` |
+| `[[select_menu_value_0]]` | The first selected value |
+| `[[select_menu_value_<index>]]` | The Nth selected value |
+| `[[select_menu_args_count]]` | The number of custom-id arguments |
+| `[[select_menu_args]]` | All custom-id arguments joined with `, ` |
+| `[[select_menu_arg_0]]` | The first custom-id argument |
+| `[[select_menu_arg_<index>]]` | The Nth custom-id argument |
+
 
 ### ticketClaim
 Triggers when a ticket is claimed. Require [Tickets](/docs/itsmybot/addons/tickets) addon
 - **Provided Context:** Guild, Member, User, Channel
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[ticket_id]]`  | The ID of the ticket|
-| `[[category]]`  | The category of the ticket|
-| `[[category_id]]`  | The ID of the category of the ticket|
+| Variable | Value |
+| --- | --- |
+| `[[ticket_id]]` | The ID of the ticket |
+| `[[category]]` | The category of the ticket |
+| `[[category_id]]` | The ID of the category of the ticket |
 
 ### ticketClose
 Triggers when a ticket is closed. Require [Tickets](/docs/itsmybot/addons/tickets) addon
-- **Provided Context:** Guild, Member, User, Channel,
+- **Provided Context:** Guild, Member, User, Channel
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[ticket_id]]`  | The ID of the ticket|
-| `[[category]]`  | The category of the ticket|
-| `[[category_id]]`  | The ID of the category of the ticket|
+| Variable | Value |
+| --- | --- |
+| `[[ticket_id]]` | The ID of the ticket |
+| `[[category]]` | The category of the ticket |
+| `[[category_id]]` | The ID of the category of the ticket |
 
 ### ticketCreate
 Triggers when a ticket is created. Require [Tickets](/docs/itsmybot/addons/tickets) addon
 - **Provided Context:** Guild, Member, User, Channel
 
-| Variable            | Value                              |
-| -----------------------|------------------------------------|
-| `[[ticket_id]]`  | The ID of the ticket|
-| `[[category]]`  | The category of the ticket|
-| `[[category_id]]`  | The ID of the category of the ticket|
+| Variable | Value |
+| --- | --- |
+| `[[ticket_id]]` | The ID of the ticket |
+| `[[category]]` | The category of the ticket |
+| `[[category_id]]` | The ID of the category of the ticket |
+
+---
+
+## Interaction Custom ID
+
+The interaction-based script triggers only work when the `custom-id` starts with `script_`.
+
+- Use [buttonClick](#buttonclick) for buttons.
+- Use [selectMenuSubmit](#selectmenusubmit) for select menus.
+- Use [modalSubmit](#modalsubmit) for modals.
+
+### Basic custom-id
+The simplest format is a script identifier without arguments:
+
+```txt
+script_<identifier>
+```
+
+Example:
+```txt
+script_ticketCreate
+```
+
+Use this when the interaction only needs to trigger one script and does not need extra information.
+
+### Custom ID with arguments
+For more complex scenarios, you can add one or more arguments after the identifier:
+```txt
+script_<identifier>:<arg0>:<arg1>:...
+```
+
+Examples:
+
+```txt
+script_ticketCreate:support
+script_profileOpen:%user_id%
+script_ticketPage:%channel_id%:2
+script_ticketCreate:"support:vip":"high priority"
+```
+
+This is useful when the same script needs extra information, for example a user ID, a channel ID, a page number, a category, or another dynamic value.
+
+Because messages and modals support placeholders, the arguments can also contain dynamic values such as `%user_id%` or `%channel_id%`.
+
+### Rules
+- the part before the first `:` stays the real custom id
+- everything after `:` becomes trigger arguments
+- if an argument contains `:`, wrap it in single or double quotes

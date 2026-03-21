@@ -1,6 +1,6 @@
 ---
 title: Leaderboards
-description: Create addon leaderboards that plug into the built-in `/leaderboard` command.
+description: Create addon leaderboards that plug into the built-in `/leaderboard` command and expose ranked entries to the core leaderboard service.
 ---
 
 import { File, Folder, Files } from 'fumadocs-ui/components/files';
@@ -9,13 +9,16 @@ Use `leaderboards/` when your addon should expose ranked data inside the built-i
 
 ## What it is
 
-A leaderboard adds a new subcommand under `/leaderboard`.
+A leaderboard is a ranked dataset registered under a name.
 
-Use this folder when the addon should expose ranked rows such as:
+Once registered, the core bot adds it as a subcommand under `/leaderboard`.
+
+Typical examples:
 
 - top message senders
 - top economy balances
 - top ticket helpers
+- top inviters
 
 ## Where to create it
 
@@ -25,6 +28,7 @@ Use this folder when the addon should expose ranked rows such as:
       <Folder name="MyAddon" defaultOpen>
         <Folder name="leaderboards" defaultOpen>
           <File name="messages.ts" />
+          <File name="invites.ts" />
         </Folder>
       </Folder>
     </Folder>
@@ -35,9 +39,13 @@ Create one file per leaderboard source.
 
 ## What it adds
 
-This folder adds a new leaderboard dataset to the built-in `/leaderboard` command.
+This folder adds:
 
-The core command handles the command UI, while your addon provides the ranked rows.
+- a new `/leaderboard <name>` subcommand
+- a ranked dataset the core command can paginate
+- placeholder access through the `leaderboard` expansion
+
+The important point is that your addon does not build the whole message output anymore. It only returns ranked entries and, optionally, how the numeric value should be formatted.
 
 ## How to create it
 
@@ -45,8 +53,6 @@ Rules:
 
 - each file should export one default class
 - that class must extend `Leaderboard<TAddon>`
-- `name`, `description`, and `getData()` are required
-- `getData()` must return one rendered string per row
 
 ## Base leaderboard API
 
@@ -63,9 +69,43 @@ Rules:
       required: true,
     },
     getData: {
-      description: 'Return rendered rows for the leaderboard.',
-      type: '() => Promise<string[]>',
+      description: 'Return ranked entries for the leaderboard.',
+      type: '() => Promise<LeaderboardEntry[]>',
       required: true,
+    },
+    formatValue: {
+      description: 'Optional custom formatter for the entry value. By default, the core uses `entry.value.toString()`.',
+      type: '(entry) => string | Promise<string>',
+      required: false,
+    },
+  }}
+/>
+
+## `LeaderboardEntry` shape
+
+`getData()` should return objects with this shape:
+
+<TypeTable
+  type={{
+    position: {
+      description: 'The rank position shown in the leaderboard.',
+      type: 'number',
+      required: true,
+    },
+    userId: {
+      description: 'The Discord user ID used to resolve the displayed user.',
+      type: 'string',
+      required: true,
+    },
+    value: {
+      description: 'The numeric value used by the leaderboard.',
+      type: 'number',
+      required: true,
+    },
+    additionalData: {
+      description: 'Optional extra data you want to keep on the entry for custom formatting.',
+      type: 'unknown',
+      required: false,
     },
   }}
 />
@@ -73,33 +113,15 @@ Rules:
 ## Minimal example
 
 ```ts
-import { Leaderboard } from '@itsmybot';
-import MyAddon from '..';
-
-export default class ExampleLeaderboard extends Leaderboard<MyAddon> {
-  name = 'example';
-  description = 'Example leaderboard';
-
-  async getData() {
-    return ['First row', 'Second row'];
-  }
-}
-```
-
-## Example with formatted rows
-
-If you want richer row output, follow the same pattern as the built-in messages leaderboard: query your ranked rows, build variables, then resolve a format string.
-
-```ts
-import { Leaderboard, User, Utils } from '@itsmybot';
+import { Leaderboard, LeaderboardEntry, User } from '@itsmybot';
 import { Op } from 'sequelize';
 import MyAddon from '..';
 
-export default class ExampleLeaderboard extends Leaderboard<MyAddon> {
-  name = 'example';
-  description = 'Example leaderboard';
+export default class MessagesLeaderboard extends Leaderboard<MyAddon> {
+  name = 'messages';
+  description = 'Messages leaderboard.';
 
-  async getData() {
+  async getData(): Promise<LeaderboardEntry[]> {
     const users = await User.findAll({
       order: [['messages', 'DESC']],
       where: {
@@ -110,45 +132,98 @@ export default class ExampleLeaderboard extends Leaderboard<MyAddon> {
       },
     });
 
-    const format = this.manager.lang.getString('leaderboard.messages-format');
+    return users.map((user, index) => ({
+      position: index + 1,
+      userId: user.id,
+      value: user.messages,
+    }));
+  }
+}
+```
 
-    return Promise.all(
-      users.map((user, index) => {
-        const variables = [
-          { name: 'position', value: index + 1 },
-          ...Utils.userVariables(user, 'position_user'),
-        ];
+## Example with custom formatting
 
-        return Utils.applyVariables(format, variables, { user });
-      }),
+If the raw number is not enough, override `formatValue(entry)`.
+
+```ts
+import { Leaderboard, LeaderboardEntry, Utils, Variable } from '@itsmybot';
+import MyAddon from '..';
+
+interface InviteEntry {
+  regular: number;
+  left: number;
+  fake: number;
+  bonus: number;
+}
+
+export default class InvitesLeaderboard extends Leaderboard<MyAddon> {
+  name = 'invites';
+  description = 'Invites leaderboard.';
+
+  async getData(): Promise<LeaderboardEntry<InviteEntry>[]> {
+    return [
+      {
+        position: 1,
+        userId: '123456789012345678',
+        value: 24,
+        additionalData: {
+          regular: 18,
+          left: 2,
+          fake: 1,
+          bonus: 3,
+        },
+      },
+    ];
+  }
+
+  async formatValue(entry: LeaderboardEntry<InviteEntry>) {
+    const variables: Variable[] = [
+      { name: 'value', value: entry.value },
+      { name: 'regular', value: entry.additionalData?.regular },
+      { name: 'left', value: entry.additionalData?.left },
+      { name: 'fake', value: entry.additionalData?.fake },
+      { name: 'bonus', value: entry.additionalData?.bonus },
+    ];
+
+    return Utils.applyVariables(
+      '**[[value]]** invites ([[regular]] regular, [[left]] left, [[fake]] fake, [[bonus]] bonus)',
+      variables,
     );
   }
 }
 ```
 
-## What `getData()` should return
+## What the core service handles for you
 
-Return one rendered string per row. The built-in `/leaderboard` command handles the rest:
+Once your leaderboard is registered, the core service handles:
 
-- command registration
+- command registration under `/leaderboard`
+- caching the result for 60 seconds
 - pagination
-- page navigation
-- wrapping the rows into a message
+- title, entry, and footer rendering
+- user lookup from `entry.userId`
+- calling `formatValue(entry)` when needed
 
-So the addon only owns the ranking query and the final row formatting.
+That means your addon only owns the dataset and the optional value formatter.
 
-## Practical tip
+## Leaderboard placeholders
 
-If your leaderboard rows need formatted variables, study the built-in messages leaderboard. It uses:
+Registered leaderboards are also available through the built-in `leaderboard` expansion.
 
-- `Utils.userVariables()`
-- `Utils.applyVariables()`
-- `Pagination`
+Examples:
 
-That is the cleanest pattern if your leaderboard rows need rich formatting rather than plain text.
+```txt
+%leaderboard_messages_top_1_user%
+%leaderboard_messages_top_1_value%
+%leaderboard_messages_top_1_value_formatted%
+%leaderboard_messages_top_1_user_mention%
+```
 
-## Practical tips
+Useful patterns:
 
-- filter empty rows out at the query layer when possible
-- keep the row text short enough to paginate cleanly
-- use language strings for row templates so addon users can restyle the output without editing code
+- `top_<position>_user`
+- `top_<position>_value`
+- `top_<position>_value_formatted`
+- `top_<position>_user_<userVariable>`
+
+So if your addon registers a leaderboard called `invites`, addon users can immediately reuse it in placeholders too.

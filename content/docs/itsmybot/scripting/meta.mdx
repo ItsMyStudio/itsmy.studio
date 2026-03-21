@@ -30,6 +30,11 @@ In each files, you can define multiple metas. Each meta is a YAML file that cont
       description: "The default value of the meta, used if the meta is not set.",
       type: 'string',
       required: true
+    },
+    leaderboard: {
+      description: "Optional leaderboard configuration. Only works when `type` is `number` and `mode` is `user`.",
+      type: 'object',
+      required: false
     }
   }}
 />
@@ -48,6 +53,11 @@ metas:
     type: 'number' # The type of the meta, can be `number`, `string`, `boolean` or `list`
     mode: 'user' # The mode of the meta, can be `global`, `user`, `channel` or `message`
     default: '0' # The default value of the meta, used if the meta is not set.
+    leaderboard:
+      enabled: true
+      name: 'experience'
+      description: 'Experience leaderboard'
+      format: '**[[value]]** xp'
 ```
 
 ### Dictionary of Meta Properties
@@ -61,6 +71,59 @@ The mode of the meta. Can be `global`, `user`, `channel` or `message`. This is u
 The scope of the meta. It is the ID of the user or channel used to retrieve the stored information. This is only used for `user` and `channel` modes.
 #### Value
 The value is the data that you want to store. It can be anything you want, but it should be of the type defined in the meta. 
+
+#### Leaderboard
+Number metas in `user` mode can now register a leaderboard automatically.
+The `leaderboard` section supports:
+
+<TypeTable
+  type={{
+    enabled: {
+      description: "Enable automatic leaderboard registration for this meta.",
+      type: 'boolean',
+      required: true
+    },
+    name: {
+      description: "Leaderboard identifier used under `/leaderboard <name>`.",
+      type: 'string',
+      required: true
+    },
+    description: {
+      description: "Description shown in the generated leaderboard subcommand.",
+      type: 'string',
+      required: true
+    },
+    format: {
+      description: "Optional value format used instead of the raw number. Supports variables like `[[value]]`.",
+      type: 'string',
+      required: false
+    }
+  }}
+/>
+
+Example:
+
+```yaml title='Level Meta with Leaderboard'
+metas:
+  - key: 'experience'
+    type: 'number'
+    mode: 'user'
+    default: '0'
+    leaderboard:
+      enabled: true
+      name: 'experience'
+      description: 'Experience leaderboard'
+      format: '**[[value]]** xp'
+```
+
+This automatically adds:
+- a new `/leaderboard experience` subcommand
+- support for `leaderboard` placeholders such as `%leaderboard_experience_top_1%`
+
+Important limitation:
+
+- this only works with `type: number`
+- this only works with `mode: user`
 
 --- 
 
