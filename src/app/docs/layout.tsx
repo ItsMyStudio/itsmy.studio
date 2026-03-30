@@ -1,6 +1,6 @@
 import { source } from '@/lib/source';
-import { DocsLayout } from '@/components/layout/docs';
-import { baseOptions, DiscordIcon } from '@/lib/layout.shared';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { baseOptions } from '@/lib/layout.shared';
 import { getSection } from '@/lib/source';
 
 export default function Layout({ children }: LayoutProps<'/docs'>) {
@@ -35,7 +35,6 @@ export default function Layout({ children }: LayoutProps<'/docs'>) {
           },
         },
       }}
-      links={[]}
     >
       {children}
     </DocsLayout>

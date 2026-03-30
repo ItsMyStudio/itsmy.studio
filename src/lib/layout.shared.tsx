@@ -1,4 +1,4 @@
-import type { BaseLayoutProps } from '@/components/layout/shared';
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { Bot, FileBox, Wrench } from 'lucide-react';
 
 export const gitConfig = {
@@ -21,50 +21,6 @@ export function baseOptions(): BaseLayoutProps {
     nav: {
       title: <StudioTitle />,
     },
-    links: [
-      {
-        text: 'Docs',
-        url: '/docs',
-        active: 'nested-url',
-      },
-      {
-        type: 'menu',
-        text: 'Products',
-        items: [
-          {
-            icon: <Bot className="size-4" />,
-            text: 'ItsMyBot',
-            description: 'Self-hosted Discord bot docs, addons, scripting, and configuration.',
-            url: '/docs/itsmybot',
-            active: 'nested-url',
-          },
-          {
-            icon: <Wrench className="size-4" />,
-            text: 'ItsMyConfig',
-            description: 'MiniMessage, PlaceholderAPI, and custom placeholder guides.',
-            url: '/docs/itsmyconfig',
-            active: 'nested-url',
-          },
-          {
-            icon: <FileBox className="size-4" />,
-            text: 'ItsMyConvert',
-            description: 'CLI guides for schematic conversion and command usage.',
-            url: '/docs/itsmyconvert',
-            active: 'nested-url',
-          },
-        ],
-      },
-      {
-        type: 'icon',
-        icon: <DiscordIcon />,
-        label: 'Discord',
-        text: 'Support',
-        url: 'https://itsmy.studio/discord',
-        external: true,
-        secondary: false,
-      },
-    ],
-    discordUrl: 'https://itsmy.studio/discord',
   };
 }
 
