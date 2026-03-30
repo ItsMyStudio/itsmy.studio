@@ -2,8 +2,8 @@
 
 import { Check, CircleHelp } from 'lucide-react';
 import { useId, type ReactNode } from 'react';
-import { buttonVariants } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/ui/popover';
 import type { BuilderOption } from '@/lib/builders/core';
 import { cn } from '@/lib/cn';
 

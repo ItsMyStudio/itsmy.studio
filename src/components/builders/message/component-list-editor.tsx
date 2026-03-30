@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { moveItem, removeAt, replaceAt } from '@/lib/builders/core';
 import {
   CONTAINER_COMPONENTS,

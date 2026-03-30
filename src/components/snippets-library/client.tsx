@@ -2,7 +2,7 @@
 
 import { Suspense, startTransition, useDeferredValue, useEffect, useState, type ReactNode } from 'react';
 import { Search, Share2, UserRound, X } from 'lucide-react';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { cn } from '@/lib/cn';
 import type { Snippet } from '@/lib/snippets.types';
 import browserCollections from '../../../.source/browser';

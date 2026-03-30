@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { MessageBuilder } from '@/components/message-builder';
 import { ModalBuilder } from '@/components/modal-builder';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import {
   MESSAGE_BUILDER_DEFINITION,
   deserializeMessageConfig,

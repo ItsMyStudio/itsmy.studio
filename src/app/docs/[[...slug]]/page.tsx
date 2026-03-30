@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { LLMCopyButton, ViewOptions } from '@/components/ai/page-actions';
 import { DiscordIcon, gitConfig } from '@/lib/layout.shared';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { cn } from '@/lib/cn';
 import Link from 'next/link';
 

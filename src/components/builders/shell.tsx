@@ -1,11 +1,8 @@
 'use client';
 
-import { Copy } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
-import { buttonVariants } from '@/components/ui/button';
 import type { BuilderOutputDefinition } from '@/lib/builders/core';
-import { cn } from '@/lib/cn';
 import { BuilderPanel } from './ui';
 
 type BuilderShellSection = {

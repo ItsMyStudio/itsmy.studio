@@ -13,7 +13,7 @@ import {
   type ButtonComponent,
   type SelectMenuComponent,
 } from '@/lib/builders/message';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { moveItem, removeAt, replaceAt } from '@/lib/builders/core';
 import { cn } from '@/lib/cn';
 import { ButtonEditor } from './button-editor';

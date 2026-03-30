@@ -6,8 +6,8 @@ import {
   BuilderDescriptionTip,
   BuilderIconActionButton,
 } from '@/components/builders/ui';
-import { buttonVariants } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from 'fumadocs-ui/components/ui/collapsible';
 import { cn } from '@/lib/cn';
 
 export function NestedEditorCard({

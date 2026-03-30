@@ -16,7 +16,7 @@ import {
   BuilderToggleField,
   builderInputClassName,
 } from '@/components/builders/ui';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { moveItem, removeAt, replaceAt } from '@/lib/builders/core';
 import {
   MODAL_COMPONENTS,
