@@ -1,0 +1,122 @@
+---
+title: Store Data
+description: Define data keys, scopes, defaults, numeric rules, and leaderboards in ItsMyData.
+---
+
+Every stored value in ItsMyData starts with a definition under `data-definitions` in `config.yml`.
+
+One definition answers four questions:
+
+- what kind of value is stored
+- who owns that value
+- what happens when no value exists yet
+- whether the value can be ranked in a leaderboard
+
+## Example
+
+```yaml title="config.yml"
+data-definitions:
+  server_name:
+    type: string
+    scope: global
+    default: "SkyBlock One"
+
+  coins:
+    type: number
+    decimal: false
+    scope: player
+    default: "%player_level% * 10"
+    min: 0
+    max: 1000000
+    leaderboard:
+      enabled: true
+      exact-rank-limit: 1000
+      dynamic-refresh-minutes: 5
+
+  pvp_enabled:
+    type: string
+    scope: world
+    default: "true"
+
+  island_tax:
+    type: number
+    decimal: false
+    scope: superiorskyblock
+    default: 100
+    min: 0
+    max: 10000
+```
+
+## Fields
+
+### `type`
+Decides how ItsMyData parses, validates, and formats the value.
+
+Supported values:
+- `string`: plain text, useful for names, toggles, labels, prefix, tags, etc.
+- `number`: numeric value, useful for currencies, scores, counters, taxes, or progress values
+
+### `scope`
+The scope decides who shares the value and what the plugin uses as the storage target, for example with the scope `superiorskyblock`, the plugin stores one value per island and all members share it.
+Supported scopes:
+- `global`: one shared server-wide value
+- `player`: each player gets their own value
+- `world`: each world gets its own value
+- `superiorskyblock`: each island gets its own value
+
+### `default`
+The default value is what ItsMyData returns when no stored value exists yet for the current scope target. Supports expressions such as `"%player_level% * 10"` for numeric types and PlaceholderAPI placeholders for all types.
+
+<Callout>
+Placeholder support even allows you to create leaderboards from any placeholder, you don't even need to use AjLeaderboard !
+</Callout>
+
+### `decimal`
+<Callout type="warn">
+Only applies to type number.
+</Callout>
+Decimal controls whether the value can have decimal places or not. If false, values are rounded to whole numbers.
+
+### `min` and `max`
+<Callout type="warn">
+Only applies to type number.
+</Callout>
+Min and max control the allowed range for the value. ItsMyData prevents setting values outside that range.
+
+### `leaderboard`
+<Callout type="warn">
+Only applies to type number.
+</Callout>
+`leaderboard` enables ranking support for the data key.
+
+When it is enabled, ItsMyData stores a numeric leaderboard cache for that key and exposes leaderboard PlaceholderAPI values such as top positions, player rank, and total tracked entries.
+
+```yaml title="config.yml"
+data-definitions:
+  coins:
+    type: number
+    scope: player
+    default: 0
+    leaderboard:
+      enabled: true
+      exact-rank-limit: 1000
+      dynamic-refresh-minutes: 5
+```
+
+#### `leaderboard.enabled`
+Turns leaderboard support on or off for the data key.
+
+#### `leaderboard.exact-rank-limit`
+
+Controls how far the plugin searches for an exact player rank.
+
+If a player is within that top range, placeholders can return an exact rank like `#47`.
+
+If the player is outside that range, the plugin falls back to a summary value like `1000+`.
+
+#### `leaderboard.dynamic-refresh-minutes`
+<Callout type="warn">
+Only useful when the default value depends on a placeholder, if the leaderboard don't have placeholders inside defaults, the values are only updated when the stored value changes, so dynamic refreshes are not needed.
+</Callout>
+
+Controls how often dynamic player-scoped leaderboard values are refreshed.

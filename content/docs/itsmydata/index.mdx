@@ -1,0 +1,87 @@
+---
+title: Introduction
+description: Learn what ItsMyData does, how its scoped data model works, and how to get started on Paper.
+---
+
+import { GithubInfo } from 'fumadocs-ui/components/github-info';
+
+<GithubInfo owner="itsmystudio" repo="ItsMyData" />
+
+ItsMyData is a Paper plugin for storing custom data and reading it back through PlaceholderAPI or the `/data` command.
+
+Instead of hardcoding values in several plugins, you define named data keys once in `config.yml`, choose who shares each value through a scope, and then read or update that data anywhere you need it.
+
+This section is organized by the main parts of the plugin:
+
+- `Database Config`: choose SQLite or MySQL
+- `Store Data`: define keys, scopes, defaults, numeric rules, and leaderboards
+- `Commands`: manage values with `/data`
+- `Placeholders`: read values through PlaceholderAPI
+
+## How It Works
+
+Each data key is defined under `data-definitions` with:
+
+- a `type`: `string` or `number`
+- a `scope`: `global`, `player`, `world`, or `superiorskyblock`
+- a `default` value
+- optional numeric settings such as `decimal`, `min`, `max`, and `leaderboard`
+
+At runtime, ItsMyData resolves the correct scope, loads the stored value from the database, falls back to the configured default when needed, and exposes the result through PlaceholderAPI.
+
+## Quick Start
+
+1. Install ItsMyData on a Paper `1.21` server running Java `21`.
+2. Install PlaceholderAPI if you want `%itsmydata_...%` placeholders or PlaceholderAPI values inside defaults.
+3. Install SuperiorSkyblock2 only if you plan to use the `superiorskyblock` scope.
+4. Start the server once to generate `config.yml` and `lang.yml`.
+5. Define your data keys in `config.yml`.
+6. Use `/data` to inspect or update values, then read them with PlaceholderAPI.
+
+```yaml title="config.yml"
+database:
+  type: sqlite
+
+data-definitions:
+  server_name:
+    type: string
+    scope: global
+    default: "ItsMyData"
+
+  coins:
+    type: number
+    decimal: false
+    scope: player
+    default: 0
+    min: 0
+    max: 1000000
+    leaderboard:
+      enabled: true
+      exact-rank-limit: 1000
+      dynamic-refresh-minutes: 5
+```
+
+With that config:
+
+- `%itsmydata_server_name%` returns the global server name
+- `%itsmydata_coins%` returns the current player's coins
+- `/data set coins Steve 250` sets Steve's stored value
+
+## What ItsMyData Is Good At
+
+- Keeping shared values in one place instead of repeating them across plugins
+- Storing player, world, global, or island-scoped data
+- Running numeric commands like `set`, `give`, `take`, and `reset`
+- Powering PlaceholderAPI placeholders for scoreboards, GUIs, chat, and menus
+- Building leaderboards from numeric data keys
+
+## Requirements
+
+- Paper `1.21.x`
+- Java `21`
+- PlaceholderAPI: optional, but required for `%itsmydata_...%` placeholders
+- SuperiorSkyblock2: optional, only required for the `superiorskyblock` scope
+
+<Callout>
+Numeric defaults or command values that contain PlaceholderAPI placeholders only work correctly when PlaceholderAPI is installed. Without it, numeric expressions like `%player_level% * 10` cannot be resolved.
+</Callout>

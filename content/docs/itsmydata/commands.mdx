@@ -1,0 +1,115 @@
+---
+title: Commands
+description: Manage stored values with the `/data` command in ItsMyData.
+---
+
+ItsMyData exposes one root command:
+
+```text
+/data
+```
+
+## Subcommands
+
+### `/data help`
+
+Shows every subcommand the sender is allowed to use.
+
+Permission: `itsmydata.command.help`
+Default: `true`
+
+### `/data list`
+
+Lists every configured data key.
+
+Permission: `itsmydata.command.list`
+Default: `true`
+
+### `/data info <dataKey> [target]`
+
+Shows the selected key's type, scope, default value, min, and max.
+
+Permission: `itsmydata.command.info`
+Default: `true`
+
+### `/data get <dataKey> [target]`
+
+Reads the current value for the resolved target.
+
+Permission: `itsmydata.command.get`
+Default: `true`
+
+### `/data set <dataKey> [target] <value>`
+
+Sets a value directly.
+
+Permission: `itsmydata.command.set`
+Default: `op`
+
+Notes:
+
+- non-global writes require an explicit target
+- numeric keys accept math expressions such as `2 + 3 * 4`
+- string values may contain spaces
+
+### `/data give <dataKey> [target] <amount>`
+
+Adds a numeric amount to a numeric key.
+
+Permission: `itsmydata.command.give`
+Default: `op`
+
+### `/data take <dataKey> [target] <amount>`
+
+Subtracts a numeric amount from a numeric key.
+
+Permission: `itsmydata.command.take`
+Default: `op`
+
+### `/data reset <dataKey> [target]`
+
+Removes the stored value and returns the key to its configured default.
+
+Permission: `itsmydata.command.reset`
+Default: `op`
+
+### `/data reload`
+
+Reloads `config.yml` and `lang.yml`.
+
+Permission: `itsmydata.command.reload`
+Default: `op`
+
+## Target Rules
+
+The `target` argument depends on the key scope.
+
+### `global`
+
+- no target is used
+- example: `/data set server_name SkyBlock One`
+
+### `player`
+
+- `get`, `info`, and `reset` can omit the target in game and use the sender
+- `set`, `give`, and `take` require a target
+- target can be a player name or UUID
+- example: `/data set coins Steve 250`
+
+### `world`
+
+- `get`, `info`, and `reset` can omit the target in game and use the sender's current world
+- `set`, `give`, and `take` require a target
+- target can be a world name or an online player name
+- example: `/data get pvp_enabled world_nether`
+
+### `superiorskyblock`
+
+- `get`, `info`, and `reset` can omit the target in game and use the sender's island
+- `set`, `give`, and `take` require a target
+- target is a player name, then ItsMyData resolves that player's island
+- example: `/data set island_tax Steve 250`
+
+<Callout>
+`give` and `take` only work on `type: number` data keys.
+</Callout>

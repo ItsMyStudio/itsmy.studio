@@ -1,0 +1,13 @@
+{
+  "title": "ItsMyData",
+  "description": "Scoped data and PlaceholderAPI plugin",
+  "root": true,
+  "icon": "Database",
+  "pages": [
+    "index",
+    "store-data",
+    "commands",
+    "placeholders",
+    "database-config"
+  ]
+}

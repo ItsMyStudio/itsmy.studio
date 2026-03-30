@@ -1,0 +1,108 @@
+---
+title: Placeholders
+description: Use ItsMyData values through PlaceholderAPI, including numeric formatting and leaderboards.
+---
+
+If PlaceholderAPI is installed, ItsMyData registers the `itsmydata` expansion.
+
+Basic syntax:
+
+```text
+%itsmydata_<dataKey>%
+```
+
+## Requirements
+
+- PlaceholderAPI must be installed
+- non-global placeholders generally need a player context
+
+Examples:
+
+- `%itsmydata_server_name%`
+- `%itsmydata_coins%`
+
+## Value Placeholders
+
+### Current value
+
+- `%itsmydata_<dataKey>%`
+
+Returns the current resolved value.
+
+### Default value
+
+- `%itsmydata_<dataKey>_default%`
+
+Returns the configured default after resolving expressions or PlaceholderAPI where applicable.
+
+### Numeric bounds
+
+- `%itsmydata_<dataKey>_min%`
+- `%itsmydata_<dataKey>_max%`
+
+Returns the configured numeric bounds.
+
+## Numeric Formatting
+
+### Fixed decimals
+
+- `%itsmydata_<dataKey>_fixed%`
+
+Example:
+
+- `1234` -> `1234.00`
+
+### Compact formatting
+
+- `%itsmydata_<dataKey>_formatted%`
+
+Examples:
+
+- `1500` -> `1.5k`
+- `2500000` -> `2.5M`
+
+### Comma formatting
+
+- `%itsmydata_<dataKey>_commas%`
+
+Example:
+
+- `2500000` -> `2,500,000`
+
+## Leaderboards
+
+Leaderboard placeholders only work on numeric keys with `leaderboard.enabled: true`.
+
+### Value at a position
+
+- `%itsmydata_<dataKey>_leaderboard_<position>%`
+- `%itsmydata_<dataKey>_leaderboard_<position>_fixed%`
+- `%itsmydata_<dataKey>_leaderboard_<position>_formatted%`
+- `%itsmydata_<dataKey>_leaderboard_<position>_commas%`
+- `%itsmydata_<dataKey>_leaderboard_<position>_name%`
+
+Examples:
+
+- `%itsmydata_coins_leaderboard_1%`
+- `%itsmydata_coins_leaderboard_1_name%`
+- `%itsmydata_coins_leaderboard_10_formatted%`
+
+### Current player's position
+
+- `%itsmydata_<dataKey>_leaderboard_position%`
+- `%itsmydata_<dataKey>_leaderboard_position_percent%`
+
+Examples:
+
+- `#5`
+- `12.5%`
+
+### Total tracked entries
+
+- `%itsmydata_<dataKey>_leaderboard_total_players%`
+
+Despite the suffix name, this returns the total number of stored leaderboard entries for that key.
+
+<Callout>
+Without PlaceholderAPI, `/data` commands still work, but `%itsmydata_...%` placeholders do not exist.
+</Callout>

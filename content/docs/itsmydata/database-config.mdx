@@ -1,0 +1,84 @@
+---
+title: Database Config
+description: Configure SQLite or MySQL storage for ItsMyData.
+---
+
+ItsMyData stores runtime values in the database configured in `config.yml`.
+
+The relevant section is `database`.
+
+## Default Structure
+
+```yaml title="config.yml"
+database:
+  type: sqlite
+
+  sqlite:
+    file: data.db
+
+  mysql:
+    host: localhost
+    port: 3306
+    database: itsmydata
+    username: root
+    password: change-me
+```
+
+## `type`
+
+Supported backends:
+
+- `sqlite`
+- `mysql`
+
+## SQLite
+
+SQLite is the default and the simplest option for a single server.
+
+```yaml title="config.yml"
+database:
+  type: sqlite
+
+  sqlite:
+    file: data.db
+```
+
+### `sqlite.file`
+
+The SQLite file name stored inside the plugin data folder.
+
+## MySQL
+
+Use MySQL when you want values in an external database.
+
+```yaml title="config.yml"
+database:
+  type: mysql
+
+  mysql:
+    host: localhost
+    port: 3306
+    database: itsmydata
+    username: root
+    password: change-me
+```
+
+### MySQL Fields
+
+- `mysql.host`
+- `mysql.port`
+- `mysql.database`
+- `mysql.username`
+- `mysql.password`
+
+## Reloading
+
+Database settings are reloaded with:
+
+```text
+/data reload
+```
+
+<Callout>
+ItsMyData reopens the configured backend on reload, but it does not include a built-in migration step between SQLite and MySQL. If you switch backends, move your data separately.
+</Callout>
