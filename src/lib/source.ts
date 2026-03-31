@@ -35,6 +35,7 @@ export function getSection(path: string | undefined) {
       itsmybot: 'itsmybot',
       itsmyconfig: 'itsmyconfig',
       itsmyconvert: 'itsmyconvert',
+      itsmydata: 'itsmydata',
     }[dir] ?? 'itsmybot'
   );
 }

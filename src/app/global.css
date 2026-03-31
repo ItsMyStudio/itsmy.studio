@@ -51,10 +51,15 @@
   --color-fd-primary: var(--itsmybot-color);
 }
 
+.itsmydata {
+  --color-fd-primary: var(--itsmydata-color);
+}
+
 :root {
   --itsmybot-color: hsl(250, 80%, 54%);
   --itsmyconvert-color: #23D043;
   --itsmyconfig-color: hsl(217, 100%, 58%);
+  --itsmydata-color: #E258F2;
 }
 
 
@@ -62,4 +67,5 @@
   --itsmybot-color: hsl(250 100% 80%);
   --itsmyconvert-color: #B0FFA9;
   --itsmyconfig-color: #a9ceff;
+  --itsmydata-color: #FFABFE;
 }

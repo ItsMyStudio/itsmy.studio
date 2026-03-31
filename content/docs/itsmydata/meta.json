@@ -1,6 +1,6 @@
 {
   "title": "ItsMyData",
-  "description": "Scoped data and PlaceholderAPI plugin",
+  "description": "Custom Data Plugin",
   "root": true,
   "icon": "Database",
   "pages": [
