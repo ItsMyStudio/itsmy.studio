@@ -1,10 +1,13 @@
 import {
+  Check,
   ChevronDown,
+  Circle,
   ExternalLink,
   FileText,
   ImageIcon,
   Lock,
   MessageSquareText,
+  Upload,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { DiscordTextContent } from './content';
@@ -131,11 +134,56 @@ export type GeneratedTextInputComponent = {
   value?: string;
 };
 
+export type GeneratedFileUploadComponent = {
+  type: 'file-upload';
+  'custom-id'?: string;
+  'min-values'?: number;
+  'max-values'?: number;
+  required?: boolean;
+};
+
+export type GeneratedCheckboxComponent = {
+  type: 'checkbox';
+  'custom-id'?: string;
+  default?: boolean;
+};
+
+export type GeneratedChoiceOption = {
+  label: string;
+  value: string;
+  description?: string;
+  default?: boolean;
+};
+
+export type GeneratedCheckboxGroupComponent = {
+  type: 'checkbox-group';
+  'custom-id'?: string;
+  required?: boolean;
+  'min-values'?: number;
+  'max-values'?: number;
+  options: GeneratedChoiceOption[];
+};
+
+export type GeneratedRadioGroupComponent = {
+  type: 'radio-group';
+  'custom-id'?: string;
+  required?: boolean;
+  options: GeneratedChoiceOption[];
+};
+
+export type GeneratedModalInputComponent =
+  | GeneratedTextInputComponent
+  | GeneratedSelectMenuComponent
+  | GeneratedFileUploadComponent
+  | GeneratedCheckboxComponent
+  | GeneratedCheckboxGroupComponent
+  | GeneratedRadioGroupComponent;
+
 export type GeneratedLabelComponent = {
   type: 'label';
   label?: string;
   description?: string;
-  component: GeneratedTextInputComponent | GeneratedSelectMenuComponent;
+  component: GeneratedModalInputComponent;
 };
 
 export type GeneratedModalComponent = GeneratedTextDisplayComponent | GeneratedLabelComponent;
@@ -416,9 +464,27 @@ function ModalComponentRenderer({ component }: { component: GeneratedModalCompon
 
       {component.component.type === 'text-input' ? (
         <PreviewTextInput component={component.component} />
-      ) : (
+      ) : null}
+
+      {component.component.type === 'select-menu' ? (
         <PreviewSelectMenu component={component.component} fullWidth />
-      )}
+      ) : null}
+
+      {component.component.type === 'file-upload' ? (
+        <PreviewFileUpload component={component.component} />
+      ) : null}
+
+      {component.component.type === 'checkbox' ? (
+        <PreviewCheckbox component={component.component} />
+      ) : null}
+
+      {component.component.type === 'checkbox-group' ? (
+        <PreviewChoiceGroup component={component.component} kind="checkbox-group" />
+      ) : null}
+
+      {component.component.type === 'radio-group' ? (
+        <PreviewChoiceGroup component={component.component} kind="radio-group" />
+      ) : null}
     </div>
   );
 }
@@ -485,6 +551,105 @@ function PreviewTextInput({ component }: { component: GeneratedTextInputComponen
     <div className="flex h-10 items-center rounded-lg border border-[#1f2124] bg-[#1e1f22] px-3 text-sm text-[#b5bac1]">
       {value}
     </div>
+  );
+}
+
+function PreviewFileUpload({
+  component,
+}: {
+  component: GeneratedFileUploadComponent;
+}) {
+  const maxFiles = component['max-values'] ?? 1;
+  const minFiles = component['min-values'] ?? 0;
+
+  return (
+    <div className="rounded-lg border border-dashed border-[#4a4d55] bg-[#1e1f22] px-4 py-5 text-center">
+      <div className="flex flex-col items-center gap-2 text-[#b5bac1]">
+        <Upload className="size-5" />
+        <p className="text-sm font-medium text-white">Upload files</p>
+        <p className="text-xs text-[#949ba4]">
+          {minFiles > 0 ? `Min ${minFiles}` : 'Optional'} • Max {maxFiles}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PreviewCheckbox({
+  component,
+}: {
+  component: GeneratedCheckboxComponent;
+}) {
+  return (
+    <div className="flex h-10 items-center gap-3 rounded-lg border border-[#1f2124] bg-[#1e1f22] px-3 text-sm text-[#dbdee1]">
+      <ChoiceIndicator kind="checkbox" checked={component.default ?? false} />
+      <span className="text-[#b5bac1]">
+        {component.default ? 'Checked by default' : 'Unchecked'}
+      </span>
+    </div>
+  );
+}
+
+function PreviewChoiceGroup({
+  component,
+  kind,
+}: {
+  component: GeneratedCheckboxGroupComponent | GeneratedRadioGroupComponent;
+  kind: 'checkbox-group' | 'radio-group';
+}) {
+  if (component.options.length === 0) {
+    return <EmptyPreviewState compact label="No options yet." />;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-[#1f2124] bg-[#1e1f22] p-3">
+      {component.options.map((option, index) => (
+        <div
+          key={`${option.value}-${index}`}
+          className="flex items-start gap-3 text-sm text-[#dbdee1]"
+        >
+          <ChoiceIndicator kind={kind} checked={option.default ?? false} />
+          <div className="min-w-0">
+            <div className="truncate">{option.label || option.value || `Option ${index + 1}`}</div>
+            {option.description ? (
+              <div className="mt-0.5 text-xs leading-5 text-[#949ba4]">{option.description}</div>
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ChoiceIndicator({
+  kind,
+  checked,
+}: {
+  kind: 'checkbox' | 'checkbox-group' | 'radio-group';
+  checked: boolean;
+}) {
+  if (kind === 'radio-group') {
+    return (
+      <span
+        className={cn(
+          'relative inline-flex size-4 shrink-0 items-center justify-center rounded-full border',
+          checked ? 'border-[#5865f2]' : 'border-[#6d727b]',
+        )}
+      >
+        {checked ? <span className="size-2 rounded-full bg-[#5865f2]" /> : null}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className={cn(
+        'inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border',
+        checked ? 'border-[#5865f2] bg-[#5865f2] text-white' : 'border-[#6d727b]',
+      )}
+    >
+      {checked ? <Check className="size-3" /> : null}
+    </span>
   );
 }
 

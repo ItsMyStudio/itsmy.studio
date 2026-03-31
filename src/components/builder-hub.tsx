@@ -33,7 +33,7 @@ const builderTabs: {
   {
     id: 'modal',
     label: 'Modal Builder',
-    description: 'Build interactive modals with text-display, labels, text inputs, and select menus.',
+    description: 'Build interactive modals with text, labels, inputs, uploads, checkboxes, and choice groups.',
   },
 ];
 

@@ -78,7 +78,7 @@ export function ModalBuilder({
       }}
       editor={{
         title: 'Components',
-        description: 'Add text blocks and labeled fields to shape the modal.',
+        description: 'Add text blocks and labeled fields with inputs, uploads, or choices.',
         children: (
           <ModalComponentListEditor
             components={config.components}

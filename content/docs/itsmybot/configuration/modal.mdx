@@ -3,35 +3,39 @@ title: Modal
 description: Learn how to configure modals in ItsMyBot.
 ---
 
-# How to configure Modal
-In this guide, you will learn how to configure a modal and everything you can do with it. 
-Modals support [placeholders](/docs/itsmybot/configuration/placeholders/), you can put them in any part of the modal, and they will be replaced with the corresponding value when the modal is displayed.
+Modals let you collect structured input from the user.
 
-I really recommend learning about the [message configuration](/docs/itsmybot/configuration/message) first, as modals use the same component system. 
+ItsMyBot modals support [placeholders](/docs/itsmybot/configuration/placeholders/) across titles, labels, descriptions, and input values, so the modal can adapt to the current context before it is shown.
 
-If you want a faster starting point, open the [Modal Builder](/docs/itsmybot/builder?tab=modal). It lets you compose your modal with an interactive interface and generates the configuration for you. You can also use it to edit an existing modal configuration.
+If you want a faster starting point, open the [Modal Builder](/docs/itsmybot/builder?tab=modal). It generates the same YAML structure documented here.
 
----
+## Modal Configuration
 
-# Modal Configuration
-This is the main part of the modal configuration. You set everything you want to display in the modal here. The modal is composed of components, which are the building blocks of the modal. Each component has a type and can have various options.
+At the top level, a modal contains:
 
-- Support the following components: [`text-display`](#text-display), [`label`](#label).
+- a `title`
+- a `custom-id`
+- a `components` array
+
+Top-level modal components are limited to:
+
+- `text-display`
+- `label`
 
 <TypeTable
   type={{
     title: {
-      description: 'The title of the modal, it will be displayed at the top of the modal.',
+      description: 'Text shown in the modal header.',
       type: 'string',
       required: true,
     },
     'custom-id': {
-      description: "The custom id of the modal, used to identify the modal when it is submitted. The custom id is not required everywhere, it's not used in tickets for example",
+      description: 'Identifier used to resolve the submitted modal. Use a `script_` prefix if you want to catch the submit in scripts.',
       type: 'string',
-      required: false,
+      required: true,
     },
     components: {
-      description: 'List of components, the components of the modal. Can be a text display or a label.',
+      description: 'List of top-level modal components. Only `text-display` and `label` are valid here.',
       type: 'Component[]',
       required: true,
     },
@@ -39,133 +43,126 @@ This is the main part of the modal configuration. You set everything you want to
 />
 
 ```yaml title="Example"
-title: "My Modal" # Optional, the title of the modal.
-custom-id: "my_modal" # Optional, the custom id of the modal, used to identify the modal when it is submitted.
-components: # The components of the modal. With the new format, all the content of the modal is in the components.
-  - type: "text-display" # A text display component, it will display the content as a text.
-    content: "Hello there !"
-  - type: "label" # A label component, it will display a label with a description and an input field.
-    components:
-      - type: 'label'
-        label: 'What is your name?'
-        description: 'Please enter your full name.'
-        component:
-          type: 'text-input' # A text input component, it will display an input field.
-          style: 'Short' # 'Short' or 'Paragraph'
-          custom-id: 'name'
-          placeholder: 'Enter your name here'
-          max-length: 50
-    - type: 'label'
-      label: 'Select an option'
-      description: 'Please select one of the options below.'
-      component:
-        type: select-menu # A select menu component, it will display a dropdown menu with options.
-        custom-id: "select1"
-        options:
-          - label: "Option 1"
-            value: "option1"
-          - label: "Option 2"
-            value: "option2"
+title: "Feedback"
+custom-id: "script_feedback_modal"
+components:
+  - type: text-display
+    content: "Tell us what happened and attach files if needed."
+
+  - type: label
+    label: "Message"
+    description: "Explain the issue clearly."
+    component:
+      type: text-input
+      style: "paragraph"
+      custom-id: "message"
+      required: true
+      min-length: 10
+
+  - type: label
+    label: "Category"
+    description: "Choose one category."
+    component:
+      type: radio-group
+      custom-id: "category"
+      required: true
+      options:
+        - label: "Bug"
+          value: "bug"
+        - label: "Suggestion"
+          value: "suggestion"
+
+  - type: label
+    label: "Attachments"
+    description: "Upload screenshots or files."
+    component:
+      type: file-upload
+      custom-id: "files"
+      max-values: 3
 ```
 
----
+## Component Conditions
 
-# Components
-Below, you will find a list of all the possible components you can include in your modal.
+Modal components support the same condition system used elsewhere in ItsMyBot. This lets you show or hide parts of the modal depending on context.
 
-### Component Conditions
-Each component supports conditions, these are exactly the same conditions you can find in scripts. They allow you to display a component only in certain cases, so your message can adapt to the context.
-You can find the list of available [conditions here](/docs/itsmybot/scripting/conditions/). The format is as follows:
+You can find the available condition list in [Scripting Conditions](/docs/itsmybot/scripting/conditions/).
 
 <TypeTable
   type={{
     conditions: {
-      description: 'List of conditions, the conditions of the component. The component will only be displayed if the conditions are met.',
+      description: 'List of conditions that must pass before the component is included in the modal.',
       type: 'Condition[]',
       required: false,
       typeDescriptionLink: '/docs/itsmybot/scripting/conditions',
     },
   }}
 />
-```yaml title="Example"
-components:
-  - type: "text-display"
-    content: "Hello there !"
-    conditions: # [!code focus]
-      - id: aboveMembers # [!code focus]
-        args: # [!code focus]
-          amount: 10 # [!code focus]
-```
 
----
+## Top-Level Components
 
-### Text Display 
-#### `text-display` [!toc]
-Text display are the default components to use when you want to display text. They are compatible with Discord’s markdown format, so you can create titles by adding # at the beginning of the line, etc.
+### `text-display`
 
-The content option can be a list of strings, ItsMyBot will randomly select one of the results. This means each message will be unique!
+Use `text-display` when you want to explain the modal before the user starts filling fields.
 
 <TypeTable
   type={{
     type: {
       type: 'text-display',
-      description: 'The type of the component, in this case text-display.',
+      description: 'Component type.',
       required: true,
     },
     content: {
-      description: 'The content of the text display. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      description: 'Displayed text. Can be a string or a string array for randomized content.',
       type: 'string | string[]',
       required: true,
     },
   }}
 />
 
-```yaml title="Example" tab="Simple"
+```yaml title="Example"
 components:
   - type: text-display
-    content: "Hello there !" # A simple text display
-```
-```yaml title="Example" tab="Multiline"
-components:
-  - type: text-display
-    content: | # A multiline text display
-      Multiple lines of text
-      are supported, just like in Discord.
-```
-```yaml title="Example" tab="Random"
-components:
-  - type: text-display
-    content: # A list of strings, one will be randomly selected
-      - "Hello there !"
-      - "Hi !"
-      - "Greetings !"
+    content: "Please complete every required field."
 ```
 
-### Label
-#### `label` [!toc]
-A label is a component that can contain a label, a description, and an input component. It is used to display a label with an input field, like a text input or a select menu.
+### `label`
 
-- Support the following components: [`text-input`](#text-input), [`select-menu`](#select-menu).
+`label` is the field wrapper used inside modals.
+
+It renders:
+
+- a visible label
+- an optional description
+- exactly one modal input component
+
+Supported input components inside `label.component`:
+
+- `text-input`
+- `select-menu`
+- `file-upload`
+- `checkbox`
+- `checkbox-group`
+- `radio-group`
 
 <TypeTable
   type={{
     type: {
       type: 'label',
-      description: 'The type of the component, in this case label.',
+      description: 'Component type.',
       required: true,
     },
     label: {
-      description: 'The label of the component, it will be displayed above the input component.',
-      type: 'string | string[]',
+      description: 'Field title shown above the input.',
+      type: 'string',
       required: true,
     },
     description: {
-      description: 'The description of the component, it will be displayed below the label and above the input component.',
-      type: 'string | string[]',
+      description: 'Optional helper text shown under the label.',
+      type: 'string',
       required: false,
     },
     component: {
-      description: 'The input component of the label, it can be a text input or a select menu.',
+      description: 'The actual input rendered inside the field.',
       type: 'Component',
       required: true,
     },
@@ -176,57 +173,59 @@ A label is a component that can contain a label, a description, and an input com
 components:
   - type: label
     label: "Username"
-    description: "Enter your username"
-    component: # [!code focus]
-      type: text-input # [!code focus]
-      custom-id: "username" # [!code focus]
-      style: "short" # [!code focus]
-      required: true # [!code focus]
+    description: "Enter the account name you want to use."
+    component:
+      type: text-input
+      custom-id: "username"
+      style: "short"
+      required: true
 ```
 
-### Text Input
-#### `text-input` [!toc]
-A text input is a component that allows the user to enter text. It can be used to collect information from the user.
+## Input Components
+
+### `text-input`
+
+Use `text-input` for free-form user text.
 
 <TypeTable
   type={{
     type: {
       type: 'text-input',
-      description: 'The type of the component, in this case text-input.',
+      description: 'Input type.',
       required: true,
     },
     style: {
-      description: 'The style of the text input, can be "Short" or "Paragraph".',
+      description: 'Input layout. Use `short` for one line or `paragraph` for larger text.',
       type: 'string',
       required: true,
     },
     'custom-id': {
-      description: 'The custom id of the text input, used to identify the text input when it is submitted.',
+      description: 'Identifier used to read the submitted value.',
       type: 'string',
       required: true,
     },
     placeholder: {
-      description: 'The placeholder of the text input, it will be displayed when the input is empty.',
+      description: 'Placeholder shown while the field is empty.',
       type: 'string | string[]',
       required: false,
     },
-    'max-length': {
-      description: 'The maximum length of the text input, it will prevent the user from entering more than the specified number of characters.',
+    'min-length': {
+      description: 'Minimum number of characters required.',
       type: 'integer',
       required: false,
     },
-    'min-length': {
-      description: 'The minimum length of the text input, it will prevent the user from entering less than the specified number of characters.',
+    'max-length': {
+      description: 'Maximum number of characters allowed.',
       type: 'integer',
       required: false,
     },
     required: {
-      description: 'Whether the text input is required or not, if true the user will not be able to submit the modal without filling this input.',
+      description: 'Whether the user must fill the input before submitting.',
       type: 'boolean',
       required: false,
     },
     value: {
-      description: 'The default value of the text input, it will be displayed in the input field when the modal is displayed.',
+      description: 'Prefilled value shown when the modal opens.',
       type: 'string | string[]',
       required: false,
     },
@@ -234,73 +233,66 @@ A text input is a component that allows the user to enter text. It can be used t
 />
 
 ```yaml title="Example"
-components:
-  - type: label
-    label: "What is your favorite color?"
-    component:
-      type: text-input # [!code focus]
-      style: "Short" # [!code focus]
-      custom-id: "favorite_color" # [!code focus] 
-      placeholder: "Enter your favorite color" # [!code focus]
-      max-length: 30 # [!code focus] 
-      required: true # [!code focus]
+component:
+  type: text-input
+  style: "paragraph"
+  custom-id: "details"
+  placeholder: "Explain the issue"
+  min-length: 10
+  max-length: 1000
+  required: true
 ```
 
+### `select-menu`
 
-### Select Menu
-#### `select-menu` [!toc]
-A select menu is a component that allows the user to select an option from a list.
-
-The placeholder options can be a string or a list of strings, ItsMyBot will randomly select one of the results. 
+Use `select-menu` when the user should choose from a predefined list.
 
 <TypeTable
   type={{
     type: {
       type: 'select-menu',
-      description: 'The type of the component, in this case select-menu.',
+      description: 'Input type.',
       required: true,
     },
     'custom-id': {
-      description: 'The custom id of the select menu. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      description: 'Identifier used to read the selected values.',
       type: 'string | string[]',
       required: true,
     },
     options: {
-      description: 'List of options, the options of the select menu.',
+      description: 'Available options shown in the menu.',
       type: 'SelectOption[]',
       required: true,
     },
     placeholder: {
-      description: 'The placeholder of the select menu. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      description: 'Placeholder text shown before the user selects anything.',
       type: 'string | string[]',
       required: false,
     },
     'min-values': {
-      description: 'The minimum number of values that can be selected.',
+      description: 'Minimum number of selected entries.',
       type: 'integer',
       required: false,
-      default: 1,
     },
     'max-values': {
-      description: 'The maximum number of values that can be selected.',
+      description: 'Maximum number of selected entries.',
       type: 'integer',
       required: false,
-      default: 1,
     },
   }}
 />
 
-#### Select Option
-A select option is an object that represents an option in the select menu. It has the following properties:
+#### `select-menu` options
+
 <TypeTable
   type={{
     label: {
-      description: 'The label of the option. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      description: 'Visible option label.',
       type: 'string | string[]',
       required: true,
     },
     value: {
-      description: 'The value of the option. It can be a string or a list of strings. If it is a list of strings, one of the strings will be randomly selected when the message is sent.',
+      description: 'Stored option value used in the submission.',
       type: 'string | string[]',
       required: true,
     },
@@ -308,27 +300,248 @@ A select option is an object that represents an option in the select menu. It ha
 />
 
 ```yaml title="Example"
-components:
-  - type: label
-    label: "Select your favorite fruits"
-    component:
-      type: select-menu # [!code focus]
-      custom-id: "select1" # The custom id of the select menu, used to identify the select menu when it is selected [!code focus]
-      options: # The options of the select menu [!code focus]
-        - label: "Option 1" # [!code focus]
-          value: "option1" # The value of the option, used to identify the option when it is selected [!code focus]
-        - label: "Option 2" # [!code focus]
-          value: "option2" # [!code focus]
-        - label: "Option 3" # [!code focus]
-          value: "option3" # [!code focus]
-      placeholder: "Select an option" # Optional, the placeholder of the select menu [!code focus]
-      min-values: 1 # Optional, the minimum number of values that can be selected [!code focus]
-      max-values: 2 # Optional, the maximum number of values that can be selected [!code focus]
+component:
+  type: select-menu
+  custom-id: "fruits"
+  placeholder: "Select your favorite fruits"
+  min-values: 1
+  max-values: 2
+  options:
+    - label: "Apple"
+      value: "apple"
+    - label: "Orange"
+      value: "orange"
 ```
 
----
+### `file-upload`
+
+Use `file-upload` when the user should attach screenshots, logs, or other files.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'file-upload',
+      description: 'Input type.',
+      required: true,
+    },
+    'custom-id': {
+      description: 'Identifier used to read uploaded attachments after submit.',
+      type: 'string | string[]',
+      required: true,
+    },
+    required: {
+      description: 'Whether at least one file must be uploaded.',
+      type: 'boolean',
+      required: false,
+    },
+    'min-values': {
+      description: 'Minimum number of files the user must upload.',
+      type: 'integer',
+      required: false,
+    },
+    'max-values': {
+      description: 'Maximum number of files the user can upload.',
+      type: 'integer',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+component:
+  type: file-upload
+  custom-id: "attachments"
+  required: false
+  max-values: 3
+```
+
+### `checkbox`
+
+Use `checkbox` for a single boolean choice.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'checkbox',
+      description: 'Input type.',
+      required: true,
+    },
+    'custom-id': {
+      description: 'Identifier used to read the submitted boolean value.',
+      type: 'string | string[]',
+      required: true,
+    },
+    default: {
+      description: 'Whether the checkbox is preselected when the modal opens.',
+      type: 'boolean',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+component:
+  type: checkbox
+  custom-id: "agree_rules"
+  default: true
+```
+
+### `checkbox-group`
+
+Use `checkbox-group` when the user can select multiple options from one field.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'checkbox-group',
+      description: 'Input type.',
+      required: true,
+    },
+    'custom-id': {
+      description: 'Identifier used to read the submitted values.',
+      type: 'string | string[]',
+      required: true,
+    },
+    required: {
+      description: 'Whether the user must choose at least one option.',
+      type: 'boolean',
+      required: false,
+    },
+    'min-values': {
+      description: 'Minimum number of selected options.',
+      type: 'integer',
+      required: false,
+    },
+    'max-values': {
+      description: 'Maximum number of selected options.',
+      type: 'integer',
+      required: false,
+    },
+    options: {
+      description: 'Available checkbox options.',
+      type: 'ChoiceOption[]',
+      required: true,
+    },
+  }}
+/>
+
+#### `checkbox-group` options
+
+<TypeTable
+  type={{
+    label: {
+      description: 'Visible option label.',
+      type: 'string | string[]',
+      required: true,
+    },
+    value: {
+      description: 'Stored option value used in the submission.',
+      type: 'string | string[]',
+      required: true,
+    },
+    description: {
+      description: 'Optional helper text shown under the option label.',
+      type: 'string | string[]',
+      required: false,
+    },
+    default: {
+      description: 'Whether the option is preselected when the modal opens.',
+      type: 'boolean',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+component:
+  type: checkbox-group
+  custom-id: "platforms"
+  required: true
+  min-values: 1
+  max-values: 2
+  options:
+    - label: "Java"
+      value: "java"
+      description: "Java Edition players"
+    - label: "Bedrock"
+      value: "bedrock"
+      description: "Bedrock Edition players"
+      default: true
+```
+
+### `radio-group`
+
+Use `radio-group` when the user must choose one option from a list.
+
+<TypeTable
+  type={{
+    type: {
+      type: 'radio-group',
+      description: 'Input type.',
+      required: true,
+    },
+    'custom-id': {
+      description: 'Identifier used to read the submitted value.',
+      type: 'string | string[]',
+      required: true,
+    },
+    required: {
+      description: 'Whether a choice is required before submit.',
+      type: 'boolean',
+      required: false,
+    },
+    options: {
+      description: 'Available radio options.',
+      type: 'ChoiceOption[]',
+      required: true,
+    },
+  }}
+/>
+
+#### `radio-group` options
+
+<TypeTable
+  type={{
+    label: {
+      description: 'Visible option label.',
+      type: 'string | string[]',
+      required: true,
+    },
+    value: {
+      description: 'Stored option value used in the submission.',
+      type: 'string | string[]',
+      required: true,
+    },
+    description: {
+      description: 'Optional helper text shown under the option label.',
+      type: 'string | string[]',
+      required: false,
+    },
+    default: {
+      description: 'Whether the option is preselected when the modal opens.',
+      type: 'boolean',
+      required: false,
+    },
+  }}
+/>
+
+```yaml title="Example"
+component:
+  type: radio-group
+  custom-id: "priority"
+  required: true
+  options:
+    - label: "Low"
+      value: "low"
+      description: "General issue with no immediate urgency"
+    - label: "High"
+      value: "high"
+      description: "Needs quick attention"
+      default: true
+```
 
 ## Script Interactions
-To detect a modal submission with a script, the modal `custom-id` needs to start with `script_`.
 
-See [Script interaction custom-id format](/docs/itsmybot/scripting/triggers#interaction-custom-id) for the format and arguments, and [modalSubmit](/docs/itsmybot/scripting/triggers#modalsubmit) for the submitted variables.
+To detect a modal submission with a script, the modal `custom-id` must start with `script_`.
+
+See [Script interaction custom-id format](/docs/itsmybot/scripting/triggers#interaction-custom-id) for argument parsing, and [modalSubmit](/docs/itsmybot/scripting/triggers#modalsubmit) for the submitted variables.

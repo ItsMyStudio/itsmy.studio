@@ -121,14 +121,51 @@ Triggers when a modal is submitted. _Only modals starting with `script_` will wo
 | `[[modal_args]]` | All custom-id arguments joined with `, ` |
 | `[[modal_arg_0]]` | The first custom-id argument |
 | `[[modal_arg_<index>]]` | The Nth custom-id argument |
-| `[[modal_text_input_<custom-id>]]` | The value of a text input component |
-| `[[modal_select_<custom-id>_values_count]]` | The number of selected values in a modal select menu |
-| `[[modal_select_<custom-id>_values]]` | All selected values joined with `, ` in a modal select menu |
-| `[[modal_select_<custom-id>_value_0]]` | The first selected value in a modal select menu |
-| `[[modal_select_<custom-id>_value_<index>]]` | The Nth selected value in a modal select menu |
-| `[[modal_file_upload_<custom-id>_attachments_count]]` | The number of uploaded files in a file upload component |
-| `[[modal_file_upload_<custom-id>_attachment_0]]` | The URL of the first uploaded file |
-| `[[modal_file_upload_<custom-id>_attachment_<index>]]` | The URL of the Nth uploaded file |
+
+#### Text Input Variables [!toc]
+For each text input component in the modal, you can use the following variables based on the custom ID of the text input:
+
+| Variable | Value |
+| --- | --- |
+| `[[modal_<custom-id>]]` | The value of a text input component |
+
+#### Select Menu Variables [!toc]
+For each select menu component in the modal, you can use the following variables based on the custom ID of the select menu:
+| Variable | Value |
+| --- | --- |
+| `[[modal_<custom-id>_values_count]]` | The number of selected values in a modal select menu |
+| `[[modal_<custom-id>_values]]` | All selected values joined with `, ` in a modal select menu |
+| `[[modal_<custom-id>_value_0]]` | The first selected value in a modal select menu |
+| `[[modal_<custom-id>_value_<index>]]` | The Nth selected value in a modal select menu |
+
+#### File Upload Variables [!toc]
+For each file upload component in the modal, you can use the following variables based on the custom ID of the file upload:
+| Variable | Value |
+| --- | --- |
+| `[[modal_<custom-id>_attachments_count]]` | The number of uploaded files in a file upload component |
+| `[[modal_<custom-id>_attachment_0]]` | The URL of the first uploaded file |
+| `[[modal_<custom-id>_attachment_<index>]]` | The URL of the Nth uploaded file |
+
+#### Checkbox Variables [!toc]
+For each checkbox component in the modal, you can use the following variable based on the custom ID of the checkbox:
+| Variable | Value |
+| --- | --- |
+| `[[modal_<custom-id>]]` | `true` if the checkbox is checked, `false` otherwise |
+
+#### Checkbox Group Variables [!toc]
+For each checkbox group component in the modal, you can use the following variables based on the custom ID of the checkbox group:
+| Variable | Value |
+| --- | --- |
+| `[[modal_<custom-id>_values_count]]` | The number of selected values in a modal checkbox group |
+| `[[modal_<custom-id>_values]]` | All selected values joined with `, ` in a modal checkbox group |
+| `[[modal_<custom-id>_value_0]]` | The first selected value in a modal checkbox group |
+| `[[modal_<custom-id>_value_<index>]]` | The Nth selected value in a modal checkbox group |
+
+#### Radio Group Variables [!toc]
+For each radio group component in the modal, you can use the following variable based on the custom ID of the radio group:
+| Variable | Value |
+| --- | --- |
+| `[[modal_<custom-id>]]` | The selected value in a modal radio group |
 
 ### presenceUpdate
 Triggers when a user presence is updated.

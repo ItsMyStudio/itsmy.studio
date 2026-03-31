@@ -205,6 +205,21 @@ For the first addon, hard-coded text is acceptable. Add translations once the ad
 </Step>
 
 <Step>
+## Add addon-specific dependencies
+If your addon needs a third-party package, create a `package.json` yourself directly in the addon folder.
+
+```json { title="src/addons/MyAddon/package.json" }
+{
+  "dependencies": {
+    "dayjs": "^1.11.13"
+  }
+}
+```
+
+ItsMyBot can then install those dependencies automatically for that addon.
+</Step>
+
+<Step>
 ## Build before testing
 
 <Callout type="warn">

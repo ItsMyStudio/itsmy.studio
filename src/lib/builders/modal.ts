@@ -7,7 +7,6 @@ import type {
 } from './message';
 
 export type AddableModalComponentType = 'text-display' | 'label';
-export type ModalInputComponentType = 'text-input' | 'select-menu';
 export type TextInputStyle = 'short' | 'paragraph';
 
 export type TextInputComponent = {
@@ -22,12 +21,64 @@ export type TextInputComponent = {
   value: string;
 };
 
+export type FileUploadComponent = {
+  id: string;
+  type: 'file-upload';
+  customId: string;
+  minValues: number | null;
+  maxValues: number;
+  required: boolean;
+};
+
+export type CheckboxComponent = {
+  id: string;
+  type: 'checkbox';
+  customId: string;
+  default: boolean;
+};
+
+export type ModalChoiceOption = {
+  id: string;
+  label: string;
+  value: string;
+  description: string;
+  default: boolean;
+};
+
+export type CheckboxGroupComponent = {
+  id: string;
+  type: 'checkbox-group';
+  customId: string;
+  required: boolean;
+  minValues: number | null;
+  maxValues: number | null;
+  options: ModalChoiceOption[];
+};
+
+export type RadioGroupComponent = {
+  id: string;
+  type: 'radio-group';
+  customId: string;
+  required: boolean;
+  options: ModalChoiceOption[];
+};
+
+export type ModalInputComponent =
+  | TextInputComponent
+  | SelectMenuComponent
+  | FileUploadComponent
+  | CheckboxComponent
+  | CheckboxGroupComponent
+  | RadioGroupComponent;
+
+export type ModalInputComponentType = ModalInputComponent['type'];
+
 export type LabelComponent = {
   id: string;
   type: 'label';
   label: string;
   description: string;
-  component: TextInputComponent | SelectMenuComponent;
+  component: ModalInputComponent;
 };
 
 export type ModalBuilderComponent = TextDisplayComponent | LabelComponent;
@@ -39,7 +90,14 @@ export type ModalBuilderState = {
 };
 
 export const MODAL_COMPONENTS: AddableModalComponentType[] = ['text-display', 'label'];
-export const MODAL_INPUT_COMPONENTS: ModalInputComponentType[] = ['text-input', 'select-menu'];
+export const MODAL_INPUT_COMPONENTS: ModalInputComponentType[] = [
+  'text-input',
+  'select-menu',
+  'file-upload',
+  'checkbox',
+  'checkbox-group',
+  'radio-group',
+];
 export const TEXT_INPUT_STYLES: TextInputStyle[] = ['short', 'paragraph'];
 
 const nextModalId = createIdFactory();
@@ -61,6 +119,19 @@ export function createModalSelectMenuOption(
     id: nextModalId('modal-select-option'),
     label: 'Option',
     value: 'option',
+    ...overrides,
+  };
+}
+
+export function createModalChoiceOption(
+  overrides: Partial<Omit<ModalChoiceOption, 'id'>> = {},
+): ModalChoiceOption {
+  return {
+    id: nextModalId('modal-choice-option'),
+    label: 'Option',
+    value: 'option',
+    description: '',
+    default: false,
     ...overrides,
   };
 }
@@ -100,6 +171,66 @@ export function createTextInput(
   };
 }
 
+export function createFileUpload(
+  overrides: Partial<Omit<FileUploadComponent, 'id' | 'type'>> = {},
+): FileUploadComponent {
+  return {
+    id: nextModalId('modal-file-upload'),
+    type: 'file-upload',
+    customId: 'modal_file_upload',
+    minValues: null,
+    maxValues: 1,
+    required: false,
+    ...overrides,
+  };
+}
+
+export function createCheckbox(
+  overrides: Partial<Omit<CheckboxComponent, 'id' | 'type'>> = {},
+): CheckboxComponent {
+  return {
+    id: nextModalId('modal-checkbox'),
+    type: 'checkbox',
+    customId: 'modal_checkbox',
+    default: false,
+    ...overrides,
+  };
+}
+
+export function createCheckboxGroup(
+  overrides: Partial<Omit<CheckboxGroupComponent, 'id' | 'type'>> = {},
+): CheckboxGroupComponent {
+  return {
+    id: nextModalId('modal-checkbox-group'),
+    type: 'checkbox-group',
+    customId: 'modal_checkbox_group',
+    required: false,
+    minValues: null,
+    maxValues: null,
+    options: [
+      createModalChoiceOption({ label: 'Option 1', value: 'option_1' }),
+      createModalChoiceOption({ label: 'Option 2', value: 'option_2' }),
+    ],
+    ...overrides,
+  };
+}
+
+export function createRadioGroup(
+  overrides: Partial<Omit<RadioGroupComponent, 'id' | 'type'>> = {},
+): RadioGroupComponent {
+  return {
+    id: nextModalId('modal-radio-group'),
+    type: 'radio-group',
+    customId: 'modal_radio_group',
+    required: false,
+    options: [
+      createModalChoiceOption({ label: 'Option 1', value: 'option_1' }),
+      createModalChoiceOption({ label: 'Option 2', value: 'option_2' }),
+    ],
+    ...overrides,
+  };
+}
+
 export function createLabel(): LabelComponent {
   return {
     id: nextModalId('modal-label'),
@@ -119,12 +250,20 @@ export function createModalComponent(type: AddableModalComponentType): ModalBuil
   }
 }
 
-export function createModalInputComponent(type: ModalInputComponentType) {
+export function createModalInputComponent(type: ModalInputComponentType): ModalInputComponent {
   switch (type) {
     case 'text-input':
       return createTextInput();
     case 'select-menu':
       return createModalSelectMenu();
+    case 'file-upload':
+      return createFileUpload();
+    case 'checkbox':
+      return createCheckbox();
+    case 'checkbox-group':
+      return createCheckboxGroup();
+    case 'radio-group':
+      return createRadioGroup();
   }
 }
 
@@ -151,6 +290,14 @@ export function formatModalComponentType(
       return 'Text Input';
     case 'select-menu':
       return 'Select Menu';
+    case 'file-upload':
+      return 'File Upload';
+    case 'checkbox':
+      return 'Checkbox';
+    case 'checkbox-group':
+      return 'Checkbox Group';
+    case 'radio-group':
+      return 'Radio Group';
   }
 }
 
@@ -161,11 +308,19 @@ export function describeModalComponent(
     case 'text-display':
       return 'Plain text shown at the top of the modal.';
     case 'label':
-      return 'A labeled field wrapping either a text input or a select menu.';
+      return 'A labeled field wrapping one modal input component.';
     case 'text-input':
       return 'Collect short or long text directly from the user.';
     case 'select-menu':
       return 'Let the user choose one or more predefined options.';
+    case 'file-upload':
+      return 'Allow the user to upload one or more files in the modal.';
+    case 'checkbox':
+      return 'Single boolean choice shown as a checkbox.';
+    case 'checkbox-group':
+      return 'Multiple checkbox options inside one field.';
+    case 'radio-group':
+      return 'Single-choice radio options inside one field.';
   }
 }
 
@@ -222,7 +377,7 @@ function deserializeModalComponent(value: unknown, path: string): ModalBuilderCo
 function deserializeModalInputComponent(
   value: unknown,
   path: string,
-): TextInputComponent | SelectMenuComponent {
+): ModalInputComponent {
   const component = asRecord(value, path);
   const type = readString(component.type);
 
@@ -255,6 +410,52 @@ function deserializeModalInputComponent(
             )
           : [],
       });
+    case 'file-upload':
+      return createFileUpload({
+        customId: readString(component['custom-id']),
+        required: readBoolean(component.required, false),
+        minValues:
+          component['min-values'] === undefined
+            ? null
+            : readInteger(component['min-values'], 0),
+        maxValues:
+          component['max-values'] === undefined
+            ? 1
+            : readInteger(component['max-values'], 1),
+      });
+    case 'checkbox':
+      return createCheckbox({
+        customId: readString(component['custom-id']),
+        default: readBoolean(component.default, false),
+      });
+    case 'checkbox-group':
+      return createCheckboxGroup({
+        customId: readString(component['custom-id']),
+        required: readBoolean(component.required, false),
+        minValues:
+          component['min-values'] === undefined
+            ? null
+            : readInteger(component['min-values'], 0),
+        maxValues:
+          component['max-values'] === undefined
+            ? null
+            : readInteger(component['max-values'], 1),
+        options: Array.isArray(component.options)
+          ? component.options.map((option, index) =>
+              deserializeModalChoiceOption(option, `${path}.options[${index}]`),
+            )
+          : [],
+      });
+    case 'radio-group':
+      return createRadioGroup({
+        customId: readString(component['custom-id']),
+        required: readBoolean(component.required, false),
+        options: Array.isArray(component.options)
+          ? component.options.map((option, index) =>
+              deserializeModalChoiceOption(option, `${path}.options[${index}]`),
+            )
+          : [],
+      });
     default:
       throw new Error(`${path}.type "${type}" is not supported inside modal label.`);
   }
@@ -266,6 +467,17 @@ function deserializeModalSelectMenuOption(value: unknown, path: string): SelectM
   return createModalSelectMenuOption({
     label: readString(option.label),
     value: readString(option.value),
+  });
+}
+
+function deserializeModalChoiceOption(value: unknown, path: string): ModalChoiceOption {
+  const option = asRecord(value, path);
+
+  return createModalChoiceOption({
+    label: readString(option.label),
+    value: readString(option.value),
+    description: readString(option.description),
+    default: readBoolean(option.default, false),
   });
 }
 
@@ -302,52 +514,125 @@ function serializeLabel(component: LabelComponent, indentLevel: number) {
 }
 
 function serializeInputComponent(
-  component: TextInputComponent | SelectMenuComponent,
+  component: ModalInputComponent,
   indentLevel: number,
 ) {
-  if (component.type === 'text-input') {
-    const lines = [`${indent(indentLevel)}type: text-input`];
-    lines.push(`${indent(indentLevel + 1)}style: ${quoteString(component.style)}`);
-    pushStringField(lines, indentLevel + 1, 'custom-id', component.customId);
-    pushStringField(lines, indentLevel + 1, 'placeholder', component.placeholder);
-    if (component.minLength !== null) {
-      lines.push(`${indent(indentLevel + 1)}min-length: ${component.minLength}`);
+  switch (component.type) {
+    case 'text-input': {
+      const lines = [`${indent(indentLevel)}type: text-input`];
+      lines.push(`${indent(indentLevel)}style: ${quoteString(component.style)}`);
+      pushStringField(lines, indentLevel, 'custom-id', component.customId);
+      pushStringField(lines, indentLevel, 'placeholder', component.placeholder);
+      if (component.minLength !== null) {
+        lines.push(`${indent(indentLevel)}min-length: ${component.minLength}`);
+      }
+      if (component.maxLength !== null) {
+        lines.push(`${indent(indentLevel)}max-length: ${component.maxLength}`);
+      }
+      if (component.required) {
+        lines.push(`${indent(indentLevel)}required: true`);
+      }
+      pushStringField(lines, indentLevel, 'value', component.value);
+      return lines;
     }
-    if (component.maxLength !== null) {
-      lines.push(`${indent(indentLevel + 1)}max-length: ${component.maxLength}`);
+
+    case 'select-menu': {
+      const lines = [`${indent(indentLevel)}type: select-menu`];
+      pushStringField(lines, indentLevel, 'custom-id', component.customId);
+
+      if (component.options.length === 0) {
+        lines.push(`${indent(indentLevel)}options: []`);
+      } else {
+        lines.push(`${indent(indentLevel)}options:`);
+        for (const option of component.options) {
+          lines.push(`${indent(indentLevel + 1)}- label: ${quoteString(option.label)}`);
+          lines.push(`${indent(indentLevel + 2)}value: ${quoteString(option.value)}`);
+        }
+      }
+
+      if (component.placeholder.trim().length > 0) {
+        pushStringField(lines, indentLevel, 'placeholder', component.placeholder);
+      }
+
+      if (component.minValues !== 1) {
+        lines.push(`${indent(indentLevel)}min-values: ${component.minValues}`);
+      }
+
+      if (component.maxValues !== 1) {
+        lines.push(`${indent(indentLevel)}max-values: ${component.maxValues}`);
+      }
+
+      return lines;
     }
-    if (component.required) {
-      lines.push(`${indent(indentLevel + 1)}required: true`);
+
+    case 'file-upload': {
+      const lines = [`${indent(indentLevel)}type: file-upload`];
+      pushStringField(lines, indentLevel, 'custom-id', component.customId);
+      if (component.minValues !== null) {
+        lines.push(`${indent(indentLevel)}min-values: ${component.minValues}`);
+      }
+      if (component.maxValues !== 1) {
+        lines.push(`${indent(indentLevel)}max-values: ${component.maxValues}`);
+      }
+      if (component.required) {
+        lines.push(`${indent(indentLevel)}required: true`);
+      }
+      return lines;
     }
-    pushStringField(lines, indentLevel + 1, 'value', component.value);
-    return lines;
-  }
 
-  const lines = [`${indent(indentLevel)}type: select-menu`];
-  pushStringField(lines, indentLevel + 1, 'custom-id', component.customId);
+    case 'checkbox': {
+      const lines = [`${indent(indentLevel)}type: checkbox`];
+      pushStringField(lines, indentLevel, 'custom-id', component.customId);
+      if (component.default) {
+        lines.push(`${indent(indentLevel)}default: true`);
+      }
+      return lines;
+    }
 
-  if (component.options.length === 0) {
-    lines.push(`${indent(indentLevel + 1)}options: []`);
-  } else {
-    lines.push(`${indent(indentLevel + 1)}options:`);
-    for (const option of component.options) {
-      lines.push(`${indent(indentLevel + 2)}- label: ${quoteString(option.label)}`);
-      lines.push(`${indent(indentLevel + 3)}value: ${quoteString(option.value)}`);
+    case 'checkbox-group': {
+      const lines = [`${indent(indentLevel)}type: checkbox-group`];
+      pushStringField(lines, indentLevel, 'custom-id', component.customId);
+      if (component.required) {
+        lines.push(`${indent(indentLevel)}required: true`);
+      }
+      if (component.minValues !== null) {
+        lines.push(`${indent(indentLevel)}min-values: ${component.minValues}`);
+      }
+      if (component.maxValues !== null) {
+        lines.push(`${indent(indentLevel)}max-values: ${component.maxValues}`);
+      }
+      lines.push(...serializeModalChoiceOptions(component.options, indentLevel));
+      return lines;
+    }
+
+    case 'radio-group': {
+      const lines = [`${indent(indentLevel)}type: radio-group`];
+      pushStringField(lines, indentLevel, 'custom-id', component.customId);
+      if (component.required) {
+        lines.push(`${indent(indentLevel)}required: true`);
+      }
+      lines.push(...serializeModalChoiceOptions(component.options, indentLevel));
+      return lines;
     }
   }
+}
 
-  if (component.placeholder.trim().length > 0) {
-    pushStringField(lines, indentLevel + 1, 'placeholder', component.placeholder);
+function serializeModalChoiceOptions(options: ModalChoiceOption[], indentLevel: number) {
+  if (options.length === 0) {
+    return [`${indent(indentLevel)}options: []`];
   }
 
-  if (component.minValues !== 1) {
-    lines.push(`${indent(indentLevel + 1)}min-values: ${component.minValues}`);
+  const lines = [`${indent(indentLevel)}options:`];
+  for (const option of options) {
+    lines.push(`${indent(indentLevel + 1)}- label: ${quoteString(option.label)}`);
+    lines.push(`${indent(indentLevel + 2)}value: ${quoteString(option.value)}`);
+    if (option.description.trim().length > 0) {
+      lines.push(`${indent(indentLevel + 2)}description: ${quoteString(option.description)}`);
+    }
+    if (option.default) {
+      lines.push(`${indent(indentLevel + 2)}default: true`);
+    }
   }
-
-  if (component.maxValues !== 1) {
-    lines.push(`${indent(indentLevel + 1)}max-values: ${component.maxValues}`);
-  }
-
   return lines;
 }
 
@@ -380,7 +665,7 @@ export const MODAL_BUILDER_DEFINITION: BuilderDefinition<ModalBuilderState> = {
   output: {
     title: 'Generated YAML',
     description: 'Copy this output into modal fields, modal actions, or preset configurations.',
-    lang: 'yaml'
+    lang: 'yaml',
   },
   createInitialState: createInitialModalBuilderState,
   serialize: serializeModalConfig,

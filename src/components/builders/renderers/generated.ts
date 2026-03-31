@@ -9,11 +9,20 @@ import type {
   TextDisplayComponent,
 } from '@/lib/builders/message';
 import type {
+  CheckboxComponent,
+  CheckboxGroupComponent,
+  FileUploadComponent,
+  ModalChoiceOption,
   ModalBuilderComponent,
   ModalBuilderState,
+  RadioGroupComponent,
   TextInputComponent,
 } from '@/lib/builders/modal';
 import type {
+  GeneratedCheckboxComponent,
+  GeneratedCheckboxGroupComponent,
+  GeneratedChoiceOption,
+  GeneratedFileUploadComponent,
   GeneratedActionRowComponent,
   GeneratedButtonComponent,
   GeneratedContainerComponent,
@@ -25,6 +34,8 @@ import type {
   GeneratedMessageConfig,
   GeneratedModalComponent,
   GeneratedModalConfig,
+  GeneratedModalInputComponent,
+  GeneratedRadioGroupComponent,
   GeneratedRepeatComponent,
   GeneratedSectionAccessory,
   GeneratedSectionComponent,
@@ -131,11 +142,33 @@ function buildGeneratedModalComponent(
     ...(component.description.trim().length > 0
       ? { description: component.description }
       : {}),
-    component:
-      component.component.type === 'text-input'
-        ? buildGeneratedTextInput(component.component)
-        : buildGeneratedSelectMenu(component.component),
+    component: buildGeneratedModalInput(component.component),
   } satisfies GeneratedLabelComponent;
+}
+
+function buildGeneratedModalInput(
+  component:
+    | TextInputComponent
+    | SelectMenuComponent
+    | FileUploadComponent
+    | CheckboxComponent
+    | CheckboxGroupComponent
+    | RadioGroupComponent,
+): GeneratedModalInputComponent {
+  switch (component.type) {
+    case 'text-input':
+      return buildGeneratedTextInput(component);
+    case 'select-menu':
+      return buildGeneratedSelectMenu(component);
+    case 'file-upload':
+      return buildGeneratedFileUpload(component);
+    case 'checkbox':
+      return buildGeneratedCheckbox(component);
+    case 'checkbox-group':
+      return buildGeneratedCheckboxGroup(component);
+    case 'radio-group':
+      return buildGeneratedRadioGroup(component);
+  }
 }
 
 function buildGeneratedTextDisplay(
@@ -234,5 +267,60 @@ function buildGeneratedTextInput(
     ...(component.maxLength !== null ? { 'max-length': component.maxLength } : {}),
     ...(component.required ? { required: true } : {}),
     ...(component.value.trim().length > 0 ? { value: component.value } : {}),
+  };
+}
+
+function buildGeneratedFileUpload(
+  component: FileUploadComponent,
+): GeneratedFileUploadComponent {
+  return {
+    type: 'file-upload',
+    ...(component.customId.trim().length > 0 ? { 'custom-id': component.customId } : {}),
+    ...(component.minValues !== null ? { 'min-values': component.minValues } : {}),
+    ...(component.maxValues !== 1 ? { 'max-values': component.maxValues } : {}),
+    ...(component.required ? { required: true } : {}),
+  };
+}
+
+function buildGeneratedCheckbox(
+  component: CheckboxComponent,
+): GeneratedCheckboxComponent {
+  return {
+    type: 'checkbox',
+    ...(component.customId.trim().length > 0 ? { 'custom-id': component.customId } : {}),
+    ...(component.default ? { default: true } : {}),
+  };
+}
+
+function buildGeneratedCheckboxGroup(
+  component: CheckboxGroupComponent,
+): GeneratedCheckboxGroupComponent {
+  return {
+    type: 'checkbox-group',
+    ...(component.customId.trim().length > 0 ? { 'custom-id': component.customId } : {}),
+    ...(component.required ? { required: true } : {}),
+    ...(component.minValues !== null ? { 'min-values': component.minValues } : {}),
+    ...(component.maxValues !== null ? { 'max-values': component.maxValues } : {}),
+    options: component.options.map(buildGeneratedChoiceOption),
+  };
+}
+
+function buildGeneratedRadioGroup(
+  component: RadioGroupComponent,
+): GeneratedRadioGroupComponent {
+  return {
+    type: 'radio-group',
+    ...(component.customId.trim().length > 0 ? { 'custom-id': component.customId } : {}),
+    ...(component.required ? { required: true } : {}),
+    options: component.options.map(buildGeneratedChoiceOption),
+  };
+}
+
+function buildGeneratedChoiceOption(option: ModalChoiceOption): GeneratedChoiceOption {
+  return {
+    label: option.label,
+    value: option.value,
+    ...(option.description.trim().length > 0 ? { description: option.description } : {}),
+    ...(option.default ? { default: true } : {}),
   };
 }
