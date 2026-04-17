@@ -197,7 +197,7 @@ export type GeneratedModalConfig = {
 export function DiscordMessageRenderer({ config }: { config: GeneratedMessageConfig }) {
   return (
     <div
-      className="overflow-hidden rounded-3xl border border-[#1f2023] bg-[#313338] text-[#dbdee1] shadow-[0_20px_60px_rgba(0,0,0,0.28)]"
+      className="overflow-hidden rounded-3xl border border-[#1f2023] bg-[#313338] text-[#dbdee1]"
       style={{ fontFamily: discordFontFamily }}
     >
       <style>{ggSansFontFace}</style>

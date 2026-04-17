@@ -2,5 +2,12 @@
   "title": "ItsMyConfig",
   "description": "Custom Placeholders Plugin",
   "root": true,
-  "icon": "Wrench"
+  "icon": "Wrench",
+  "pages": [
+    "index",
+    "builder",
+    "custom-placeholder",
+    "tag-system",
+    "commands-placeholders"
+  ]
 }
