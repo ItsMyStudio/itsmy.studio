@@ -644,7 +644,7 @@ function ChoiceIndicator({
   return (
     <span
       className={cn(
-        'inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border',
+        'inline-flex size-4 shrink-0 items-center justify-center rounded-sm border',
         checked ? 'border-[#5865f2] bg-[#5865f2] text-white' : 'border-[#6d727b]',
       )}
     >
