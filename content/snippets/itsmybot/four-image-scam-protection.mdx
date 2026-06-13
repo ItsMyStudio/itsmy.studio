@@ -1,0 +1,154 @@
+---
+title: "4 Image Scam Protection"
+description: "Removes messages containing exactly 4 images and no text, a pattern commonly used by compromised Discord accounts."
+author: "Ph4ntom"
+tags:
+  - Moderation
+  - No Addons
+---
+
+```yaml title="auto-scam-delete.yml"
+actions:
+  - triggers: messageCreate
+
+    conditions:
+      # Ignore bots
+      - id: "!isBot"
+
+      # Exempt trusted roles (or above)
+      - id: "!hasRole"
+        args:
+          value: "ROLE_ID_HERE"
+          inherit: true
+
+      # Channels to monitor
+      - id: inChannel
+        args:
+          value:
+            - "CHANNEL_ID_1"
+            - "CHANNEL_ID_2"
+            - "CHANNEL_ID_3"
+            - "CHANNEL_ID_4"
+            - "CHANNEL_ID_5"
+
+      # Message must contain exactly 4 attachments
+      - id: isExpressionTrue
+        args:
+          value: "%message_attachment_count% == 4"
+
+      # Message must contain no text
+      - id: isExpressionTrue
+        args:
+          value: "%message_is_content_empty% == true"
+
+    actions:
+
+      # Log the removed message for staff review
+      - id: sendMessage
+        target:
+          channel: "LOG_CHANNEL_ID"
+        args:
+          components:
+            - type: container
+              color: "#f92f2f"
+              components:
+                - type: text-display
+                  content: "### ⛔ Suspicious Message Removed"
+                - type: separator
+                  spacing: 2
+                - type: section
+                  components:
+                    - type: text-display
+                      content: |-
+                        **User:** %user_mention%
+                        **Username:** %user_username% (%user_id%)
+                        **Member Since:** %user_join_date% (Created %user_create_date%)
+                        **Channel:** %message_url%
+                  accessory:
+                    type: thumbnail
+                    url: "%user_avatar%"
+                - type: separator
+                  spacing: 1
+                - type: text-display
+                  content: "**Attachments:** (%message_attachment_count%)"
+                - type: media-gallery
+                  items:
+                    - url: "%message_attachment_0_url%"
+                    - url: "%message_attachment_1_url%"
+                    - url: "%message_attachment_2_url%"
+                    - url: "%message_attachment_3_url%"
+
+      # Remove the suspicious message
+      - id: deleteMessage
+
+      # Inform the user publicly
+      - id: sendMessage
+        args:
+          components:
+            - type: container
+              color: "#f9b32f"
+              components:
+                - type: text-display
+                  content: "### ⚠️ Message Removed"
+                - type: separator
+                  spacing: 2
+                - type: text-display
+                  content: |-
+                    Hey %user_mention%, your message was automatically removed because it matched a pattern frequently associated with compromised Discord accounts, scam messages, or malicious content.
+
+                    If this was a legitimate message, you can usually avoid triggering this protection by:
+                    - Adding a short text message along with your images.
+                    - Sending fewer or more than 4 images in a single message.
+
+                    If you believe this action was taken incorrectly, please contact a member of staff and we will gladly review the removal.
+                - type: separator
+                  spacing: 2
+                - type: text-display
+                  content: |-
+                    -# This notice will automatically disappear shortly.
+
+          follow-up-actions:
+            # Auto-delete the notice
+            - id: deleteMessage
+              args:
+                delay: 45
+
+
+      # Send additional information via DM
+      - id: sendPrivateMessage
+        target:
+          user: "%user_id%"
+        args:
+          components:
+            - type: container
+              color: "#f9b32f"
+              components:
+                - type: text-display
+                  content: "### ⚠️ Message Automatically Removed"
+                - type: separator
+                  spacing: 2
+                - type: text-display
+                  content: |-
+                    Hi %user_mention%,
+
+                    Your message was automatically removed from **%guild_name%** because it matched a pattern commonly seen in spam or compromised-account activity.
+                - type: separator
+                  spacing: 2
+                - type: text-display
+                  content: |-
+                    ### ✔ If this was a mistake, try sending again with:
+                    - A short text message alongside your images
+                    - Fewer or more than 4 images in one message
+                    - Splitting images into multiple messages
+
+                    ### 🔐 Account safety tips:
+                    If you didn’t expect this to happen, it's a good idea to:
+                    - Change your Discord password
+                    - Enable Two-Factor Authentication (2FA)
+                    - Check authorized devices in your Discord settings
+                - type: separator
+                  spacing: 2
+                - type: text-display
+                  content: |-
+                    If you believe this was removed incorrectly, staff can review it for you shortly.
+```
