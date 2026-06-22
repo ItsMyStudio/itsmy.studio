@@ -69,7 +69,7 @@ const yamlDumpOptions = {
 
 export const DEFAULT_YAML_OUTPUT_INDENT = 0;
 export const MIN_YAML_OUTPUT_INDENT = 0;
-export const MAX_YAML_OUTPUT_INDENT = 24;
+export const MAX_YAML_OUTPUT_INDENT = 12;
 
 export function normalizeYamlOutputIndent(value: number | string | null | undefined) {
   const parsed = typeof value === 'number' ? value : Number(value);
@@ -86,7 +86,7 @@ export function detectYamlOutputIndent(value: string) {
     if (!line.trim() || line.trimStart().startsWith('#')) continue;
     if (line.trim() === '---' || line.trim() === '...') continue;
 
-    const currentIndent = line.length - line.trimStart().length;
+    const currentIndent = Math.ceil((line.length - line.trimStart().length) / 2);
     indent = indent === null ? currentIndent : Math.min(indent, currentIndent);
   }
 
@@ -97,11 +97,12 @@ export function dedentYamlInput(value: string, indent = detectYamlOutputIndent(v
   const normalizedIndent = normalizeYamlOutputIndent(indent);
   if (normalizedIndent === 0) return value;
 
-  const prefix = ' '.repeat(normalizedIndent);
+  const spaces = normalizedIndent * 2;
+  const prefix = ' '.repeat(spaces);
 
   return value
     .split(/\r?\n/)
-    .map((line) => (line.startsWith(prefix) ? line.slice(normalizedIndent) : line))
+    .map((line) => (line.startsWith(prefix) ? line.slice(spaces) : line))
     .join('\n');
 }
 
@@ -109,7 +110,7 @@ export function indentYamlOutput(value: string, indent: number | string | null |
   const normalizedIndent = normalizeYamlOutputIndent(indent);
   if (normalizedIndent === 0) return value;
 
-  const prefix = ' '.repeat(normalizedIndent);
+  const prefix = ' '.repeat(normalizedIndent * 2);
 
   return value
     .split('\n')
