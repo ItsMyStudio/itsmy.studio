@@ -9,7 +9,7 @@ You can define conditions in script, custom commands, message components, and mo
 ```yaml
 - id: hasPermission
   args:
-    value: "MANAGE_MESSAGES" # Permission ID or name
+    permission: "MANAGE_MESSAGES" # Permission ID or name
 ```
 As shown in the example below, all conditions can include an optional `inverse` argument:
 
@@ -40,7 +40,7 @@ actions:
     conditions:
       - id: hasPermission
         args:
-          value: "MANAGE_MESSAGES"
+          permission: "MANAGE_MESSAGES"
         not-met-actions: # [!code focus]
           - id: addReaction # [!code focus]
             args: # [!code focus]
@@ -152,7 +152,7 @@ Check if a user has a certain permission.
 
 <TypeTable
   type={{
-    value: {
+    permission: {
       description: 'The permission ID or name to check',
       type: 'string | string[]',
       required: true
@@ -164,10 +164,10 @@ Check if a user has a certain permission.
 conditions:
   - id: hasPermission
     args:
-      value: "MANAGE_MESSAGES" # Permission name
+      permission: "MANAGE_MESSAGES" # Permission name
   - id: hasPermission
     args:
-      value: 
+      permission: 
         - "MANAGE_MESSAGES" # Permission name
         - "MANAGE_CHANNELS" # Permission name
 ```
