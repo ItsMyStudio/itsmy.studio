@@ -1,0 +1,178 @@
+---
+title: Tag System
+description: Allows you to use MiniMessage, PlaceholderAPI, play sound, create a bossbar, and more in the plugin of your choice.
+icon: MessageCircleCode
+---
+
+ItsMyConfig allows you to use tags in any plugin, this allows you to use MiniMessage, PlaceholderAPI, play sound, create a bossbar, and way more everywhere.
+## How It Works
+If the first character of the message is the `symbol-prefix` defined in `config.yml` (default is `$`), ItsMyConfig will detect the message and modify it to replace the tags you added inside.
+#### Currently supporting: [!toc]
+- Server Message
+- ActionBar
+- Title
+- BossBar
+- Disconnect Message
+
+<Callout>Advanced Usage: Sometimes, you can have message that can be inside another and alone, using the `symbol-prefix` will keep the prefix visible if it's inside another message. For this you can use the incognito prefix with the following format: `{_symbol-prefix_}`, for example the default ones is `{$}`</Callout>
+
+## All Tags
+### MiniMessage
+`_tag_`
+
+Use any MiniMessage tag in the message, for example `<red>`, `<bold>`, `<gradient:color1:color2>`, and more.
+- [See MiniMessage tags](https://docs.advntr.dev/minimessage/format.html)
+
+```yaml title='Example'
+join-message: '$<red><bold>Welcome to the server, %player%!</bold></red>'
+```
+
+### PlaceholderAPI
+`<papi:_placeholder_>`
+
+Returns the value of the PlaceholderAPI placeholder.
+
+```yaml title='Example'
+kick-message: '$<red><bold>Goodbye, <papi:player_name>!</bold></red>'
+economy-message: '$<green>You have <papi:vault_eco_balance_formatted> coins.</green>'
+```
+
+### Action Bar
+`<actionbar:_text_>`
+
+Sends the message part in the Action Bar.
+
+```yaml title='Example'
+healed: '$<actionbar:You have been healed!>'
+feed: '$You have been fed! <actionbar:Enjoy your meal!>'
+```
+
+### Title & Subtitle
+`<title:_fadeIn_:_duration_:_fadeOut_:_title_:_subtitle_>` | `<title:_title_:_subtitle_>`
+`<subtitle:_fadeIn_:_duration_:_fadeOut_:_text_>` | `<subtitle:_text_>`
+
+Send the message part in the Title and Subtitle
+
+```yaml title='Example'
+join-message: '$<title:10:70:20:"Welcome to the server, %player%!":"Enjoy your stay!">'
+exp-gain: '$<subtitle:"You gained <green>%exp%</green> experience points!">'
+level-up: '$Congratulations! You are now level <yellow>%level%</yellow>! <title:"<gradient:blue:green>Level Up!</gradient>"'
+```
+
+### Custom Placeholder
+`<p:_placeholder_>` | `<p:_placeholder_:_arg-1_:_arg-2_>`
+
+Return the value of the custom placeholder made by ItsMyConfig, you can use arguments if the placeholder supports it. 
+- [See Custom Placeholders](/docs/itsmyconfig/placeholders)
+
+```yaml title='Example'
+denied-teleport: "$<p:prefix> Denied <p:primary-color>{0}</p> pending teleport request(s)."
+```
+
+### Sound
+`<sound:_sound_:_volume_:_pitch_>` | `<sound:_sound_>`
+
+Play a sound to the player
+
+```yaml title='Example'
+eco-gain: "$You have gained <green>%eco%</green> coins. <sound:ENTITY_EXPERIENCE_ORB_PICKUP:1:1>"
+teleport: "$Teleporting to <green>%warp%</green>... <sound:entity.shulker.teleport:0.7:1> "
+```
+
+### SmallCaps
+`<smallcaps>_text_</smallcaps>`
+
+Transform the text into small caps
+
+```yaml title='Example'
+kicked: "$<smallcaps>You have been kicked from the server.</smallcaps>"
+```
+<Callout>
+  TIP: When it's not inside a message, you can use the placeholder `%itsmyconfig_smallcaps:"<text>"%` to transform the text into small caps, for example: `%itsmyconfig_smallcaps:I'm small%`
+</Callout>
+
+### Quote
+`<quote>_text_</quote>`
+
+It's a very important tag that blocks other tags within it, very useful for preventing players from parsing placeholders and using tags.
+
+<Callout type='warning'>
+  For security reasons, the tag can only be used once per message and must be closed.
+</Callout>
+
+```yaml title='Example'
+unknown-warp: "$<red>The warp <quote>%warp%</quote> doesn't exist."
+```
+
+### Delay
+`<delay:_timeInTick_:"_text_">`
+
+Delay the message for the specified time in tick
+
+```yaml title='Example'
+teleport: "$<red>Teleporting in 5 seconds...<delay:100:'<green>Teleporting'>"
+```
+
+### Repeat
+`<repeat:"_text_":_amount_:_timeInTick_>` | `<repeat:"_text_":_amount_>`
+
+Repeat the message for the specified amount of time
+Support different value: 
+- `<v:repeat_left>` - The number of times left to repeat the message
+- `<v:repeat_total>` - The total number of times the message will be repeated
+- `<v:repeat_count>` - The number of times the message has been repeated
+
+<Callout>
+  You can cancel a repeat in progress with the tag `<repeat:cancel>`
+</Callout>
+
+```yaml title='Example'
+dont-move: "$<repeat:'<red>Teleporting in <v:repeat_left> seconds... Do not move!':5:20>"
+moved: "$<red>Teleportation canceled! <repeat:cancel>"
+```
+
+---
+
+### BossBar
+`<bossbar:"_text_":_barProgress_|progress|reverse:_color_:_style_:_timeInTick_>` | `<bossbar:"_text_":_barProgress_|progress|reverse:_color_:_style_>`
+
+Create a boss bar with the specified text, progress, color, style, and time.
+Bar progress can be a number or the value `progress` or `reverse`, if it's `progress` the bar will increase, if it's `reverse` the bar will decrease.
+
+Supported color: `BLUE`, `GREEN`, `PINK`, `PURPLE`, `RED`, `WHITE`, `YELLOW`
+Supported style: `NOTCHED_6`, `NOTCHED_10`, `NOTCHED_12`, `NOTCHED_20`, `SOLID`
+
+<Callout>
+  You can remove the boss bar with the tag `<bossbar:cancel>`
+</Callout>
+
+```yaml title='Example'
+teleport: "<bossbar:'Teleporting...':50:RED:SOLID:100>"
+```
+
+### Plain
+`<plain>_text_</plain>`
+
+Remove all color and formatting from the text
+
+```yaml title='Example'
+kick-message: "$<plain><red>You have been kicked from the server.</red></plain>"
+```
+
+### Uppercase
+`<uppercase>_text_</uppercase>`
+
+Transform the text into uppercase
+
+```yaml title='Example'
+banned: "$<uppercase>You have been banned from the server.</uppercase>"
+```
+
+### Lowercase
+`<lowercase>_text_</lowercase>`
+
+Transform the text into lowercase
+
+```yaml title='Example'
+join-message: "$<lowercase>Welcome to the server, %player%!</lowercase>"
+```

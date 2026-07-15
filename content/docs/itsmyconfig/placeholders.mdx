@@ -1,0 +1,321 @@
+---
+title: Custom Placeholder
+description: Create your own placeholders and unlock new possibilities with ItsMyConfig.
+icon: Percent
+---
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+Custom Placeholders allow you to create your own placeholders and use them in all plugins that are compatible with PlaceholderAPI or with the [Tag System](/docs/itsmyconfig/tags). For example, you can have one universal prefix for all messages, regardless of the plugin, and be able to change this prefix easily. 
+
+## Create your first placeholder
+To create a placeholder, you need to create or edit the files inside `/plugins/ItsMyConfig/placeholders/`.
+<Files>
+  <Folder name="plugins/ItsMyConfig" defaultOpen>
+    <Folder name="placeholders" defaultOpen>
+      <File name="default.yml" />
+      <File name="example.yml" />
+      <File name="Create new files here or in a subfolder" icon={<Plus />} />
+    </Folder>
+    <File name="config.yml" />
+  </Folder>
+</Files>
+
+Inside the file, you can create your own placeholders with the following format:
+```yaml
+custom-placeholder:
+  placeholder-id:
+    type: "string" # The type of the placeholder, you have the list of all types below
+    value: "This is your custom placeholder" # The value of the placeholder
+```
+
+## Placeholder Types
+### String
+String placeholder is the default type, it allows you to create a simple placeholder with a string value. You don't need to specify the type, placeholder will automatically detect it.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: "string" # Optional
+    value: "This is your custom placeholder"
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>%` - Return the value
+- `%itsmyconfig_<placeholder>:<arg-1>:<arg-2>%` - Return the value with arguments
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}>` - Return the value
+- `<p:{placeholder}:{arg-1}:{arg-2}>` - Return the value with arguments
+
+### Color
+Color placeholder allows you to create a placeholder with a color value. You can use the color name or the hex color code. It's automatically create different placeholders for each format.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: "color"
+    value: "red"
+    # Supported value: black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, or white.
+    # You can also use hex color code: #FF0000
+    bold: true # Optional
+    underlined: false # Optional
+    italic: false # Optional
+    strikethrough: false # Optional
+    obfuscated: false # Optional
+```
+
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>%` - Return the miniMessage color: `<red>` for color and `<#FF0000>` for hex
+- `%itsmyconfig_<placeholder>_legacy%` - Return the legacy color: `&c` for color and `&#FF0000` for hex
+- `%itsmyconfig_<placeholder>_l%` - Return the legacy color: `&c` for color and `&#FF0000` for hex
+- `%itsmyconfig_<placeholder>_console%` - Return the console color: `§c` for color and `§x§F§F§0§0§0§0` for hex
+- `%itsmyconfig_<placeholder>_c%` - Return the console color: `§c` for color and `§x§F§F§0§0§0§0` for hex
+- `%itsmyconfig_<placeholder>_mini%` - Return the miniMessage color: `<red>` for color and `<#FF0000>` for hex
+- `%itsmyconfig_<placeholder>_mini:<text>%`<br/> - Return the miniMessage color but closing the tag after the text: `<red>text</red>`
+#### Placeholder Tag Format[!toc]
+- `<p:{placeholder}>`<br/> - Apply the style to the text after the tag. Can be closed with `</p>`
+
+### Animation
+Animation placeholder allows you to create a placeholder with a list of values that will be displayed one after the other at a specified interval.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: "animation"
+    values: # Attention, values not value
+      - "<green>Animation !"
+      - "<yellow>Animation !"
+      - "<gold>Animation !"
+      - "<red>Animation !"
+      - "<pink>Animation !"
+    interval: 20
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>%` - Return the value
+- `%itsmyconfig_<placeholder>:<arg-1>:<arg-2>%` - Return the value with arguments
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}>` - Return the value
+- `<p:{placeholder}:{arg-1}:{arg-2}>` - Return the value with arguments
+
+### Random
+Random placeholder allows you to create a placeholder with a list of values that will be randomly displayed.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: "random"
+    values: # Attention, values not value
+      - "Rock"
+      - "Paper"
+      - "Scissors"
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>%` - Return the value
+- `%itsmyconfig_<placeholder>:<arg-1>:<arg-2>%` - Return the value with arguments
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}>` - Return the value
+- `<p:{placeholder}:{arg-1}:{arg-2}>` - Return the value with arguments
+
+### Colored Text
+Colored Text placeholder allows you to create a placeholder with a text that contains color and style and get output in different formats.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    value: "<#d4acfb>Server Name</#d4acfb>"
+    type: colored_text
+```
+#### PlaceholderAPI Format[!toc]
+- `%itsmyconfig_<placeholder>%` - Return the value in miniMessage format: `<#d4acfb>Server Name</#d4acfb>`
+- `%itsmyconfig_<placeholder>:<arg-1>:<arg-2>%` - Return the value with arguments in miniMessage format
+- `%itsmyconfig_<placeholder>_legacy%` - Return the value in legacy format: `&#d4acfbServer Name`
+- `%itsmyconfig_<placeholder>_legacy:<arg-1>:<arg-2>%` - Return the value with arguments in legacy format
+- `%itsmyconfig_<placeholder>_l%` - Return the value in legacy format
+- `%itsmyconfig_<placeholder>_l:<arg-1>:<arg-2>%` - Return the value with arguments in legacy format
+- `%itsmyconfig_<placeholder>_console%`<br/> - Return the value in console format: `§x§d§4§a§c§fServer Name`
+- `%itsmyconfig_<placeholder>_console:<arg-1>:<arg-2>%`<br/> - Return the value with arguments in console format
+- `%itsmyconfig_<placeholder>_c%`<br/> - Return the value in console format
+- `%itsmyconfig_<placeholder>_c:<arg-1>:<arg-2>%`<br/> - Return the value with arguments in console format
+- `%itsmyconfig_<placeholder>_mini%`<br/> - Return the value in miniMessage format: `<#d4acfb>Server Name</#d4acfb>`
+- `%itsmyconfig_<placeholder>_mini:<arg-1>:<arg-2>%`<br/> - Return the value with arguments in miniMessage format
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}>` - Return the value
+- `<p:{placeholder}:{arg-1}:{arg-2}>` - Return the value with arguments
+
+### Math
+Math placeholder allows you to create a placeholder with a math expression that will be calculated and displayed.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    value: "1 + 1"
+    type: "math"
+    rounding: HALF_UP # Supported value: HALF_UP, HALF_DOWN, HALF_EVEN, UP, DOWN, CEILING, FLOOR. Optional
+    precision: 1 # Number of decimal places. Optional
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>%` - Return the value
+- `%itsmyconfig_<placeholder>:<arg-1>:<arg-2>%` - Return the value with arguments
+- `%itsmyconfig_<placeholder>_formatted%` - Return the value with formatted number: `1k` for `1000`
+- `%itsmyconfig_<placeholder>_formatted:<arg-1>:<arg-2>%` - Return the value with arguments and formatted number
+- `%itsmyconfig_<placeholder>_fixed%` - Return the value with fixed number of decimal places: `1.0` for `1`
+- `%itsmyconfig_<placeholder>_fixed:<arg-1>:<arg-2>%` - Return the value with arguments
+- `%itsmyconfig_<placeholder>_commas%` - Return the value with formatted number with commas: `1,000` for `1000`
+- `%itsmyconfig_<placeholder>_commas:<arg-1>:<arg-2>%` - Return the value with arguments and formatted number with commas
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}>` - Return the value
+- `<p:{placeholder}:{arg-1}:{arg-2}>` - Return the value with arguments
+- `<p:{placeholder}_formatted>` - Return the value with formatted number
+- `<p:{placeholder}_formatted:{arg-1}:{arg-2}>` - Return the value with arguments and formatted number
+- `<p:{placeholder}_fixed>` - Return the value with fixed number of decimal places
+- `<p:{placeholder}_fixed:{arg-1}:{arg-2}>` - Return the value with arguments and fixed number of decimal places
+- `<p:{placeholder}_commas>` - Return the value with formatted number with commas
+- `<p:{placeholder}_commas:{arg-1}:{arg-2}>` - Return the value with arguments and formatted number with commas
+
+### Progress Bar
+
+Progress Bar placeholder allows you to create a placeholder with a progress bar that will be displayed.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    value: ⦁●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⚫●⦁
+    type: progress_bar
+    completed-color: '&a'
+    progress-color: '&e'
+    remaining-color: '&7'
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>:<current-value>:<max-value>%` - Return the progress bar with the value and max value
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}:{current-value}:{max-value}>` - Return the progress bar with the value and max value
+
+### List
+List placeholder allows you to create a placeholder with a list of values that will be displayed.
+
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: "list"
+    values: # Attention, values not value
+      - "Value 1"
+      - "Value 2"
+      - "Value 3"
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>_<index>%` - Return the value at the specified index (starting at 1)
+- `%itsmyconfig_<placeholder>_<index>:<arg-1>:<arg-2>%` - Return the value at the specified index with arguments
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}_{index}>` - Return the value at the specified index (starting at 1)
+- `<p:{placeholder}_{index}:{arg-1}:{arg-2}>` - Return the value at the specified index with arguments
+
+### Switch
+Switch placeholder allows you to create a placeholder with a list of cases that will be displayed based on the input value. If the input value matches a case, the corresponding value will be returned. If no case matches, the default value will be returned.
+You can use ranges for the cases, for example `1-10` will match any value between 1 and 10 (inclusive). You can also use empty string `""` to match empty value.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: switch
+    cases:
+      key1: "Value 1"
+      "test": "Value 2"
+      key3: "Value 3"
+      "": "Value for empty key"
+      "4-10": "Value for range key"
+    default: "&7Unknown"
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>:<key>%` - Return the value for the specified key
+- `%itsmyconfig_<placeholder>:<key>:<arg-1>:<arg-2>%` - Return the value for the specified key with arguments
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}:{key}>` - Return the value for the specified key
+- `<p:{placeholder}:{key}:{arg-1}:{arg-2}>` - Return the value for the specified key with arguments
+
+### Conditional
+Conditional placeholder allows you to create a placeholder with a list of conditions that will be checked and return a value based on the result. If all conditions are met, the true value will be returned, otherwise the false value will be returned.
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id: 
+    type: conditional
+    conditions:
+      - type: string equals
+        input: "%itsmyconfig_example-string%"
+        output: "This is a custom string placeholder"
+        false: "&cCondition not met!" # Optional, use the main false value if not specified
+    true: "&aCondition met!"
+    false: "&cCondition not met!"
+```
+#### PlaceholderAPI Format [!toc]
+- `%itsmyconfig_<placeholder>%` - Return the value based on the conditions
+- `%itsmyconfig_<placeholder>:<arg-1>:<arg-2>%` - Return the value based on the conditions with arguments
+#### Placeholder Tag Format [!toc]
+- `<p:{placeholder}>` - Return the value based on the conditions
+- `<p:{placeholder}:{arg-1}:{arg-2}>` - Return the value
+
+### Condition Types [!toc]
+#### Comparators
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id:
+    type: "conditional"
+    conditions:
+      - type: ">="
+        input: "%player_health%"
+        output: "10"
+    true: "&aCondition met!"
+    false: "&cCondition not met!"
+```
+
+Compares `input:` with `output:`.
+
+| Comparator | Description |
+| --- | --- | 
+| `==` | `input:` equals to `output:` |
+| `>=` | `input:` greater than or equals to `output:` |
+| `<=` | `input:` less than or equals to `output:` |
+| `!=` | `input:` not equals to `output:` |
+| `>` | `input:` greater than `output:` |
+| `<` | `input:` less than `output:` |
+
+
+#### String Equals
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id:
+    type: "conditional"
+    conditions:
+      - type: "string equals ignorecase"
+        input: "%player_name%"
+        output: "Skyssy"
+    true: "&aCondition met!"
+    false: "&cCondition not met!"
+```
+Checks if `input:` matches `output:`. You can use the following modifiers:
+- `ignorecase` - Ignore case when comparing strings
+- `ignorecolor` - Ignore color codes when comparing strings
+<Callout>You can invert the requirement by adding the exclamation mark before the type name: `!string equals ignorecase`).</Callout>
+
+#### String Contains
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id:
+    type: "conditional"
+    conditions:
+      - type: "string contains"
+        input: "%player_name%"
+        output: "Skyssy"
+    true: "&aCondition met!"
+    false: "&cCondition not met!"
+```
+Checks if `input:` contains `output:`. You can use the following modifiers:
+- `ignorecase` - Ignore case when comparing strings
+- `ignorecolor` - Ignore color codes when comparing strings
+
+<Callout>You can invert the requirement by adding the exclamation mark before the type name: `!string contains ignorecolor`).</Callout>
+
+#### Regex matches
+```yaml title='/plugins/ItsMyConfig/placeholders/example.yml'
+custom-placeholder:
+  placeholder-id:
+    type: "conditional"
+    conditions:
+      - type: "regex matches" 
+        input: "Skyssy"
+        output: "^[a-zA-Z0-9_]{3,16}$"
+    true: "&aCondition met!"
+    false: "&cCondition not met!"
+```
+Checks if `input:` matches the regex pattern in `output:`.
+
+<Callout type="info"> Use [this site](https://regexr.com/) to create regular expressions easily. </Callout>

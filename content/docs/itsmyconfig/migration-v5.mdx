@@ -1,0 +1,134 @@
+---
+title: Migrate to v5
+description: Update v4 requirements, placeholder formats, and plugin configurations safely.
+icon: RefreshCw
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+ItsMyConfig v5 changes how placeholder arguments and requirements are written. Follow these steps when upgrading from v4.
+
+## Migration steps
+
+<Steps>
+<Step>
+## Install ItsMyConfig v5
+
+1. Stop your server.
+2. Replace the old ItsMyConfig jar with v5.
+3. Start the server once.
+
+During startup, v5 runs the automatic requirement migration. Check the console for errors, then confirm your old `requirements:` sections use the conditional format shown below.
+</Step>
+
+<Step>
+## Update premade configurations
+
+If you use an ItsMyStudio configuration for **Jobs, Quests, EssentialsX, EconomyShopGUI, or ChatGames**, download its latest version.
+
+- No personal edits: use the latest configuration files.
+- Personal edits: keep your files and migrate their plugin folders with the commands below.
+</Step>
+
+<Step>
+## Migrate edited plugin folders
+
+Run only the commands for the folders installed on your server. Folder names are relative to `/plugins`.
+
+| Configuration | Command |
+| --- | --- |
+| Jobs | `/itsmyconfig migrate Jobs`<br />`/itsmyconfig migrate DeluxeMenus` |
+| Quests | `/itsmyconfig migrate Quests` |
+| EssentialsX | `/itsmyconfig migrate Essentials` |
+| EconomyShopGUI | `/itsmyconfig migrate EconomyShopGUI` **or** `/itsmyconfig migrate EconomyShopGUI-Premium` |
+| ChatGames | `/itsmyconfig migrate ChatGames`, `/itsmyconfig migrate ChatGames-Premium`, **or** `/itsmyconfig migrate KixsChatGames` |
+</Step>
+
+<Step>
+## Migrate any other plugin
+
+Use the same command with its folder name:
+
+```text
+/itsmyconfig migrate <folder>
+```
+
+For example, `/itsmyconfig migrate MyPlugin` scans `/plugins/MyPlugin` and its subfolders. It updates old ItsMyConfig placeholder usages in supported `.yml`, `.yaml`, `.txt`, and `.properties` files.
+
+Before changing a file, ItsMyConfig copies it to an `itsmyconfig-backup-<timestamp>` folder inside that plugin folder. Files without changes are not backed up or rewritten.
+</Step>
+
+<Step>
+## Check and restart
+
+1. Check important menus, messages, scoreboards, and placeholders.
+3. Restart the server after all folders are migrated.
+4. Keep the backup folders until everything works.
+</Step>
+</Steps>
+
+## Placeholder format changes
+
+In v5, the placeholder name and variant still use an underscore. Arguments now use a colon.
+
+| v4 format | v5 format |
+| --- | --- |
+| `%itsmyconfig_greet_hello::world%` | `%itsmyconfig_greet:hello:world%` |
+| `%itsmyconfig_job-progress_25_100%` | `%itsmyconfig_job-progress:25:100%` |
+| `%itsmyconfig_font_smallcaps_hello%` | `%itsmyconfig_smallcaps:hello%` |
+| `%itsmyconfig_f_latin_5%` | `%itsmyconfig_latin:5%` |
+
+Format variants stay attached to the placeholder name:
+
+```text
+%itsmyconfig_price_formatted:1000%
+%itsmyconfig_prefix_legacy:PlayerName%
+```
+
+Quote an argument when it contains spaces or a colon:
+
+```text
+%itsmyconfig_message:'hello world':'value:with:colons'%
+```
+
+## Requirement changes
+
+Normal placeholder types no longer use a `requirements:` section. In v5, use a `conditional` placeholder with a `conditions:` list.
+
+### v4
+
+```yaml
+custom-placeholder:
+  money-message:
+    type: string
+    value: "<green>Requirement passed!"
+    requirements:
+      haveMoney:
+        type: ">="
+        input: "%vault_eco_balance%"
+        output: "100"
+        deny: "<red>Not enough money"
+```
+
+### v5
+
+```yaml
+custom-placeholder:
+  money-message:
+    type: conditional
+    conditions:
+      - type: ">="
+        input: "%vault_eco_balance%"
+        output: "100"
+    true: "<green>Requirement passed!"
+    false: "<red>Not enough money"
+```
+
+During automatic migration:
+
+- `requirements:` becomes the `conditions:` list.
+- `value:` becomes `true:`.
+- Each `deny:` becomes that condition's `false:` value.
+- All conditions must pass. The first failed condition returns its `false:` value.
+
+[See all conditional formats and condition types](/docs/itsmyconfig/placeholders#conditional).

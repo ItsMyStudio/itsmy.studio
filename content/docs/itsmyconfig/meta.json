@@ -4,10 +4,12 @@
   "root": true,
   "icon": "Wrench",
   "pages": [
+    "---Introduction---",
     "index",
     "builder",
-    "custom-placeholder",
-    "tag-system",
-    "commands-placeholders"
+    "migration-v5",
+    "---Features---",
+    "tags",
+    "placeholders"
   ]
 }
