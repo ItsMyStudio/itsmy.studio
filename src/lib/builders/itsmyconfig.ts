@@ -219,7 +219,7 @@ export const ITSMYCONFIG_BUILDER_PRESETS: ItsMyConfigBuilderPreset[] = [
 
 export const ITSMYCONFIG_BUILDER_DEFINITION: BuilderDefinition<ItsMyConfigBuilderState> = {
   kind: 'itsmyconfig',
-  label: 'ItsMyConfig Builder',
+  label: 'Theme Editor',
   description: 'Edit default placeholders and preview them in common Minecraft UI views.',
   output: {
     title: 'Placeholder YAML',
@@ -243,10 +243,6 @@ export function createItsMyConfigStateFromPreset(presetId: string): ItsMyConfigB
     placeholders: preset.state.placeholders.map(cloneItsMyConfigPlaceholder),
     templates: cloneItsMyConfigTemplates(preset.state.templates),
   };
-}
-
-export function isItsMyConfigPlaceholderVisible(placeholder: ItsMyConfigPlaceholder) {
-  return placeholder.id !== 'price-modifier';
 }
 
 function cloneItsMyConfigPlaceholder<TPlaceholder extends ItsMyConfigPlaceholder>(

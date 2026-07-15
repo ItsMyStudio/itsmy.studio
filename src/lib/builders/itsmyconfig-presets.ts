@@ -103,15 +103,7 @@ export const DEFAULT_PLACEHOLDERS: ItsMyConfigPlaceholder[] = [
     description: 'Economy amount format. `{0}` is amount.',
     type: 'colored_text',
     value: '<yellow>{0}⛁</yellow>',
-  },
-  {
-    id: 'price-modifier',
-    description: 'Math expression used to rescale prices. `{0}` is amount.',
-    type: 'math',
-    value: '1*{0}',
-    rounding: 'HALF_UP',
-    precision: 1,
-  },
+  }
 ];
 
 
@@ -218,15 +210,7 @@ export const HYPIXEL_PLACEHOLDERS: ItsMyConfigPlaceholder[] = [
     description: 'Economy amount format. `{0}` is amount.',
     type: 'colored_text',
     value: '<#FFCF9C>${0}</#FFCF9C>',
-  },
-  {
-    id: 'price-modifier',
-    description: 'Math expression used to rescale prices. `{0}` is amount.',
-    type: 'math',
-    value: '2*{0}',
-    rounding: 'HALF_UP',
-    precision: 1,
-  },
+  }
 ];
 
 export const ORIGIN_REALMS_PLACEHOLDERS: ItsMyConfigPlaceholder[] = [
@@ -332,15 +316,7 @@ export const ORIGIN_REALMS_PLACEHOLDERS: ItsMyConfigPlaceholder[] = [
     description: 'Economy amount format. `{0}` is amount.',
     type: 'colored_text',
     value: '<#EB7B9D>$<italic>{0}</italic></#EB7B9D>',
-  },
-  {
-    id: 'price-modifier',
-    description: 'Math expression used to rescale prices. `{0}` is amount.',
-    type: 'math',
-    value: '0.75*{0}',
-    rounding: 'HALF_UP',
-    precision: 1,
-  },
+  }
 ];
 
 export const THE_HIVE_PLACEHOLDERS: ItsMyConfigPlaceholder[] = [
@@ -446,13 +422,5 @@ export const THE_HIVE_PLACEHOLDERS: ItsMyConfigPlaceholder[] = [
     description: 'Economy amount format. `{0}` is amount.',
     type: 'colored_text',
     value: '<#0082D3>$<bold>{0}</bold></#0082D3>',
-  },
-  {
-    id: 'price-modifier',
-    description: 'Math expression used to rescale prices. `{0}` is amount.',
-    type: 'math',
-    value: '1.5*{0}',
-    rounding: 'HALF_UP',
-    precision: 1,
-  },
+  }
 ];

@@ -6,7 +6,7 @@
   "pages": [
     "---Introduction---",
     "index",
-    "builder",
+    "editor",
     "migration-v5",
     "---Features---",
     "tags",

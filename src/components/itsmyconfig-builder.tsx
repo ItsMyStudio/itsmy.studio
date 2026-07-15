@@ -20,7 +20,6 @@ import {
   ITSMYCONFIG_BUILDER_DEFINITION,
   ITSMYCONFIG_BUILDER_PRESETS,
   ITSMYCONFIG_VIEW_OPTIONS,
-  isItsMyConfigPlaceholderVisible,
   type ItsMyConfigBuilderState,
   type ItsMyConfigPlaceholder,
   type ItsMyConfigPreviewView,
@@ -47,9 +46,7 @@ export function ItsMyConfigBuilder({
   );
   const isControlled = controlledConfig !== undefined && onChange !== undefined;
   const config = isControlled ? controlledConfig : internalConfig;
-  const visiblePlaceholderEntries = config.placeholders.flatMap((placeholder, index) =>
-    isItsMyConfigPlaceholderVisible(placeholder) ? [{ placeholder, index }] : [],
-  );
+  const visiblePlaceholderEntries = config.placeholders.flatMap((placeholder, index) => [{ placeholder, index }]);
 
   function setConfig(
     updater: ItsMyConfigBuilderState | ((current: ItsMyConfigBuilderState) => ItsMyConfigBuilderState),
@@ -127,7 +124,7 @@ export function ItsMyConfigBuilder({
   return (
     <BuilderShell
       options={{
-        title: 'Builder Options',
+        title: 'Editor Options',
         description: 'Import or reset default placeholders before copying the generated YAML.',
         action: (
           <div className="flex flex-wrap gap-2">
@@ -192,8 +189,8 @@ export function ItsMyConfigBuilder({
         ),
       }}
       editor={{
-        title: 'Placeholders & Examples',
-        description: 'The example snippets are already there. Change values and adjust the fixed templates.',
+        title: 'Placeholders',
+        description: 'Change values and adjust the template.',
         children: (
           <div className="grid gap-2">
             {visiblePlaceholderEntries.map(({ placeholder, index }) => (
