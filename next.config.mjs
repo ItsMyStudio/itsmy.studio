@@ -5,7 +5,7 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  serverExternalPackages: ['typescript', 'twoslash', "@takumi-rs/image-response"],
+  serverExternalPackages: ['typescript', 'twoslash', 'takumi-js'],
   async rewrites() {
     return [
       {

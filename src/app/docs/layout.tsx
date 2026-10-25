@@ -25,7 +25,7 @@ export default function Layout({ children }: LayoutProps<'/docs'>) {
                   style={
                     {
                       '--tab-color': color,
-                    } as object
+                    }
                   }
                 >
                   {node.icon}

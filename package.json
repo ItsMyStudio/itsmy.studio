@@ -10,20 +10,20 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
-    "@takumi-rs/image-response": "^0.68.17",
     "class-variance-authority": "^0.7.1",
     "discord-markdown-parser": "^1.3.1",
-    "fumadocs-core": "^16.7.7",
-    "fumadocs-mdx": "14.2.8",
-    "fumadocs-twoslash": "^3.1.13",
-    "fumadocs-ui": "16.7.7",
+    "fumadocs-core": "16.17.8",
+    "fumadocs-mdx": "14.3.2",
+    "fumadocs-twoslash": "4.0.4",
+    "fumadocs-ui": "16.17.8",
     "js-yaml": "^4.2.0",
     "lucide-react": "^0.577.0",
-    "next": "16.1.6",
+    "next": "16.4.3",
     "node-emoji": "^2.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwind-merge": "^3.5.0",
+    "takumi-js": "2.18.0",
     "twemoji": "^14.0.2"
   },
   "devDependencies": {
